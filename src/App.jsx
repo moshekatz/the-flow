@@ -1,6 +1,6 @@
 import React from "react";
 import { AuthProvider } from "./auth-context";
-import { Header } from "./components";
+// import { Header } from "./components";
 
 //TODO: lazy-load
 import AuthenticatedApp from "./authenticated-app";

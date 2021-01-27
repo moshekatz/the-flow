@@ -1,10 +1,11 @@
 import React from "react";
 import { useAuth } from "./auth-context";
-import { ErrorMessage, Form } from "./components";
+import { ErrorMessage } from "./components";
 
 export default TailwindLogin;
 
 function TailwindLogin() {
+  // eslint-disable-next-line no-unused-vars
   const { login, register, resetPasswordForEmail } = useAuth();
   const [error, setError] = React.useState(null);
 
@@ -140,83 +141,83 @@ function TailwindLogin() {
   );
 }
 
-function UnauthenticatedApp() {
-  const { login, register, resetPasswordForEmail } = useAuth();
-  const [error, setError] = React.useState(null);
+// function UnauthenticatedApp() {
+//   const { login, register, resetPasswordForEmail } = useAuth();
+//   const [error, setError] = React.useState(null);
 
-  // TODO: is-memo-premature-optimization
-  const signInFormProps = React.useMemo(
-    () => ({
-      elements: [
-        { type: "email", name: "email" },
-        { type: "password", name: "password" },
-        { type: "submit", name: "Sign In" },
-      ],
-      onSubmit: async ({ email, password, provider }) => {
-        try {
-          const { error } = await login({ email, password, provider });
-          if (error) {
-            setError(error);
-          }
-        } catch (error) {
-          setError(error);
-        }
-      },
-    }),
-    [login]
-  );
+//   // TODO: is-memo-premature-optimization
+//   const signInFormProps = React.useMemo(
+//     () => ({
+//       elements: [
+//         { type: "email", name: "email" },
+//         { type: "password", name: "password" },
+//         { type: "submit", name: "Sign In" },
+//       ],
+//       onSubmit: async ({ email, password, provider }) => {
+//         try {
+//           const { error } = await login({ email, password, provider });
+//           if (error) {
+//             setError(error);
+//           }
+//         } catch (error) {
+//           setError(error);
+//         }
+//       },
+//     }),
+//     [login]
+//   );
 
-  const signUpFormProps = {
-    elements: [
-      { type: "email", name: "email" },
-      { type: "password", name: "password" },
-      { type: "submit", name: "Sign Up" },
-    ],
-    onSubmit: async ({ email, password }) => {
-      try {
-        const { error } = await register({ email, password });
-        if (error) {
-          setError(error);
-        }
-      } catch (error) {
-        setError(error);
-      }
-    },
-  };
+//   const signUpFormProps = {
+//     elements: [
+//       { type: "email", name: "email" },
+//       { type: "password", name: "password" },
+//       { type: "submit", name: "Sign Up" },
+//     ],
+//     onSubmit: async ({ email, password }) => {
+//       try {
+//         const { error } = await register({ email, password });
+//         if (error) {
+//           setError(error);
+//         }
+//       } catch (error) {
+//         setError(error);
+//       }
+//     },
+//   };
 
-  const resetPasswordFormProps = {
-    elements: [
-      { type: "email", name: "email" },
-      { type: "submit", name: "Reset Password" },
-    ],
-    onSubmit: async ({ email }) => {
-      try {
-        const { error } = await resetPasswordForEmail(email);
-        if (error) {
-          setError(error);
-        }
-      } catch (error) {
-        setError(error);
-      }
-    },
-  };
+//   const resetPasswordFormProps = {
+//     elements: [
+//       { type: "email", name: "email" },
+//       { type: "submit", name: "Reset Password" },
+//     ],
+//     onSubmit: async ({ email }) => {
+//       try {
+//         const { error } = await resetPasswordForEmail(email);
+//         if (error) {
+//           setError(error);
+//         }
+//       } catch (error) {
+//         setError(error);
+//       }
+//     },
+//   };
 
-  return (
-    <main
-      style={{
-        display: "flex",
-        flexDirection: "column",
-        alignItems: "center",
-        justifyContent: "center",
-      }}
-    >
-      <h2>Sign In</h2>
-      <Form {...signInFormProps} />
-      <h3>Sign Up</h3>
-      <Form {...signUpFormProps} />
-      <h3>Forgot my Password :(</h3>
-      <Form {...resetPasswordFormProps} />
-      {error ? <ErrorMessage error={error} /> : null}
-    </main>
-  );
-}
+//   return (
+//     <main
+//       style={{
+//         display: "flex",
+//         flexDirection: "column",
+//         alignItems: "center",
+//         justifyContent: "center",
+//       }}
+//     >
+//       <h2>Sign In</h2>
+//       <Form {...signInFormProps} />
+//       <h3>Sign Up</h3>
+//       <Form {...signUpFormProps} />
+//       <h3>Forgot my Password :(</h3>
+//       <Form {...resetPasswordFormProps} />
+//       {error ? <ErrorMessage error={error} /> : null}
+//     </main>
+//   );
+// }
