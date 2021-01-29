@@ -1,6 +1,5 @@
 import React from "react";
 import { AuthProvider } from "./auth-context";
-// import { Header } from "./components";
 
 //TODO: lazy-load
 import AuthenticatedApp from "./authenticated-app";
@@ -12,7 +11,6 @@ export default App;
 function App() {
   return (
     <>
-      {/* <Header heading="The Flow" /> */}
       <AuthProvider>
         <AuthProvider.Authenticated>
           <AuthenticatedApp />
