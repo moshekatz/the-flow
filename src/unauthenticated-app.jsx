@@ -64,20 +64,6 @@ function UnauthenticatedApp() {
         />
       );
     }
-    // case workflowState.forgotMyPassword: {
-    //   return (
-    //     <ForgotMyPassword
-    //       onBack={() => {
-    //         setWorkflow(workflowState.email);
-    //       }}
-    //       onResetPassword={() => {
-    //         setWorkflow(workflowState.emailSent);
-    //       }}
-    //       onEmailChanged={(e) => setEmail(e.target.value)}
-    //       email={email}
-    //     />
-    //   );
-    // }
     case workflowState.emailSent: {
       return <EmailSent email={email} />;
     }
@@ -96,7 +82,6 @@ function SignInEmailView({ onContinue, onGotoSignUp, onEmailChanged, email }) {
   };
 
   const handleGotoSignUp = (e) => {
-    e.preventDefault();
     onGotoSignUp();
   };
 
@@ -242,33 +227,6 @@ function MagicLinkOrPasswordView({ email, onBack, onMagicLink }) {
             </div>
           </div>
           {error ? <ErrorMessage error={error} /> : null}
-
-          {/* <div className="flex items-center justify-between">
-            <div className="flex items-center">
-              <input
-                id="remember_me"
-                name="remember_me"
-                type="checkbox"
-                className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
-              />
-              <label
-                htmlFor="remember_me"
-                className="ml-2 block text-sm text-gray-900"
-              >
-                Remember me
-              </label>
-            </div>
-            <div className="text-sm">
-              <button
-                className="font-medium text-blue-600 hover:text-blue-500"
-                onClick={() => {
-                  onForgotPassword();
-                }}
-              >
-                Forgot your password?
-              </button>
-            </div> 
-          </div> */}
           <div>
             <button
               type="submit"
@@ -300,7 +258,6 @@ function MagicLinkOrPasswordView({ email, onBack, onMagicLink }) {
             <button
               onClick={handleMagicLink}
               className="w-full inline-flex justify-center py-2 px-4 border border-gray-300 rounded-md shadow-sm bg-white text-sm font-medium text-gray-500 hover:bg-gray-50"
-              // className="w-full flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
             >
               <svg
                 xmlns="http://www.w3.org/2000/svg"
@@ -320,7 +277,6 @@ function MagicLinkOrPasswordView({ email, onBack, onMagicLink }) {
             <button
               onClick={handlePasswordReset}
               className="mt-2 w-full inline-flex justify-center py-2 px-4 border border-gray-300 rounded-md shadow-sm bg-white text-sm font-medium text-gray-500 hover:bg-gray-50"
-              // className="w-full flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
             >
               <svg
                 xmlns="http://www.w3.org/2000/svg"
@@ -345,6 +301,28 @@ function MagicLinkOrPasswordView({ email, onBack, onMagicLink }) {
 }
 
 function SignUp({ onBack, onSignUp, onEmailChanged, email }) {
+  const [password, setPassword] = React.useState("");
+  const [error, setError] = React.useState(null);
+  const { register } = useAuth();
+
+  const onPasswordChanged = (e) => {
+    setPassword(e.target.value);
+  };
+
+  const handleSignUp = async (e) => {
+    e.preventDefault();
+    try {
+      const { error } = await register({ email, password });
+      if (error) {
+        setError(error);
+      } else {
+        onSignUp();
+      }
+    } catch (error) {
+      setError(error);
+    }
+  };
+
   return (
     <UnauthenticatedAppWrapper>
       <UnauthenticatedAppCard>
@@ -352,12 +330,7 @@ function SignUp({ onBack, onSignUp, onEmailChanged, email }) {
           Back
         </UnauthenticatedAppTopLeftCardButton>
         <UnauthenticatedAppSubHeading>Sign Up</UnauthenticatedAppSubHeading>
-        <form
-          className="space-y-6"
-          onSubmit={() => {
-            onSignUp();
-          }}
-        >
+        <form className="space-y-6" onSubmit={handleSignUp}>
           <div className="rounded-md shadow-sm -space-y-px">
             <div>
               <label htmlFor="email-address" className="sr-only">
@@ -387,9 +360,12 @@ function SignUp({ onBack, onSignUp, onEmailChanged, email }) {
                 required
                 className="appearance-none rounded-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-b-md focus:outline-none focus:ring-blue-500 focus:border-blue-500 focus:z-10 sm:text-sm"
                 placeholder="Password"
+                value={password}
+                onChange={onPasswordChanged}
               />
             </div>
           </div>
+          {error ? <ErrorMessage error={error} /> : null}
           <div>
             <button
               type="submit"
@@ -419,70 +395,6 @@ function SignUp({ onBack, onSignUp, onEmailChanged, email }) {
     </UnauthenticatedAppWrapper>
   );
 }
-
-// function ForgotMyPassword({ onBack, onResetPassword, onEmailChanged, email }) {
-//   const handlePasswordReset = (e) => {
-//     e.preventDefault();
-//     onResetPassword();
-//   };
-//   return (
-//     <UnauthenticatedAppWrapper>
-//       <UnauthenticatedAppCard>
-//         <UnauthenticatedAppTopLeftCardButton onClick={onBack}>
-//           Back
-//         </UnauthenticatedAppTopLeftCardButton>
-//         <UnauthenticatedAppSubHeading>
-//           Forgot Your Password
-//         </UnauthenticatedAppSubHeading>
-//         <form className="space-y-6" onSubmit={handlePasswordReset}>
-//           <div className="rounded-md shadow-sm -space-y-px">
-//             <div>
-//               <label htmlFor="email-address" className="sr-only">
-//                 Email address
-//               </label>
-//               <input
-//                 id="email-address"
-//                 name="email"
-//                 type="email"
-//                 autoComplete="email"
-//                 required
-//                 className="appearance-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 rounded focus:outline-none focus:ring-blue-500 focus:border-blue-500 focus:z-10 sm:text-sm"
-//                 placeholder="Email address"
-//                 value={email}
-//                 onChange={onEmailChanged}
-//               />
-//             </div>
-//           </div>
-//           <div>
-//             <button
-//               type="submit"
-//               className="group relative w-full flex justify-center py-2 px-4 border border-transparent text-sm font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
-//             >
-//               <span className="absolute right-0 inset-y-0 flex items-center pr-3">
-//                 {/* Heroicon name: lock-closed */}
-//                 <svg
-//                   className="h-5 w-5 text-blue-500 group-hover:text-blue-400"
-//                   xmlns="http://www.w3.org/2000/svg"
-//                   fill="none"
-//                   viewBox="0 0 24 24"
-//                   stroke="currentColor"
-//                 >
-//                   <path
-//                     strokeLinecap="round"
-//                     strokeLinejoin="round"
-//                     strokeWidth={2}
-//                     d="M17 8l4 4m0 0l-4 4m4-4H3"
-//                   />
-//                 </svg>
-//               </span>
-//               Reset My Password
-//             </button>
-//           </div>
-//         </form>
-//       </UnauthenticatedAppCard>
-//     </UnauthenticatedAppWrapper>
-//   );
-// }
 
 function EmailSent({ email }) {
   return (

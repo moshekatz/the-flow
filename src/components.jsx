@@ -1,6 +1,6 @@
 export function UnauthenticatedAppWrapper({ children }) {
   return (
-    <div className="min-h-screen flex flex-col items-center justify-center space-y-6 bg-gray-50 py-12 px-4 sm:px-6 lg:px-8 bg-gradient-to-br from-blue-200 via-gray-50 to-yellow-400">
+    <div className="min-h-screen flex flex-col items-center justify-center space-y-6 bg-gray-50 py-12 px-4 sm:px-6 lg:px-8 bg-gradient-to-br from-blue-200 via-gray-50 to-yellow-300">
       <div className="max-w-md w-full space-y-4">
         <UnauthenticatedAppHeader />
         {children}
