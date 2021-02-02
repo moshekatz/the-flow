@@ -1,5 +1,5 @@
 import React from "react";
-import { useAuth } from "./auth-context";
+import { useAuth } from "../auth/auth-context";
 
 export default PasswordRecovery;
 

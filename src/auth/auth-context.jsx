@@ -6,7 +6,7 @@ import {
   resetPasswordForEmail,
   updatePassword,
   onAuthStateChange,
-} from "./api/auth-provider";
+} from "./auth-provider";
 
 export { AuthProvider, useAuth };
 
@@ -28,11 +28,6 @@ function AuthProvider(props) {
   React.useEffect(() => {
     const { authListener, error } = onAuthStateChange((event, session) => {
       /* type AuthChangeEvent = 'SIGNED_IN' | 'SIGNED_OUT' | 'USER_UPDATED' | 'PASSWORD_RECOVERY' */
-      console.log("useEffect in AuthContext - onAuthStateChangeCallback:", {
-        event,
-        session,
-      });
-
       const isPasswordRecovery = event === "PASSWORD_RECOVERY";
       setAuthState({ user: session?.user, error: null, isPasswordRecovery });
     });

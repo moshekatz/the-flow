@@ -1,10 +1,10 @@
 import React from "react";
-import { AuthProvider } from "./auth-context";
+import { AuthProvider } from "./auth/auth-context";
 
 //TODO: lazy-load
-import AuthenticatedApp from "./authenticated-app";
-import UnauthenticatedApp from "./unauthenticated-app";
-import PasswordRecovery from "./password-recovery";
+import AuthenticatedApp from "./authenticated-app/authenticated-app";
+import UnauthenticatedApp from "./unauthenticated-app/unauthenticated-app";
+import PasswordRecovery from "./password-recovery/password-recovery";
 
 export default App;
 
