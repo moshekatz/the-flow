@@ -57,7 +57,7 @@ export function UnauthenticatedAppTopLeftCardButton({ children, onClick }) {
   );
 }
 
-export function ErrorMessage({ error }) {
+export function UnauthenticatedAppErrorMessage({ error }) {
   return (
     <div className="rounded-md bg-red-50 p-4 max-w-md w-full">
       <div className="flex items-center">
@@ -95,93 +95,4 @@ export function ErrorMessage({ error }) {
       </div>
     </div>
   );
-}
-
-export function Form({ onSubmit, elements }) {
-  const handleSubmit = (e) => {
-    e.preventDefault();
-    const formElements = e.target.elements;
-    const elementProps = elements.reduce((acc, { name, type }) => {
-      if (type === "submit") return acc;
-      let elementValue = formElements[name].value;
-      if (elementValue === "") return acc;
-      if (type === "number") {
-        elementValue = Number(elementValue);
-      }
-      // if (type === "date") {
-      //   elementValue = Date(elementValue);
-      // }
-
-      acc[name] = elementValue;
-      return acc;
-    }, {});
-
-    onSubmit(elementProps);
-    e.target.reset();
-  };
-  return (
-    <form
-      onSubmit={handleSubmit}
-      style={{
-        width: "minmax(max-content,40vw)",
-        margin: "0 auto",
-        display: "flex",
-        flexDirection: "column",
-        justifyContent: "center",
-        alignItems: "center",
-        gap: "8px",
-      }}
-    >
-      {elements.map(mapFormElementsToComponents)}
-    </form>
-  );
-}
-
-function mapFormElementsToComponents({ type, name }) {
-  switch (type) {
-    case "text":
-    case "password":
-    case "date":
-    case "number":
-    case "email": {
-      return (
-        <div
-          key={`${type}-${name}`}
-          style={{
-            alignSelf: "stretch",
-            display: "flex",
-            justifyContent: "space-between",
-          }}
-        >
-          {/* <label style={{ float: "left", marginRight: "3px" }} htmlFor={name}> */}
-          <label htmlFor={name}>{`${capitalize(name)}:`}</label>
-          {/* <input style={{ float: "right" }} type={type} name={name}></input> */}
-          <input type={type} name={name}></input>
-        </div>
-      );
-    }
-    case "submit": {
-      return (
-        <button
-          key={type}
-          style={{
-            alignSelf: "stretch",
-            borderRadius: "7px",
-            margin: "8px 0",
-          }}
-          type="submit"
-        >
-          {name}
-        </button>
-      );
-    }
-    default: {
-      throw new Error(`Unsupported form element of type ${type}`);
-    }
-  }
-}
-
-function capitalize(s) {
-  if (typeof s !== "string") return "";
-  return s.charAt(0).toUpperCase() + s.slice(1);
 }
