@@ -167,7 +167,9 @@ function createNavLink(
   return (
     <button
       key={title}
-      onClick={() => onNavigate(title)}
+      onClick={() => {
+        onNavigate(title);
+      }}
       className={`${
         isCurrent
           ? "bg-gray-100 text-gray-900"

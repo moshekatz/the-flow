@@ -1,9 +1,11 @@
 import React from "react";
 import { useOutsideAlerter } from "../../hooks/hooks";
+import { useTransactions } from "../../api/transactions/transactions-api-hooks";
 
 export { Subscriptions };
 
-function Subscriptions({ outgoings, deleteOutgoing }) {
+function Subscriptions() {
+  const { transactions, deleteTransaction } = useTransactions();
   const [optionsOpenItemId, setOptionsOpenItemId] = React.useState(null);
 
   return (
@@ -13,11 +15,11 @@ function Subscriptions({ outgoings, deleteOutgoing }) {
           </h2> */}
       {/* <ul className="mt-3 grid grid-cols-1 gap-5 sm:gap-6 sm:grid-cols-2 lg:grid-cols-4"> */}
       <ul className="mt-3 grid grid-cols-1 gap-5 sm:gap-6">
-        {outgoings.map((outgoing) => (
-          <OutgoingItem
-            key={outgoing.id}
-            outgoing={outgoing}
-            optionsOpen={outgoing.id === optionsOpenItemId}
+        {transactions.map((transaction) => (
+          <SubscriptionItem
+            key={transaction.id}
+            transaction={transaction}
+            optionsOpen={transaction.id === optionsOpenItemId}
             onOptionsClick={(selectedId) => {
               const openedItemClicked = selectedId === optionsOpenItemId;
               const clickedOutside = selectedId === undefined;
@@ -27,7 +29,7 @@ function Subscriptions({ outgoings, deleteOutgoing }) {
               }
               setOptionsOpenItemId(selectedId);
             }}
-            deleteOutgoing={deleteOutgoing}
+            deleteTransaction={deleteTransaction}
           />
         ))}
       </ul>
@@ -35,13 +37,13 @@ function Subscriptions({ outgoings, deleteOutgoing }) {
   );
 }
 
-function OutgoingItem({
-  outgoing,
+function SubscriptionItem({
+  transaction,
   optionsOpen,
   onOptionsClick,
-  deleteOutgoing,
+  deleteTransaction,
 }) {
-  const { name, amount, repeat, due, id } = outgoing;
+  const { name, amount, repeat, due, id } = transaction;
   const optionsDropdownRef = React.useRef();
   const optionsButtonRef = React.useRef();
   useOutsideAlerter(
@@ -125,7 +127,7 @@ function OutgoingItem({
               </div>
               <div className="py-1">
                 <button
-                  onClick={() => deleteOutgoing(id)}
+                  onClick={() => deleteTransaction(id)}
                   className="w-full group flex items-center px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 hover:text-gray-900"
                   role="menuitem"
                 >

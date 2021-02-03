@@ -22,30 +22,30 @@ function Stats({ outgoings }) {
           <div className="bg-white overflow-hidden shadow rounded-lg">
             <div className="px-4 py-5 sm:p-6">
               <dt className="text-sm font-medium text-gray-500 truncate">
-                Total Subscribers
+                Left
               </dt>
               <dd className="mt-1 text-3xl font-semibold text-gray-900">
-                71,897
+                5,000<span className="font-serif">₪</span>
               </dd>
             </div>
           </div>
           <div className="bg-white overflow-hidden shadow rounded-lg">
             <div className="px-4 py-5 sm:p-6">
               <dt className="text-sm font-medium text-gray-500 truncate">
-                Avg. Open Rate
+                Received
               </dt>
               <dd className="mt-1 text-3xl font-semibold text-gray-900">
-                58.16%
+                7,000<span className="font-serif">₪</span>
               </dd>
             </div>
           </div>
           <div className="bg-white overflow-hidden shadow rounded-lg">
             <div className="px-4 py-5 sm:p-6">
               <dt className="text-sm font-medium text-gray-500 truncate">
-                Avg. Click Rate
+                Spent
               </dt>
               <dd className="mt-1 text-3xl font-semibold text-gray-900">
-                24.57%
+                2,000<span className="font-serif">₪</span>
               </dd>
             </div>
           </div>
