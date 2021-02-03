@@ -1,20 +1,91 @@
-export { CreateSlideOver };
+import React from "react";
+import { useTransactions } from "../api/transactions/transactions-api-hooks";
+
+export { TransactionSlideOver };
 
 const todayAsInputValue = new Date().toISOString().split("T")[0];
 
-function CreateSlideOver({ handleClose, createOutgoing }) {
+const defaultTransaction = {
+  name: "",
+  direction: "outgoing",
+  amount: "",
+  currency: "ILS",
+  repeat: "One Time",
+  due: todayAsInputValue,
+};
+
+function TransactionSlideOver({ handleClose, transactionId }) {
+  const {
+    transactions,
+    createTransaction,
+    deleteTransaction,
+    updateTransaction,
+  } = useTransactions();
+  const selectedTransaction = transactions.find(
+    (transaction) => transaction.id === transactionId
+  );
+  const [name, setName] = React.useState(
+    selectedTransaction?.name || defaultTransaction.name
+  );
+  const [direction, setDirection] = React.useState(
+    selectedTransaction?.direction || defaultTransaction.direction
+  );
+  const [amount, setAmount] = React.useState(
+    selectedTransaction?.amount || defaultTransaction.amount
+  );
+  const [currency, setCurrency] = React.useState(
+    selectedTransaction?.currency || defaultTransaction.currency
+  );
+  const [repeat, setRepeat] = React.useState(
+    selectedTransaction?.repeat || defaultTransaction.repeat
+  );
+  const [due, setDue] = React.useState(
+    selectedTransaction?.due || defaultTransaction.due
+  );
+
   const handleSubmit = async (e) => {
     e.preventDefault();
-    const { name, amount, currency, repeat, due } = e.target.elements;
-    const outgoingToCreate = {
-      name: name.value,
-      amount: amount.value,
-      currency: currency.value,
-      repeat: repeat.value,
-      due: due.value,
-    };
+    const shouldUpdate = transactionId !== null;
+    if (shouldUpdate) {
+      try {
+        await updateTransaction(transactionId, {
+          name,
+          direction,
+          amount,
+          currency,
+          repeat,
+          due,
+        });
+        handleClose();
+        // if (error) {
+        //   alert(error.message);
+        // }
+      } catch (error) {
+        alert(error.message);
+      }
+    } else {
+      try {
+        await createTransaction({
+          name,
+          direction,
+          amount,
+          currency,
+          repeat,
+          due,
+        });
+        handleClose();
+        // if (error) {
+        //   alert(error.message);
+        // }
+      } catch (error) {
+        alert(error.message);
+      }
+    }
+  };
+
+  const handleDelete = async () => {
     try {
-      await createOutgoing(outgoingToCreate);
+      await deleteTransaction(transactionId);
       handleClose();
       // if (error) {
       //   alert(error.message);
@@ -23,6 +94,7 @@ function CreateSlideOver({ handleClose, createOutgoing }) {
       alert(error.message);
     }
   };
+
   return (
     <section
       className="pl-3 max-w-full flex"
@@ -48,7 +120,7 @@ function CreateSlideOver({ handleClose, createOutgoing }) {
                     id="slide-over-heading"
                     className="text-lg font-medium text-gray-900"
                   >
-                    Create a new item
+                    {transactionId ? name : "Create a new transaction"}
                   </h2>
                   <div className="ml-3 h-7 flex items-center">
                     <button
@@ -92,7 +164,64 @@ function CreateSlideOver({ handleClose, createOutgoing }) {
                       name="name"
                       id="name"
                       className="shadow-sm focus:ring-blue-500 focus:border-blue-500 block w-full sm:text-sm border-gray-300 rounded-md"
+                      value={name}
+                      onChange={(e) => {
+                        setName(e.target.value);
+                      }}
                     />
+                  </div>
+                </div>
+
+                <div className="pt-6 sm:pt-5">
+                  <div role="group" aria-labelledby="label-direction">
+                    <label
+                      htmlFor="direction"
+                      className="block text-sm font-medium text-gray-700"
+                    >
+                      Direction
+                    </label>
+                    <div className="sm:grid sm:grid-cols-3 sm:gap-4 sm:items-baseline">
+                      <div className="sm:col-span-2">
+                        <div className="max-w-lg">
+                          <div className="mt-4 space-y-4">
+                            <div className="flex items-center">
+                              <input
+                                checked={direction === "outgoing"}
+                                onChange={(e) => setDirection(e.target.value)}
+                                id="outgoing"
+                                name="direction"
+                                type="radio"
+                                value="outgoing"
+                                className="focus:ring-blue-500 h-4 w-4 text-blue-600 border-gray-300"
+                              />
+                              <label
+                                htmlFor="outgoing"
+                                className="ml-3 block text-sm font-medium text-gray-700"
+                              >
+                                Outgoing
+                              </label>
+                            </div>
+                            <div className="flex items-center">
+                              <input
+                                checked={direction === "incoming"}
+                                onChange={(e) => setDirection(e.target.value)}
+                                id="incoming"
+                                name="direction"
+                                type="radio"
+                                value="incoming"
+                                className="focus:ring-blue-500 h-4 w-4 text-blue-600 border-gray-300"
+                              />
+                              <label
+                                htmlFor="incoming"
+                                className="ml-3 block text-sm font-medium text-gray-700"
+                              >
+                                Incoming
+                              </label>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
                   </div>
                 </div>
 
@@ -105,23 +234,32 @@ function CreateSlideOver({ handleClose, createOutgoing }) {
                   </label>
                   <div className="mt-1 relative rounded-md shadow-sm">
                     <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                      <span className="text-gray-500 sm:text-sm">$</span>
+                      <span className="text-gray-500 sm:text-sm font-serif">
+                        {currency === "ILS"
+                          ? "₪"
+                          : currency === "USD"
+                          ? "$"
+                          : "?"}
+                      </span>
                     </div>
                     <input
+                      value={amount}
+                      onChange={(e) => setAmount(e.target.value)}
                       type="text"
                       name="amount"
                       id="amount"
                       className="focus:ring-blue-500 focus:border-blue-500 block w-full pl-7 pr-12 sm:text-sm border-gray-300 rounded-md"
-                      placeholder={0.0}
+                      placeholder={0}
                     />
                     <div className="absolute inset-y-0 right-0 flex items-center">
                       <label htmlFor="currency" className="sr-only">
                         Currency
                       </label>
                       <select
+                        value={currency}
+                        onChange={(e) => setCurrency(e.target.value)}
                         id="currency"
                         name="currency"
-                        defaultValue="ILS"
                         className="focus:ring-blue-500 focus:border-blue-500 h-full py-0 pl-2 pr-7 border-transparent bg-transparent text-gray-500 sm:text-sm rounded-md"
                       >
                         <option>ILS</option>
@@ -145,7 +283,8 @@ function CreateSlideOver({ handleClose, createOutgoing }) {
                           <div className="mt-4 space-y-4">
                             <div className="flex items-center">
                               <input
-                                defaultChecked
+                                checked={repeat === "One Time"}
+                                onChange={(e) => setRepeat(e.target.value)}
                                 id="one-time"
                                 name="repeat"
                                 type="radio"
@@ -161,6 +300,8 @@ function CreateSlideOver({ handleClose, createOutgoing }) {
                             </div>
                             <div className="flex items-center">
                               <input
+                                checked={repeat === "Monthly"}
+                                onChange={(e) => setRepeat(e.target.value)}
                                 id="monthly"
                                 name="repeat"
                                 type="radio"
@@ -176,6 +317,8 @@ function CreateSlideOver({ handleClose, createOutgoing }) {
                             </div>
                             <div className="flex items-center">
                               <input
+                                checked={repeat === "Annually"}
+                                onChange={(e) => setRepeat(e.target.value)}
                                 id="annually"
                                 name="repeat"
                                 type="radio"
@@ -205,7 +348,8 @@ function CreateSlideOver({ handleClose, createOutgoing }) {
                   </label>
                   <div className="mt-1">
                     <input
-                      defaultValue={todayAsInputValue}
+                      value={due}
+                      onChange={(e) => setDue(e.target.value)}
                       type="date"
                       name="due"
                       id="due"
@@ -215,14 +359,20 @@ function CreateSlideOver({ handleClose, createOutgoing }) {
                 </div>
               </div>
             </div>
-            <div className="flex-shrink-0 px-4 py-4 flex justify-end">
-              <button
-                onClick={handleClose}
-                type="button"
-                className="bg-white py-2 px-4 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
-              >
-                Cancel
-              </button>
+            <div
+              className={`flex-shrink-0 px-4 py-4 flex ${
+                transactionId ? "justify-between" : "justify-end"
+              }`}
+            >
+              {transactionId ? (
+                <button
+                  onClick={handleDelete}
+                  type="button"
+                  className="bg-white py-2 px-4 border border-red-300 rounded-md shadow-sm text-sm font-medium text-red-700 hover:bg-red-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
+                >
+                  Delete
+                </button>
+              ) : null}
               <button
                 type="submit"
                 className="ml-4 inline-flex justify-center py-2 px-4 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"

@@ -2,15 +2,14 @@ import React from "react";
 
 import { Header } from "./header";
 import { Sidebar } from "./sidebar";
-import { CreateSlideOver } from "./create-slide-over";
-import { Outgoings } from "./pages/outgoings";
+import { TransactionSlideOver } from "./transaction-slide-over";
+import { MyFlow } from "./pages/my-flow";
 import { Subscriptions } from "./pages/subscriptions";
 import { Dashboard } from "./pages/dashboard";
 import { Settings } from "./pages/settings";
 import { YourProfile } from "./pages/your-profile";
 
-import { useOutgoings } from "../api/outgoings/outgoings-api-hooks";
-// import { useMockOutgoings as useOutgoings } from "../api/outgoings/outgoings-api-hooks";
+import { TransactionsProvider } from "../api/transactions/transactions-api-hooks";
 
 export default AuthenticatedApp;
 
@@ -57,27 +56,32 @@ function AuthenticatedApp() {
   const [menuOpen, setMenuOpen] = React.useState(false);
   const [selectedNav, setSelectedNav] = React.useState("My Flow");
   const [createMode, setCreateMode] = React.useState(false);
+  const [selectedTransactionId, setSelectedTransactionId] = React.useState(
+    null
+  );
+  const editMode = selectedTransactionId !== null;
+  const showTransactionSlideOver = createMode || editMode;
 
-  const {
-    outgoings,
-    createOutgoing,
-    deleteOutgoing,
-    // updateOutgoing,
-  } = useOutgoings();
-
-  const onNavigate = (navigateToTitle) => setSelectedNav(navigateToTitle);
+  const onNavigate = (navigateToTitle) => {
+    setSelectedNav(navigateToTitle);
+    setMenuOpen(false);
+  };
 
   let view;
 
   switch (selectedNav) {
     case "My Flow": {
-      view = <Outgoings outgoings={outgoings} />;
+      view = (
+        <MyFlow
+          onSelectTransaction={(id) => {
+            setSelectedTransactionId(id);
+          }}
+        />
+      );
       break;
     }
     case "Subscriptions": {
-      view = (
-        <Subscriptions outgoings={outgoings} deleteOutgoing={deleteOutgoing} />
-      );
+      view = <Subscriptions />;
       break;
     }
     case "Dashboard": {
@@ -110,41 +114,50 @@ function AuthenticatedApp() {
 
       <div className="flex-1 max-w-4xl mx-auto w-0 flex flex-col md:px-8 xl:px-0">
         <Header setMenuOpen={setMenuOpen} onNavigate={onNavigate} />
-        <div className="flex h-full bg-gray-50 px-3 py-2 my-2 shadow-2xl rounded-lg">
-          <main
-            className="flex-1 relative overflow-y-auto focus:outline-none"
-            tabIndex={0}
-          >
-            {view ? (
-              <div className="py-6 space-y-3">
-                <div className="px-4 sm:px-6 md:px-0 flex items-center justify-between ">
-                  <h1 className="text-2xl font-semibold text-gray-900 tracking-wide">
-                    {selectedNav}
-                  </h1>
+        <TransactionsProvider>
+          <div className="flex h-full bg-gray-50 px-3 py-2 my-2 shadow-2xl rounded-lg">
+            <main
+              className="flex-1 relative px-2 overflow-y-auto focus:outline-none"
+              tabIndex={0}
+            >
+              {view ? (
+                <div className="py-6 space-y-3">
+                  <div className="px-4 sm:px-6 md:px-0 flex items-center justify-between ">
+                    <h1 className="text-2xl font-semibold text-gray-900 tracking-wide">
+                      {selectedNav}
+                    </h1>
 
-                  <div className={`${createMode ? "invisible" : ""}`}>
-                    <button
-                      type="button"
-                      onClick={() => setCreateMode(true)}
-                      className="group inline-flex items-center mr-1 px-4 py-2 border border-blue-600 rounded-md shadow-sm text-sm font-medium text-blue-700 hover:bg-gray-50 hover:border-blue-700 focus:bg-gray-50 focus:border-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
+                    <div
+                      className={`${
+                        showTransactionSlideOver ? "invisible" : ""
+                      }`}
                     >
-                      Create
-                    </button>
+                      <button
+                        type="button"
+                        onClick={() => setCreateMode(true)}
+                        className="group inline-flex items-center mr-1 px-4 py-2 border border-blue-600 rounded-md shadow-sm text-sm font-medium text-blue-700 hover:bg-gray-50 hover:border-blue-700 focus:bg-gray-50 focus:border-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
+                      >
+                        Create
+                      </button>
+                    </div>
                   </div>
+                  <div className="px-4 sm:px-6 md:px-0">{view}</div>
                 </div>
-                <div className="px-4 sm:px-6 md:px-0">{view}</div>
-              </div>
-            ) : (
-              <div>Are You Lost?</div>
-            )}
-          </main>
-          {createMode ? (
-            <CreateSlideOver
-              createOutgoing={createOutgoing}
-              handleClose={() => setCreateMode(false)}
-            />
-          ) : null}
-        </div>
+              ) : (
+                <div>Are You Lost?</div>
+              )}
+            </main>
+            {showTransactionSlideOver ? (
+              <TransactionSlideOver
+                handleClose={() => {
+                  setSelectedTransactionId(null);
+                  setCreateMode(false);
+                }}
+                transactionId={selectedTransactionId}
+              />
+            ) : null}
+          </div>
+        </TransactionsProvider>
       </div>
     </div>
   );
