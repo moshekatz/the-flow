@@ -115,47 +115,45 @@ function TransactionSlideOver({ handleClose, transactionId }) {
     From: "translate-x-0"
     To: "translate-x-full"
 */}
-          <div className="w-screen md:max-w-md">
+          <div className="w-screen sm:max-w-md">
             <div className="h-full flex flex-col py-6 bg-white shadow-xl">
-              <div className="md:mt-6 relative flex-1 px-4 sm:px-6">
+              <div className="lg:mt-6 relative flex-1 px-4 sm:px-6">
+                <div className="flex items-start justify-between">
+                  <h2
+                    id="slide-over-heading"
+                    className="text-lg font-medium text-gray-900"
+                  >
+                    {transactionId ? name : "Create a new transaction"}
+                  </h2>
+                  <div className="ml-3 h-7 flex items-center">
+                    <button
+                      onClick={handleClose}
+                      type="button"
+                      className="bg-white rounded-md text-gray-400 hover:text-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    >
+                      <span className="sr-only">Close panel</span>
+                      {/* Heroicon name: x */}
+                      <svg
+                        className="h-6 w-6"
+                        xmlns="http://www.w3.org/2000/svg"
+                        fill="none"
+                        viewBox="0 0 24 24"
+                        stroke="currentColor"
+                        aria-hidden="true"
+                      >
+                        <path
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          strokeWidth={2}
+                          d="M6 18L18 6M6 6l12 12"
+                        />
+                      </svg>
+                    </button>
+                  </div>
+                </div>
                 <form onSubmit={handleSubmit}>
                   <div className="min-h-0 flex-1 flex flex-col">
-                    <div className="px-4 sm:px-6">
-                      <div className="flex items-start justify-between">
-                        <h2
-                          id="slide-over-heading"
-                          className="text-lg font-medium text-gray-900"
-                        >
-                          {transactionId ? name : "Create a new transaction"}
-                        </h2>
-                        <div className="ml-3 h-7 flex items-center">
-                          <button
-                            onClick={handleClose}
-                            type="button"
-                            className="bg-white rounded-md text-gray-400 hover:text-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-500"
-                          >
-                            <span className="sr-only">Close panel</span>
-                            {/* Heroicon name: x */}
-                            <svg
-                              className="h-6 w-6"
-                              xmlns="http://www.w3.org/2000/svg"
-                              fill="none"
-                              viewBox="0 0 24 24"
-                              stroke="currentColor"
-                              aria-hidden="true"
-                            >
-                              <path
-                                strokeLinecap="round"
-                                strokeLinejoin="round"
-                                strokeWidth={2}
-                                d="M6 18L18 6M6 6l12 12"
-                              />
-                            </svg>
-                          </button>
-                        </div>
-                      </div>
-                    </div>
-                    <div className="mt-6 relative flex-1 px-4 sm:px-6">
+                    <div className="mt-6 relative flex-1 ">
                       <div>
                         <label
                           htmlFor="name"
@@ -355,7 +353,7 @@ function TransactionSlideOver({ handleClose, transactionId }) {
                     </div>
                   </div>
                   <div
-                    className={`flex-shrink-0 px-4 py-4 flex ${
+                    className={`flex-shrink-0 py-4 flex ${
                       transactionId ? "justify-between" : "justify-end"
                     }`}
                   >

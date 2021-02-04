@@ -13,6 +13,7 @@ let outgoings = [
     currency: "ILS",
     repeat: "Monthly",
     due: "2021-02-01",
+    created_at: new Date(),
   },
   {
     id: uuidv4(),
@@ -21,6 +22,7 @@ let outgoings = [
     currency: "ILS",
     repeat: "One Time",
     due: "2021-01-26",
+    created_at: new Date(),
   },
 ];
 
@@ -32,7 +34,7 @@ async function getAllOutgoings() {
 
 async function createOutgoing(outgoing) {
   await delay(DELAY_MS);
-  const createdOutgoing = { ...outgoing, id: uuidv4() };
+  const createdOutgoing = { ...outgoing, id: uuidv4(), created_at: new Date() };
   outgoings = [...outgoings, createdOutgoing];
 
   return { createdOutgoing };
