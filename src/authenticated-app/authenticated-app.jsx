@@ -103,7 +103,7 @@ function AuthenticatedApp() {
   }
 
   return (
-    <div className="h-screen bg-white overflow-hidden flex">
+    <div className="h-screen bg-white overflow-y-auto flex">
       <Sidebar
         onNavigate={onNavigate}
         navLinks={navLinks}
@@ -115,23 +115,19 @@ function AuthenticatedApp() {
       <div className="flex-1 max-w-4xl mx-auto w-0 flex flex-col md:px-8 xl:px-0">
         <Header setMenuOpen={setMenuOpen} onNavigate={onNavigate} />
         <TransactionsProvider>
-          <div className="flex h-full bg-gray-50 px-3 py-2 my-2 shadow-2xl rounded-lg">
+          <div className="flex ">
             <main
-              className="flex-1 relative px-2 overflow-y-auto focus:outline-none"
+              className="flex-1 relative px-2 overflow-y-hidden focus:outline-none"
               tabIndex={0}
             >
               {view ? (
-                <div className="py-6 space-y-3">
+                <div className="py-3 space-y-3">
                   <div className="px-4 sm:px-6 md:px-0 flex items-center justify-between ">
                     <h1 className="text-2xl font-semibold text-gray-900 tracking-wide">
                       {selectedNav}
                     </h1>
 
-                    <div
-                      className={`${
-                        showTransactionSlideOver ? "invisible" : ""
-                      }`}
-                    >
+                    <div>
                       <button
                         type="button"
                         onClick={() => setCreateMode(true)}
