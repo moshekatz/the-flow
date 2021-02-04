@@ -25,7 +25,7 @@ function Sidebar({ navLinks, menuOpen, setMenuOpen, selectedNav, onNavigate }) {
 function DesktopMenu({ selectedNav, navLinks, onNavigate }) {
   return (
     <div className="hidden md:flex md:flex-shrink-0">
-      <div className="w-64 flex flex-col">
+      <div className="w-48 flex flex-col">
         <div className="border-r border-gray-200 pt-5 pb-4 flex flex-col flex-grow overflow-y-auto">
           <MenuLogo />
 

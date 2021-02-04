@@ -69,7 +69,7 @@ function Timeline({ onSelectTransaction }) {
   return (
     <div>
       <h2 className="text-xl font-semibold text-gray-700 tracking-wide">
-        Feed
+        Timeline
       </h2>
       <div className="flow-root">
         <ul className="mt-3">
