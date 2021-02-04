@@ -25,7 +25,7 @@ function Stats({ outgoings }) {
                 Left
               </dt>
               <dd className="mt-1 text-3xl font-semibold text-gray-900">
-                5,000<span className="font-serif">₪</span>
+                5,000<span className="font-normal">₪</span>
               </dd>
             </div>
           </div>
@@ -35,7 +35,7 @@ function Stats({ outgoings }) {
                 Received
               </dt>
               <dd className="mt-1 text-3xl font-semibold text-gray-900">
-                7,000<span className="font-serif">₪</span>
+                7,000<span className="font-normal">₪</span>
               </dd>
             </div>
           </div>
@@ -45,7 +45,7 @@ function Stats({ outgoings }) {
                 Spent
               </dt>
               <dd className="mt-1 text-3xl font-semibold text-gray-900">
-                2,000<span className="font-serif">₪</span>
+                2,000<span className="font-normal">₪</span>
               </dd>
             </div>
           </div>
@@ -91,7 +91,7 @@ function Feed({ outgoings }) {
                     <p className="text-sm text-gray-500">
                       Received{" "}
                       <span className="font-semibold text-gray-800">
-                        7,500<span className="font-serif">₪</span>
+                        7,500<span className="font-normal">₪</span>
                       </span>{" "}
                       from{" "}
                       <a href="/" className="font-medium text-gray-900">
@@ -167,7 +167,7 @@ function FeedItem({ outgoing }) {
                 {`${isOutgoing ? "Spent" : "Received"} `}
                 <span className="font-semibold text-gray-800">
                   {amount}
-                  <span className="font-serif">
+                  <span className="font-normal">
                     {currency === "ILS" ? "₪" : currency === "USD" ? "$" : "?"}
                   </span>
                 </span>{" "}
