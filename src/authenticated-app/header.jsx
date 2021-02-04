@@ -9,10 +9,10 @@ function Header({ setMenuOpen, onNavigate }) {
     <div className="relative z-10 flex-shrink-0 h-16 bg-white border-b border-gray-200 flex">
       <MobileOpenSideBarButton handleClick={() => setMenuOpen(true)} />
 
-      <div className="flex-1 flex justify-between px-4 md:px-0">
+      <div className="flex-1 flex justify-between px-4 lg:px-0">
         <SearchBar />
 
-        <div className="ml-4 flex items-center md:ml-6">
+        <div className="ml-4 flex items-center lg:ml-6">
           <ProfileDropdown onNavigate={onNavigate} />
         </div>
       </div>
@@ -24,7 +24,7 @@ function MobileOpenSideBarButton({ handleClick }) {
   return (
     <button
       onClick={handleClick}
-      className="md:hidden border-r border-gray-200 px-4 text-gray-500 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-indigo-500"
+      className="lg:hidden border-r border-gray-200 px-4 text-gray-500 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-indigo-500"
     >
       <span className="sr-only">Open sidebar</span>
       {/* Heroicon name: menu-alt-2 */}
@@ -50,7 +50,7 @@ function MobileOpenSideBarButton({ handleClick }) {
 function SearchBar() {
   return (
     <div className="flex-1 flex">
-      <form className="w-full flex md:ml-0" action="#" method="GET">
+      <form className="w-full flex lg:ml-0" action="#" method="GET">
         <label htmlFor="search_field" className="sr-only">
           Search
         </label>

@@ -21,41 +21,42 @@ function Stats() {
         Stats
       </h2>
       <div>
-        <dl className="mt-5 grid grid-cols-1 gap-5 sm:grid-cols-3">
-          <div className="bg-white overflow-hidden shadow rounded-lg">
-            <div className="px-4 py-5 sm:p-6">
-              <dt className="text-sm font-medium text-gray-500 truncate">
-                Left
-              </dt>
-              <dd className="mt-1 text-3xl font-semibold text-gray-900">
-                {left.toLocaleString()}
-                <span className="font-serif">₪</span>
-              </dd>
-            </div>
-          </div>
-          <div className="bg-white overflow-hidden shadow rounded-lg">
-            <div className="px-4 py-5 sm:p-6">
-              <dt className="text-sm font-medium text-gray-500 truncate">
-                Received
-              </dt>
-              <dd className="mt-1 text-3xl font-semibold text-gray-900">
-                {received.toLocaleString()}
-                <span className="font-serif">₪</span>
-              </dd>
-            </div>
-          </div>
-          <div className="bg-white overflow-hidden shadow rounded-lg">
-            <div className="px-4 py-5 sm:p-6">
-              <dt className="text-sm font-medium text-gray-500 truncate">
-                Spent
-              </dt>
-              <dd className="mt-1 text-3xl font-semibold text-gray-900">
-                {spent.toLocaleString()}
-                <span className="font-serif">₪</span>
-              </dd>
-            </div>
-          </div>
+        <dl className="mt-1 grid gap-3 sm:gap-5 grid-cols-3">
+          <StatCard
+            title="Received"
+            number={received.toLocaleString()}
+            bgColor="green"
+          />
+          <StatCard title="Left" number={left.toLocaleString()} />
+          <StatCard
+            title="Spent"
+            number={spent.toLocaleString()}
+            bgColor="red"
+          />
         </dl>
+      </div>
+    </div>
+  );
+}
+
+function StatCard({ title, number, bgColor }) {
+  return (
+    <div
+      className={`${
+        bgColor ? `bg-gradient-to-t from-${bgColor}-100 via-white` : "bg-white"
+      } overflow-hidden shadow rounded-lg`}
+    >
+      <div className="px-4 py-5 sm:p-6">
+        <dt className="text-xs sm:text-sm font-medium text-gray-500 truncate">
+          {/* <span className="inline bg-red-100 rounded-full px-2 py-0.5 text-xs tracking-wide uppercase font-medium">
+            <span className="text-red-700">{title}</span>
+          </span> */}
+          {title}
+        </dt>
+        <dd className="mt-1 text-xl sm:text-3xl font-semibold text-gray-900">
+          {number}
+          <span className="font-serif">₪</span>
+        </dd>
       </div>
     </div>
   );
@@ -63,9 +64,12 @@ function Stats() {
 
 function Timeline({ onSelectTransaction }) {
   const { transactions } = useTransactions();
-  const sortedByDateTransaction = transactions.sort(
-    (a, b) => new Date(b.due) - new Date(a.due)
-  );
+  const sortedByDateTransaction = transactions.sort((a, b) => {
+    if (b.due === a.due) {
+      return new Date(b.created_at) - new Date(a.created_at);
+    }
+    return new Date(b.due) - new Date(a.due);
+  });
   return (
     <div>
       <h2 className="text-xl font-semibold text-gray-700 tracking-wide">
@@ -150,7 +154,7 @@ function TimelineItem({ transaction, isLast, onSelectTransaction }) {
                 {`${isOutgoing ? "on" : "from"} `}
                 <button
                   onClick={() => onSelectTransaction(id)}
-                  className="font-medium text-gray-900"
+                  className="underline font-medium text-gray-900"
                 >
                   {name}
                 </button>

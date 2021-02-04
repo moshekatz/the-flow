@@ -112,7 +112,7 @@ function AuthenticatedApp() {
         setMenuOpen={setMenuOpen}
       />
 
-      <div className="flex-1 max-w-4xl mx-auto w-0 flex flex-col md:px-8 xl:px-0">
+      <div className="flex-1 lg:max-w-4xl mx-auto w-0 flex flex-col lg:px-8 xl:px-0">
         <Header setMenuOpen={setMenuOpen} onNavigate={onNavigate} />
         <TransactionsProvider>
           <div className="flex ">
@@ -122,7 +122,7 @@ function AuthenticatedApp() {
             >
               {view ? (
                 <div className="py-3 space-y-3">
-                  <div className="px-4 sm:px-6 md:px-0 flex items-center justify-between ">
+                  <div className="px-4 sm:px-6 lg:px-0 flex items-center justify-between ">
                     <h1 className="text-2xl font-semibold text-gray-900 tracking-wide">
                       {selectedNav}
                     </h1>
@@ -137,7 +137,7 @@ function AuthenticatedApp() {
                       </button>
                     </div>
                   </div>
-                  <div className="px-4 sm:px-6 md:px-0">{view}</div>
+                  <div className="px-4 sm:px-6 lg:px-0">{view}</div>
                 </div>
               ) : (
                 <div>Are You Lost?</div>

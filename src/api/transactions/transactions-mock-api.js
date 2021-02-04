@@ -13,21 +13,13 @@ const error = null;
 let transactions = [
   {
     id: uuidv4(),
-    name: "iCloud",
-    amount: 11.9,
-    currency: "ILS",
-    repeat: "Monthly",
-    due: "2021-02-01",
-    direction: "outgoing",
-  },
-  {
-    id: uuidv4(),
     name: "Primoosh",
     amount: 225,
     currency: "ILS",
     repeat: "One Time",
     due: "2021-01-26",
     direction: "outgoing",
+    created_at: new Date(),
   },
   {
     id: uuidv4(),
@@ -37,6 +29,7 @@ let transactions = [
     repeat: "One Time",
     due: "2021-01-01",
     direction: "incoming",
+    created_at: new Date(),
   },
   {
     id: uuidv4(),
@@ -46,78 +39,7 @@ let transactions = [
     repeat: "Monthly",
     due: "2021-02-01",
     direction: "outgoing",
-  },
-  {
-    id: uuidv4(),
-    name: "iCloud",
-    amount: 11.9,
-    currency: "ILS",
-    repeat: "Monthly",
-    due: "2021-02-01",
-    direction: "outgoing",
-  },
-  {
-    id: uuidv4(),
-    name: "Primoosh",
-    amount: 225,
-    currency: "ILS",
-    repeat: "One Time",
-    due: "2021-01-26",
-    direction: "outgoing",
-  },
-  {
-    id: uuidv4(),
-    name: "Salary",
-    amount: 7000,
-    currency: "ILS",
-    repeat: "One Time",
-    due: "2021-01-01",
-    direction: "incoming",
-  },
-  {
-    id: uuidv4(),
-    name: "iCloud",
-    amount: 11.9,
-    currency: "ILS",
-    repeat: "Monthly",
-    due: "2021-02-01",
-    direction: "outgoing",
-  },
-  {
-    id: uuidv4(),
-    name: "iCloud",
-    amount: 11.9,
-    currency: "ILS",
-    repeat: "Monthly",
-    due: "2021-02-01",
-    direction: "outgoing",
-  },
-  {
-    id: uuidv4(),
-    name: "Primoosh",
-    amount: 225,
-    currency: "ILS",
-    repeat: "One Time",
-    due: "2021-01-26",
-    direction: "outgoing",
-  },
-  {
-    id: uuidv4(),
-    name: "Salary",
-    amount: 7000,
-    currency: "ILS",
-    repeat: "One Time",
-    due: "2021-01-01",
-    direction: "incoming",
-  },
-  {
-    id: uuidv4(),
-    name: "iCloud",
-    amount: 11.9,
-    currency: "ILS",
-    repeat: "Monthly",
-    due: "2021-02-01",
-    direction: "outgoing",
+    created_at: new Date(),
   },
 ];
 
@@ -129,7 +51,11 @@ async function getAllTransactions() {
 
 async function createTransaction(transaction) {
   await delay(DELAY_MS);
-  const createdTransaction = { ...transaction, id: uuidv4() };
+  const createdTransaction = {
+    ...transaction,
+    id: uuidv4(),
+    created_at: new Date(),
+  };
   transactions = [...transactions, createdTransaction];
 
   return { createdTransaction };
