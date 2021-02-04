@@ -59,7 +59,7 @@ function StatCard({ title, number, bgColor }) {
         </dt>
         <dd className="mt-1 text-xl sm:text-3xl font-semibold text-gray-900">
           {number}
-          <span className="font-serif">₪</span>
+          <span className="font-normal">₪</span>
         </dd>
       </div>
     </div>
@@ -151,7 +151,7 @@ function TimelineItem({ transaction, isLast, onSelectTransaction }) {
                 {`${isOutgoing ? "Spent" : "Received"} `}
                 <span className="font-semibold text-gray-800">
                   {amount.toLocaleString()}
-                  <span className="font-serif">
+                  <span className="font-normal">
                     {currency === "ILS" ? "₪" : currency === "USD" ? "$" : "?"}
                   </span>
                 </span>{" "}

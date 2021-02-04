@@ -232,7 +232,7 @@ function TransactionSlideOver({ handleClose, transactionId }) {
                         </label>
                         <div className="mt-1 relative rounded-md shadow-sm">
                           <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                            <span className="text-gray-500 sm:text-sm font-serif">
+                            <span className="text-gray-500 sm:text-sm font-normal">
                               {currency === "ILS"
                                 ? "₪"
                                 : currency === "USD"
@@ -242,8 +242,10 @@ function TransactionSlideOver({ handleClose, transactionId }) {
                           </div>
                           <input
                             value={amount}
-                            onChange={(e) => setAmount(Number(e.target.value))}
-                            type="text"
+                            onChange={(e) => {
+                              setAmount(e.target.valueAsNumber);
+                            }}
+                            type="number"
                             name="amount"
                             id="amount"
                             className="focus:ring-blue-500 focus:border-blue-500 block w-full pl-7 pr-12 sm:text-sm border-gray-300 rounded-md"

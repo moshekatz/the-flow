@@ -126,7 +126,6 @@ function AuthenticatedApp() {
                     <h1 className="text-2xl font-semibold text-gray-900 tracking-wide">
                       {selectedNav}
                     </h1>
-
                     <div>
                       <button
                         type="button"
@@ -136,6 +135,12 @@ function AuthenticatedApp() {
                         Create
                       </button>
                     </div>
+                  </div>
+                  <div className="text-center sm:text-lg">
+                    <DirectionFilterDropDown /> transactions{" "}
+                    <button className="text-gray-700 underline font-semibold hover:text-gray-800">
+                      this month
+                    </button>
                   </div>
                   <div className="px-4 sm:px-6 lg:px-0">{view}</div>
                 </div>
@@ -154,6 +159,78 @@ function AuthenticatedApp() {
             ) : null}
           </div>
         </TransactionsProvider>
+      </div>
+    </div>
+  );
+}
+
+function DirectionFilterDropDown({ onDirectionFilterChange }) {
+  const [directionFilterDropDown, setDirectionFilterDropDown] = React.useState(
+    false
+  );
+
+  return (
+    <div className="ml-1  relative inline-block">
+      <button
+        onClick={() => setDirectionFilterDropDown((isOpen) => !isOpen)}
+        className="text-gray-700 underline font-semibold hover:text-gray-800 focus:text-gray-800 focus:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
+        id="user-menu"
+        aria-haspopup="true"
+      >
+        <span className="sr-only">Open Direction Filter</span>
+        All
+      </button>
+
+      {/* TODO: Animations
+        Profile dropdown panel, show/hide based on dropdown state.
+
+        Entering: "transition ease-out duration-100"
+          From: "transform opacity-0 scale-95"
+          To: "transform opacity-100 scale-100"
+        Leaving: "transition ease-in duration-75"
+          From: "transform opacity-100 scale-100"
+          To: "transform opacity-0 scale-95"
+      */}
+      <div
+        className={`${
+          directionFilterDropDown ? "" : "hidden"
+        } origin-top absolute top-6 -left-24 mt-2 w-48 rounded-md shadow-lg bg-white ring-1 ring-black ring-opacity-5 py-1`}
+        role="menu"
+        aria-orientation="vertical"
+        aria-labelledby="user-menu"
+      >
+        {/* TODO: anchor or buttons? */}
+        <button
+          className="w-full text-left block py-2 px-4 text-sm text-gray-700 hover:bg-gray-100"
+          role="menuitem"
+          onClick={() => {
+            onDirectionFilterChange("Your Profile");
+            setDirectionFilterDropDown(false);
+          }}
+        >
+          All
+        </button>
+        <button
+          className="w-full text-left block py-2 px-4 text-sm text-gray-700 hover:bg-gray-100"
+          role="menuitem"
+          onClick={() => {
+            onDirectionFilterChange("Settings");
+            setDirectionFilterDropDown(false);
+          }}
+        >
+          Outgoing
+        </button>
+        <button
+          // href="/"
+          className="w-full text-left block py-2 px-4 text-sm text-gray-700 hover:bg-gray-100"
+          role="menuitem"
+          onClick={() => {
+            onDirectionFilterChange("Settings");
+            setDirectionFilterDropDown(false);
+          }}
+        >
+          Incoming
+        </button>
       </div>
     </div>
   );
