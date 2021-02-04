@@ -43,7 +43,11 @@ function StatCard({ title, number, bgColor }) {
   return (
     <div
       className={`${
-        bgColor ? `bg-gradient-to-t from-${bgColor}-100 via-white` : "bg-white"
+        bgColor === "green"
+          ? `bg-gradient-to-t from-green-100 via-white`
+          : bgColor === "red"
+          ? `bg-gradient-to-t from-red-100 via-white`
+          : "bg-white"
       } overflow-hidden shadow rounded-lg`}
     >
       <div className="px-4 py-5 sm:p-6">
@@ -146,7 +150,7 @@ function TimelineItem({ transaction, isLast, onSelectTransaction }) {
               <p className="text-sm text-gray-500">
                 {`${isOutgoing ? "Spent" : "Received"} `}
                 <span className="font-semibold text-gray-800">
-                  {amount}
+                  {amount.toLocaleString()}
                   <span className="font-serif">
                     {currency === "ILS" ? "₪" : currency === "USD" ? "$" : "?"}
                   </span>
