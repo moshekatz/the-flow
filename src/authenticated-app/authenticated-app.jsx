@@ -156,9 +156,6 @@ function AuthenticatedApp() {
             {showTransactionSlideOver ? (
               <TransactionSlideOver
                 handleClose={(e) => {
-                  // FIXME: Did the stopPropagation helped with the focus profile dropdown bug?
-                  e.stopPropagation();
-
                   setSelectedTransactionId(null);
                   setCreateMode(false);
                 }}
