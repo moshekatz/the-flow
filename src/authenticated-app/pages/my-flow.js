@@ -22,17 +22,9 @@ function Stats() {
       </h2>
       <div>
         <dl className="mt-1 grid gap-3 sm:gap-5 grid-cols-3">
-          <StatCard
-            title="Received"
-            number={received.toLocaleString()}
-            bgColor="green"
-          />
-          <StatCard title="Left" number={left.toLocaleString()} />
-          <StatCard
-            title="Spent"
-            number={spent.toLocaleString()}
-            bgColor="red"
-          />
+          <StatCard title="Received" number={received} bgColor="green" />
+          <StatCard title="Left" number={left} />
+          <StatCard title="Spent" number={spent} bgColor="red" />
         </dl>
       </div>
     </div>
@@ -57,8 +49,8 @@ function StatCard({ title, number, bgColor }) {
           </span> */}
           {title}
         </dt>
-        <dd className="mt-1 text-xl sm:text-3xl font-semibold text-gray-900">
-          {number}
+        <dd className="mt-1 text-lg sm:text-3xl font-semibold text-gray-900">
+          {Math.round(number).toLocaleString()}
           <span className="font-normal">₪</span>
         </dd>
       </div>

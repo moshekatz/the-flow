@@ -26,7 +26,7 @@ function DesktopMenu({ selectedNav, navLinks, onNavigate }) {
   return (
     <div className="hidden lg:flex lg:flex-shrink-0">
       <div className="w-48 lg:w-64 flex flex-col">
-        <div className="border-r border-gray-200 pt-5 pb-4 flex flex-col flex-grow overflow-y-auto">
+        <div className="border-r border-gray-200 pt-5 pb-4 flex flex-col flex-grow">
           <MenuLogo />
 
           <div className="mt-5 flex flex-grow flex-col">
@@ -91,7 +91,7 @@ function MobileMenuContent({ setMenuOpen, selectedNav, navLinks, onNavigate }) {
 
       <MenuLogo />
 
-      <div className="mt-5 flex-1 h-0 overflow-y-auto">
+      <div className="mt-5 flex-1 h-0">
         <nav className="px-2 space-y-1">
           {navLinks.map(({ title, svgPath }) => {
             return createNavLink({ title, svgPath }, onNavigate, {

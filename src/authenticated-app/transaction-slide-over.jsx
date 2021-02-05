@@ -43,6 +43,13 @@ function TransactionSlideOver({ handleClose, transactionId }) {
     selectedTransaction?.due || defaultTransaction.due
   );
 
+  const nameInputRef = React.useRef();
+  React.useEffect(() => {
+    if (!selectedTransaction) {
+      nameInputRef.current.focus();
+    }
+  }, [selectedTransaction]);
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     const shouldUpdate = transactionId !== null;
@@ -163,6 +170,7 @@ function TransactionSlideOver({ handleClose, transactionId }) {
                         </label>
                         <div className="mt-1">
                           <input
+                            ref={nameInputRef}
                             type="text"
                             name="name"
                             id="name"
@@ -248,7 +256,7 @@ function TransactionSlideOver({ handleClose, transactionId }) {
                             type="number"
                             name="amount"
                             id="amount"
-                            className="focus:ring-blue-500 focus:border-blue-500 block w-full pl-7 pr-12 sm:text-sm border-gray-300 rounded-md"
+                            className="focus:ring-blue-500 focus:border-blue-500 block w-full pl-7 pr-16 sm:text-sm border-gray-300 rounded-md"
                             placeholder={0}
                           />
                           <div className="absolute inset-y-0 right-0 flex items-center">
@@ -354,6 +362,7 @@ function TransactionSlideOver({ handleClose, transactionId }) {
                       </div>
                     </div>
                   </div>
+
                   <div
                     className={`flex-shrink-0 py-4 flex ${
                       transactionId ? "justify-between" : "justify-end"
