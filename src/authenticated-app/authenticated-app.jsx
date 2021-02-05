@@ -61,6 +61,7 @@ function AuthenticatedApp() {
   );
   const editMode = selectedTransactionId !== null;
   const showTransactionSlideOver = createMode || editMode;
+  const shouldHideScrollbar = showTransactionSlideOver || menuOpen;
 
   const onNavigate = (navigateToTitle) => {
     setSelectedNav(navigateToTitle);
@@ -103,7 +104,11 @@ function AuthenticatedApp() {
   }
 
   return (
-    <div className="h-screen bg-white overflow-y-auto flex">
+    <div
+      className={`h-screen bg-white flex ${
+        shouldHideScrollbar ? "overflow-y-hidden" : ""
+      }`}
+    >
       <Sidebar
         onNavigate={onNavigate}
         navLinks={navLinks}
@@ -117,7 +122,7 @@ function AuthenticatedApp() {
         <TransactionsProvider>
           <div className="flex ">
             <main
-              className="flex-1 relative px-2 overflow-y-hidden focus:outline-none"
+              className="flex-1 relative px-2  focus:outline-none"
               tabIndex={0}
             >
               {view ? (
@@ -150,7 +155,10 @@ function AuthenticatedApp() {
             </main>
             {showTransactionSlideOver ? (
               <TransactionSlideOver
-                handleClose={() => {
+                handleClose={(e) => {
+                  // FIXME: Did the stopPropagation helped with the focus profile dropdown bug?
+                  e.stopPropagation();
+
                   setSelectedTransactionId(null);
                   setCreateMode(false);
                 }}
