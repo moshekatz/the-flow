@@ -4,22 +4,40 @@ import { useTransactions } from "../../api/transactions/transactions-api-hooks";
 
 export { Subscriptions };
 
-function Subscriptions() {
+function Subscriptions({ onSelectSubscription }) {
   const { transactions, deleteTransaction } = useTransactions();
   const [optionsOpenItemId, setOptionsOpenItemId] = React.useState(null);
 
+  const subscriptions = transactions
+    .filter(({ repeat }) => ["Monthly", "Annually"].includes(repeat))
+    .map((subscription) => {
+      return {
+        ...subscription,
+        nextDue: calculateNextDue(subscription),
+        paidMonthly: calculatePaidMonthly(subscription),
+        paidAnnually: calculatePaidAnnually(subscription),
+      };
+    });
+
+  const sortedByDateSubscriptions = subscriptions.sort((a, b) => {
+    return new Date(a.nextDue) - new Date(b.nextDue);
+  });
+
   return (
-    <div>
-      {/* <h2 className="text-gray-500 text-xs font-medium uppercase tracking-wide">
-            Pinned Projects
-          </h2> */}
-      {/* <ul className="mt-3 grid grid-cols-1 gap-5 sm:gap-6 sm:grid-cols-2 lg:grid-cols-4"> */}
+    <div className="space-y-3">
+      <h2 className="text-gray-600 text-sm font-medium uppercase tracking-wide">
+        Stats
+      </h2>
+      <SubscriptionStats subscriptions={subscriptions} />
+      <h2 className="text-gray-600 text-sm font-medium uppercase tracking-wide">
+        Active
+      </h2>
       <ul className="mt-3 grid grid-cols-1 gap-5 sm:gap-6">
-        {transactions.map((transaction) => (
+        {sortedByDateSubscriptions.map((subscription) => (
           <SubscriptionItem
-            key={transaction.id}
-            transaction={transaction}
-            optionsOpen={transaction.id === optionsOpenItemId}
+            key={subscription.id}
+            subscription={subscription}
+            optionsOpen={subscription.id === optionsOpenItemId}
             onOptionsClick={(selectedId) => {
               const openedItemClicked = selectedId === optionsOpenItemId;
               const clickedOutside = selectedId === undefined;
@@ -30,6 +48,7 @@ function Subscriptions() {
               setOptionsOpenItemId(selectedId);
             }}
             deleteTransaction={deleteTransaction}
+            onSelectSubscription={onSelectSubscription}
           />
         ))}
       </ul>
@@ -38,12 +57,22 @@ function Subscriptions() {
 }
 
 function SubscriptionItem({
-  transaction,
+  subscription,
   optionsOpen,
   onOptionsClick,
   deleteTransaction,
+  onSelectSubscription,
 }) {
-  const { name, amount, repeat, due, id } = transaction;
+  const {
+    name,
+    amount,
+    repeat,
+    nextDue,
+    id,
+    currency,
+    // paidAnnually,
+    // paidMonthly,
+  } = subscription;
   const optionsDropdownRef = React.useRef();
   const optionsButtonRef = React.useRef();
   useOutsideAlerter(
@@ -58,20 +87,24 @@ function SubscriptionItem({
 
   return (
     <li className="col-span-1 flex shadow-sm rounded-md">
-      <div className="flex-shrink-0 flex items-center justify-center w-16 bg-red-600 text-white text-sm font-medium rounded-l-md">
-        {amount}
-      </div>
       {/*TODO: removed truncate class from the div below for the dropdown - did it break anything? */}
-      <div className="flex-1 flex items-center justify-between border-t border-r border-b border-gray-200 bg-white rounded-r-md">
+      <div className="flex-1 flex items-center justify-between border border-gray-200 bg-white rounded-md">
         <div className="flex-1 px-4 py-2 text-sm truncate">
-          <a href="/" className="text-gray-900 font-medium hover:text-gray-600">
+          <p className="text-gray-900 font-medium hover:text-gray-600">
             {name}
-          </a>
-          <p className="text-gray-500">{due}</p>
+          </p>
+          <p className="text-gray-500 text-xs">{repeat}</p>
+          <p className="text-gray-400 text-xs">
+            Next billing date: {getSubscriptionDate(nextDue)}
+          </p>
         </div>
+        <div></div>
         <div className="mr-1">
-          <span className="flex-shrink-0 inline-block px-2 py-0.5 text-green-800 text-xs font-medium bg-green-100 rounded-full">
-            {repeat}
+          <span className="text-gray-700 font-semibold">
+            <span className="font-normal">
+              {currency === "ILS" ? "₪" : currency === "USD" ? "$" : "?"}
+            </span>
+            {amount.toLocaleString()}
           </span>
         </div>
         <div className="relative flex-shrink-0 pr-2">
@@ -106,6 +139,7 @@ function SubscriptionItem({
                 <button
                   className="w-full group flex items-center px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 hover:text-gray-900"
                   role="menuitem"
+                  onClick={() => onSelectSubscription(id)}
                 >
                   {/* Heroicon name: pencil-alt */}
                   <svg
@@ -154,4 +188,97 @@ function SubscriptionItem({
       </div>
     </li>
   );
+}
+
+function SubscriptionStats({ subscriptions }) {
+  const { monthlyAverage, annuallyAverage } = calculateSubscriptionStats(
+    subscriptions
+  );
+
+  return (
+    <div>
+      <dl className="mt-1 grid gap-3 sm:gap-5 grid-cols-2">
+        <StatCard title="Monthly Average" number={monthlyAverage} />
+        <StatCard title="Annually Average" number={annuallyAverage} />
+      </dl>
+    </div>
+  );
+}
+
+function calculateSubscriptionStats(subscriptions) {
+  let monthlyAverage = 0;
+  let annuallyAverage = 0;
+
+  subscriptions.forEach(({ paidMonthly, paidAnnually }) => {
+    monthlyAverage += paidMonthly;
+    annuallyAverage += paidAnnually;
+  });
+
+  return { monthlyAverage, annuallyAverage };
+}
+
+function getSubscriptionDate(date) {
+  const [, month, day, year] = date.toDateString().split(" ");
+  return `${day} ${month} ${year}`;
+}
+
+function calculateNextDue({ due, repeat }) {
+  const startDueDate = new Date(due);
+  if (startDueDate > new Date()) return startDueDate;
+
+  const increment =
+    repeat === "Monthly"
+      ? (date) => {
+          return new Date(date.setMonth(date.getMonth() + 1));
+        }
+      : (date) => {
+          return new Date(date.setFullYear(date.getFullYear() + 1));
+        };
+
+  let nextDueDate = increment(startDueDate);
+  while (nextDueDate < new Date()) {
+    nextDueDate = increment(startDueDate);
+  }
+
+  return nextDueDate;
+}
+
+// TODO: fix the depandency graph, potential abstraction with myflow stat
+function StatCard({ title, number, bgColor }) {
+  return (
+    <div
+      className={`${
+        bgColor === "green"
+          ? `bg-gradient-to-t from-green-100 via-white`
+          : bgColor === "red"
+          ? `bg-gradient-to-t from-red-100 via-white`
+          : "bg-white"
+      } overflow-hidden shadow rounded-lg`}
+    >
+      <div className="px-4 py-5 sm:p-6">
+        <dt className="text-xs sm:text-sm font-medium text-gray-500 truncate">
+          {/* <span className="inline bg-red-100 rounded-full px-2 py-0.5 text-xs tracking-wide uppercase font-medium">
+            <span className="text-red-700">{title}</span>
+          </span> */}
+          {title}
+        </dt>
+        <dd className="mt-1 text-lg sm:text-3xl font-semibold text-gray-900">
+          {Math.round(number).toLocaleString()}
+          <span className="font-normal">₪</span>
+        </dd>
+      </div>
+    </div>
+  );
+}
+
+// TODO: USD support
+function calculatePaidMonthly({ amount, repeat }) {
+  if (repeat === "Monthly") return amount;
+  return amount / 12;
+}
+
+// TODO: USD support
+function calculatePaidAnnually({ amount, repeat }) {
+  if (repeat === "Annually") return amount;
+  return amount * 12;
 }

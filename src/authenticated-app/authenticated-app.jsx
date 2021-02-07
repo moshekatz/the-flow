@@ -82,7 +82,13 @@ function AuthenticatedApp() {
       break;
     }
     case "Subscriptions": {
-      view = <Subscriptions />;
+      view = (
+        <Subscriptions
+          onSelectSubscription={(id) => {
+            setSelectedTransactionId(id);
+          }}
+        />
+      );
       break;
     }
     case "Dashboard": {
@@ -156,9 +162,6 @@ function AuthenticatedApp() {
             {showTransactionSlideOver ? (
               <TransactionSlideOver
                 handleClose={(e) => {
-                  // FIXME: Did the stopPropagation helped with the focus profile dropdown bug?
-                  e.stopPropagation();
-
                   setSelectedTransactionId(null);
                   setCreateMode(false);
                 }}
