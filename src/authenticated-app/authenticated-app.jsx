@@ -55,18 +55,19 @@ const navLinks = [
 function AuthenticatedApp() {
   const [menuOpen, setMenuOpen] = React.useState(false);
   const [selectedNav, setSelectedNav] = React.useState("My Flow");
+  const onNavigate = (navigateToTitle) => {
+    setSelectedNav(navigateToTitle);
+    setMenuOpen(false);
+  };
+
   const [createMode, setCreateMode] = React.useState(false);
   const [selectedTransactionId, setSelectedTransactionId] = React.useState(
     null
   );
   const editMode = selectedTransactionId !== null;
   const showTransactionSlideOver = createMode || editMode;
-  const shouldHideScrollbar = showTransactionSlideOver || menuOpen;
 
-  const onNavigate = (navigateToTitle) => {
-    setSelectedNav(navigateToTitle);
-    setMenuOpen(false);
-  };
+  const shouldHideScrollbar = showTransactionSlideOver || menuOpen;
 
   let view;
 
