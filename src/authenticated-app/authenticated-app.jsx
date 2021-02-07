@@ -82,7 +82,13 @@ function AuthenticatedApp() {
       break;
     }
     case "Subscriptions": {
-      view = <Subscriptions />;
+      view = (
+        <Subscriptions
+          onSelectSubscription={(id) => {
+            setSelectedTransactionId(id);
+          }}
+        />
+      );
       break;
     }
     case "Dashboard": {

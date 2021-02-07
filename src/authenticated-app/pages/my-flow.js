@@ -1,3 +1,4 @@
+import React from "react";
 import { useTransactions } from "../../api/transactions/transactions-api-hooks";
 
 export { MyFlow };
@@ -5,13 +6,13 @@ export { MyFlow };
 function MyFlow({ onSelectTransaction }) {
   return (
     <div className="space-y-3">
-      <Stats />
+      <MyFlowStats />
       <Timeline onSelectTransaction={onSelectTransaction} />
     </div>
   );
 }
 
-function Stats() {
+function MyFlowStats() {
   const { transactions } = useTransactions();
   const { left, received, spent } = calculateStats(transactions);
 
@@ -60,20 +61,30 @@ function StatCard({ title, number, bgColor }) {
 
 function Timeline({ onSelectTransaction }) {
   const { transactions } = useTransactions();
+  const [showUpcoming, toggleShowUpcoming] = useToggle();
   const sortedByDateTransaction = transactions.sort((a, b) => {
     if (b.due === a.due) {
       return new Date(b.created_at) - new Date(a.created_at);
     }
     return new Date(b.due) - new Date(a.due);
   });
+
+  const filteredTransactions = sortedByDateTransaction.filter(({ due }) => {
+    if (showUpcoming) return true;
+    return new Date(due) <= new Date();
+  });
+
   return (
     <div>
-      <h2 className="text-xl font-semibold text-gray-700 tracking-wide">
-        Timeline
-      </h2>
+      <div className="flex justify-between items-center">
+        <h2 className="text-xl font-semibold text-gray-700 tracking-wide">
+          Timeline
+        </h2>
+        <ToggleUpcoming on={showUpcoming} onToggle={toggleShowUpcoming} />
+      </div>
       <div className="flow-root">
         <ul className="mt-3">
-          {sortedByDateTransaction?.map((transaction, index, array) => {
+          {filteredTransactions?.map((transaction, index, array) => {
             return (
               <TimelineItem
                 key={transaction.id}
@@ -92,9 +103,12 @@ function Timeline({ onSelectTransaction }) {
 function TimelineItem({ transaction, isLast, onSelectTransaction }) {
   const { name, amount, currency, due, direction, id } = transaction;
   const isOutgoing = direction === "outgoing";
+  const isFutureTransaction = new Date(due) > new Date();
   return (
     <li>
-      <div className="relative pb-8">
+      <div
+        className={`relative pb-8 ${isFutureTransaction ? "bg-gray-100" : ""}`}
+      >
         {isLast ? null : (
           <span
             className="absolute top-4 left-4 -ml-px h-full w-0.5 bg-gray-200"
@@ -142,10 +156,10 @@ function TimelineItem({ transaction, isLast, onSelectTransaction }) {
               <p className="text-sm text-gray-500">
                 {`${isOutgoing ? "Spent" : "Received"} `}
                 <span className="font-semibold text-gray-800">
-                  {amount.toLocaleString()}
                   <span className="font-normal">
                     {currency === "ILS" ? "₪" : currency === "USD" ? "$" : "?"}
                   </span>
+                  {amount.toLocaleString()}
                 </span>{" "}
                 {`${isOutgoing ? "on" : "from"} `}
                 <button
@@ -157,14 +171,40 @@ function TimelineItem({ transaction, isLast, onSelectTransaction }) {
               </p>
             </div>
             <div className="text-right text-sm whitespace-nowrap text-gray-500">
-              <time dateTime={due}>
-                {new Date(due).toGMTString().split(" 00")[0]}
-              </time>
+              <time dateTime={due}>{getTimelineDate(due)}</time>
             </div>
           </div>
         </div>
       </div>
     </li>
+  );
+}
+
+function ToggleUpcoming({ on, onToggle }) {
+  return (
+    <div className="flex items-center space-x-2">
+      <span className="ml-3" id="annual-billing-label">
+        <span className="text-sm font-medium text-gray-600">
+          {on ? "Hide" : "Show"} Upcoming
+        </span>
+      </span>
+      <button
+        type="button"
+        onClick={onToggle}
+        className={`${
+          on ? "bg-blue-600" : "bg-gray-200"
+        } relative inline-flex flex-shrink-0 h-6 w-11 border-2 border-transparent rounded-full cursor-pointer transition-colors ease-in-out duration-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500`}
+        aria-pressed="false"
+        aria-labelledby="show-upcoming-label"
+      >
+        <span
+          aria-hidden="true"
+          className={`${
+            on ? "translate-x-5" : "translate-x-0"
+          } pointer-events-none inline-block h-5 w-5 rounded-full bg-white shadow transform ring-0 transition ease-in-out duration-200`}
+        />
+      </button>
+    </div>
   );
 }
 
@@ -176,4 +216,16 @@ function calculateStats(transactions) {
     if (direction === "incoming") received += amount;
   });
   return { left: received - spent, received, spent };
+}
+
+function getTimelineDate(date) {
+  const [, month, day] = new Date(date).toDateString().split(" ");
+  return `${day} ${month}`;
+}
+
+function useToggle(initialValue = false) {
+  // Returns the tuple [state, dispatch]
+  // Normally with useReducer you pass a value to dispatch to indicate what action to
+  // take on the state, but in this case there's only one action.
+  return React.useReducer((state) => !state, initialValue);
 }
