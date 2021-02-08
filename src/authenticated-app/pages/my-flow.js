@@ -3,17 +3,43 @@ import { useTransactions } from "../../api/transactions/transactions-api-hooks";
 
 export { MyFlow };
 
-function MyFlow({ onSelectTransaction }) {
+function MyFlow({ onSelectTransaction, searchQuery }) {
+  const { transactions } = useTransactions();
+  const timelineTransactions = transactions.map((transaction) => {
+    const { amount, due, direction } = transaction;
+    const isOutgoing = direction === "outgoing";
+    const isFutureTransaction = new Date(due) > new Date();
+    const dueToShow = getTimelineDate(due);
+    const amountToShow = amount.toLocaleString();
+    return {
+      ...transaction,
+      isOutgoing,
+      isFutureTransaction,
+      dueToShow,
+      amountToShow,
+    };
+  });
+  const filteredTransactions = timelineTransactions.filter((transaction) => {
+    if (searchQuery === "") return true;
+    const { name, amountToShow, dueToShow } = transaction;
+
+    return [name, amountToShow, dueToShow].some((s) =>
+      s.toLowerCase().includes(searchQuery.toLowerCase())
+    );
+  });
+
   return (
     <div className="space-y-3">
-      <MyFlowStats />
-      <Timeline onSelectTransaction={onSelectTransaction} />
+      <MyFlowStats transactions={filteredTransactions} />
+      <Timeline
+        onSelectTransaction={onSelectTransaction}
+        transactions={filteredTransactions}
+      />
     </div>
   );
 }
 
-function MyFlowStats() {
-  const { transactions } = useTransactions();
+function MyFlowStats({ transactions }) {
   const { left, received, spent } = calculateStats(transactions);
 
   return (
@@ -59,9 +85,7 @@ function StatCard({ title, number, bgColor }) {
   );
 }
 
-function Timeline({ onSelectTransaction }) {
-  const { transactions } = useTransactions();
-  const [showUpcoming, toggleShowUpcoming] = useToggle();
+function Timeline({ onSelectTransaction, transactions }) {
   const sortedByDateTransaction = transactions.sort((a, b) => {
     if (b.due === a.due) {
       return new Date(b.created_at) - new Date(a.created_at);
@@ -69,6 +93,7 @@ function Timeline({ onSelectTransaction }) {
     return new Date(b.due) - new Date(a.due);
   });
 
+  const [showUpcoming, toggleShowUpcoming] = useToggle();
   const filteredTransactions = sortedByDateTransaction.filter(({ due }) => {
     if (showUpcoming) return true;
     return new Date(due) <= new Date();
@@ -101,9 +126,16 @@ function Timeline({ onSelectTransaction }) {
 }
 
 function TimelineItem({ transaction, isLast, onSelectTransaction }) {
-  const { name, amount, currency, due, direction, id } = transaction;
-  const isOutgoing = direction === "outgoing";
-  const isFutureTransaction = new Date(due) > new Date();
+  const {
+    name,
+    amountToShow,
+    currency,
+    due,
+    id,
+    isOutgoing,
+    isFutureTransaction,
+    dueToShow,
+  } = transaction;
   return (
     <li>
       <div
@@ -159,7 +191,7 @@ function TimelineItem({ transaction, isLast, onSelectTransaction }) {
                   <span className="font-normal">
                     {currency === "ILS" ? "₪" : currency === "USD" ? "$" : "?"}
                   </span>
-                  {amount.toLocaleString()}
+                  {amountToShow}
                 </span>{" "}
                 {`${isOutgoing ? "on" : "from"} `}
                 <button
@@ -171,7 +203,7 @@ function TimelineItem({ transaction, isLast, onSelectTransaction }) {
               </p>
             </div>
             <div className="text-right text-sm whitespace-nowrap text-gray-500">
-              <time dateTime={due}>{getTimelineDate(due)}</time>
+              <time dateTime={due}>{dueToShow}</time>
             </div>
           </div>
         </div>
