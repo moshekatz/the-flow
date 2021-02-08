@@ -53,6 +53,8 @@ const navLinks = [
 ];
 
 function AuthenticatedApp() {
+  const [searchQuery, setSearchQuery] = React.useState("");
+
   const [menuOpen, setMenuOpen] = React.useState(false);
   const [selectedNav, setSelectedNav] = React.useState("My Flow");
   const onNavigate = (navigateToTitle) => {
@@ -78,6 +80,7 @@ function AuthenticatedApp() {
           onSelectTransaction={(id) => {
             setSelectedTransactionId(id);
           }}
+          searchQuery={searchQuery}
         />
       );
       break;
@@ -88,6 +91,7 @@ function AuthenticatedApp() {
           onSelectSubscription={(id) => {
             setSelectedTransactionId(id);
           }}
+          searchQuery={searchQuery}
         />
       );
       break;
@@ -125,7 +129,12 @@ function AuthenticatedApp() {
       />
 
       <div className="flex-1 lg:max-w-4xl mx-auto w-0 flex flex-col lg:px-8 xl:px-0">
-        <Header setMenuOpen={setMenuOpen} onNavigate={onNavigate} />
+        <Header
+          setMenuOpen={setMenuOpen}
+          onNavigate={onNavigate}
+          searchQuery={searchQuery}
+          onSearchChange={(e) => setSearchQuery(e.target.value)}
+        />
         <TransactionsProvider>
           <div className="flex ">
             <main

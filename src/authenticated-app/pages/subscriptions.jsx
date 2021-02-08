@@ -4,12 +4,57 @@ import { useTransactions } from "../../api/transactions/transactions-api-hooks";
 
 export { Subscriptions };
 
-function Subscriptions({ onSelectSubscription }) {
+function Subscriptions({ onSelectSubscription, searchQuery }) {
   const { transactions, deleteTransaction } = useTransactions();
   const [optionsOpenItemId, setOptionsOpenItemId] = React.useState(null);
 
+  const [normalizeAmountBy, setNormalizeAmountBy] = React.useState("monthly");
+
+  // TODO: refactor this hack
+  const [
+    { sortBy, sortTypeNextDue, sortTypePrice },
+    setSubscriptionSort,
+  ] = React.useState({
+    sortBy: "nextDue",
+    sortTypeNextDue: "ASC",
+    sortTypePrice: "ASC",
+  });
+  const handleSortChange = (nextSortBy) => {
+    if (nextSortBy === sortBy) {
+      if (nextSortBy === "nextDue") {
+        setSubscriptionSort(({ sortBy, sortTypeNextDue, sortTypePrice }) => {
+          return {
+            sortBy,
+            sortTypePrice,
+            sortTypeNextDue: sortTypeNextDue === "ASC" ? "DESC" : "ASC",
+          };
+        });
+      } else {
+        setSubscriptionSort(({ sortBy, sortTypeNextDue, sortTypePrice }) => {
+          return {
+            sortBy,
+            sortTypeNextDue,
+            sortTypePrice: sortTypePrice === "ASC" ? "DESC" : "ASC",
+          };
+        });
+      }
+    }
+
+    setSubscriptionSort(({ sortTypeNextDue, sortTypePrice }) => {
+      return {
+        sortBy: nextSortBy,
+        sortTypeNextDue,
+        sortTypePrice,
+      };
+    });
+  };
+
   const subscriptions = transactions
-    .filter(({ repeat }) => ["Monthly", "Annually"].includes(repeat))
+    .filter(({ repeat, name, next }) => {
+      const isSubscription = ["Monthly", "Annually"].includes(repeat);
+
+      return isSubscription;
+    })
     .map((subscription) => {
       return {
         ...subscription,
@@ -17,10 +62,35 @@ function Subscriptions({ onSelectSubscription }) {
         paidMonthly: calculatePaidMonthly(subscription),
         paidAnnually: calculatePaidAnnually(subscription),
       };
+    })
+    .filter(({ name, repeat, amount, nextDue, paidAnnually, paidMonthly }) => {
+      const normalizedPriceView =
+        normalizeAmountBy === "monthly" ? paidMonthly : paidAnnually;
+      const matchesSearch =
+        searchQuery === ""
+          ? true
+          : [name, repeat, amount, nextDue, normalizedPriceView].some((s) =>
+              s.toString().toLowerCase().includes(searchQuery.toLowerCase())
+            );
+      return matchesSearch;
     });
 
+  // TODO: also gotta refactor
   const sortedByDateSubscriptions = subscriptions.sort((a, b) => {
-    return new Date(a.nextDue) - new Date(b.nextDue);
+    if (sortBy === "nextDue") {
+      if (sortTypeNextDue === "ASC") {
+        return new Date(a.nextDue) - new Date(b.nextDue);
+      } else {
+        return new Date(b.nextDue) - new Date(a.nextDue);
+      }
+    } else {
+      // using paidMonthly as the *normalized* amount for compare.
+      if (sortTypePrice === "ASC") {
+        return b.paidMonthly - a.paidMonthly;
+      } else {
+        return a.paidMonthly - b.paidMonthly;
+      }
+    }
   });
 
   return (
@@ -29,14 +99,63 @@ function Subscriptions({ onSelectSubscription }) {
         Stats
       </h2>
       <SubscriptionStats subscriptions={subscriptions} />
-      <h2 className="text-gray-600 text-sm font-medium uppercase tracking-wide">
-        Active
-      </h2>
+      <div className="flex justify-between items-center">
+        <h2 className="text-gray-600 text-sm font-medium uppercase tracking-wide">
+          Active
+        </h2>
+        <div>
+          <div className="text-gray-700 text-sm flex justify-between">
+            <span className="font-semibold">Show paid: </span>
+            <button
+              onClick={() => setNormalizeAmountBy("monthly")}
+              className={`inline-block px-2 ${
+                normalizeAmountBy === "monthly"
+                  ? "font-semibold text-pink-600"
+                  : ""
+              }`}
+            >
+              Monthly
+            </button>
+            {" | "}
+            <button
+              onClick={() => setNormalizeAmountBy("annually")}
+              className={`inline-block px-2 ${
+                normalizeAmountBy === "annually"
+                  ? "font-semibold text-pink-600"
+                  : ""
+              }`}
+            >
+              Annually
+            </button>
+          </div>
+          <div className="text-gray-700 text-sm">
+            <span className="font-semibold">Order By: </span>
+            <button
+              onClick={() => handleSortChange("nextDue")}
+              className={`inline-block px-2 ${
+                sortBy === "nextDue" ? "font-semibold text-pink-600" : ""
+              }`}
+            >
+              {sortTypeNextDue === "ASC" ? "▼" : "▲"} Next Due
+            </button>
+            {" | "}
+            <button
+              onClick={() => handleSortChange("price")}
+              className={`inline-block px-2 ${
+                sortBy === "price" ? "font-semibold text-pink-600" : ""
+              }`}
+            >
+              {sortTypePrice === "ASC" ? "▼" : "▲"} Price
+            </button>
+          </div>
+        </div>
+      </div>
       <ul className="mt-3 grid grid-cols-1 gap-5 sm:gap-6">
         {sortedByDateSubscriptions.map((subscription) => (
           <SubscriptionItem
             key={subscription.id}
             subscription={subscription}
+            normalizeAmountBy={normalizeAmountBy}
             optionsOpen={subscription.id === optionsOpenItemId}
             onOptionsClick={(selectedId) => {
               const openedItemClicked = selectedId === optionsOpenItemId;
@@ -58,6 +177,7 @@ function Subscriptions({ onSelectSubscription }) {
 
 function SubscriptionItem({
   subscription,
+  normalizeAmountBy,
   optionsOpen,
   onOptionsClick,
   deleteTransaction,
@@ -65,13 +185,13 @@ function SubscriptionItem({
 }) {
   const {
     name,
-    amount,
     repeat,
     nextDue,
     id,
     currency,
-    // paidAnnually,
-    // paidMonthly,
+    amount,
+    paidAnnually,
+    paidMonthly,
   } = subscription;
   const optionsDropdownRef = React.useRef();
   const optionsButtonRef = React.useRef();
@@ -97,14 +217,22 @@ function SubscriptionItem({
           <p className="text-gray-400 text-xs">
             Next billing date: {getSubscriptionDate(nextDue)}
           </p>
+          <p className="text-gray-400 text-xs">
+            <span className="font-normal">
+              {currency === "ILS" ? "₪" : currency === "USD" ? "$" : "?"}
+            </span>
+            {amount.toLocaleString()} will be charged
+          </p>
         </div>
         <div></div>
         <div className="mr-1">
           <span className="text-gray-700 font-semibold">
             <span className="font-normal">
-              {currency === "ILS" ? "₪" : currency === "USD" ? "$" : "?"}
+              {/* TODO: support for usd view */}₪
             </span>
-            {amount.toLocaleString()}
+            {normalizeAmountBy === "monthly"
+              ? paidMonthly.toFixed().toLocaleString()
+              : paidAnnually.toFixed().toLocaleString()}
           </span>
         </div>
         <div className="relative flex-shrink-0 pr-2">
@@ -271,14 +399,18 @@ function StatCard({ title, number, bgColor }) {
   );
 }
 
+const USDtoILSRate = 3.28; // Updated: Feb 08, 2021
+
 // TODO: USD support
-function calculatePaidMonthly({ amount, repeat }) {
-  if (repeat === "Monthly") return amount;
-  return amount / 12;
+function calculatePaidMonthly({ amount, repeat, currency }) {
+  const amountInILS = currency === "USD" ? amount * USDtoILSRate : amount;
+  if (repeat === "Monthly") return amountInILS;
+  return amountInILS / 12;
 }
 
 // TODO: USD support
-function calculatePaidAnnually({ amount, repeat }) {
-  if (repeat === "Annually") return amount;
-  return amount * 12;
+function calculatePaidAnnually({ amount, repeat, currency }) {
+  const amountInILS = currency === "USD" ? amount * USDtoILSRate : amount;
+  if (repeat === "Annually") return amountInILS;
+  return amountInILS * 12;
 }

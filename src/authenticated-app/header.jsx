@@ -4,13 +4,13 @@ import { useOutsideAlerter } from "../hooks/hooks";
 
 export { Header };
 
-function Header({ setMenuOpen, onNavigate }) {
+function Header({ setMenuOpen, onNavigate, searchQuery, onSearchChange }) {
   return (
     <div className="relative z-10 flex-shrink-0 h-16 bg-white border-b border-gray-200 flex">
       <MobileOpenSideBarButton handleClick={() => setMenuOpen(true)} />
 
       <div className="flex-1 flex justify-between px-4 lg:px-0">
-        <SearchBar />
+        <SearchBar searchQuery={searchQuery} onSearchChange={onSearchChange} />
 
         <div className="ml-4 flex items-center lg:ml-6">
           <ProfileDropdown onNavigate={onNavigate} />
@@ -47,7 +47,7 @@ function MobileOpenSideBarButton({ handleClick }) {
   );
 }
 
-function SearchBar() {
+function SearchBar({ searchQuery, onSearchChange }) {
   return (
     <div className="flex-1 flex">
       <form className="w-full flex lg:ml-0" action="#" method="GET">
@@ -77,6 +77,8 @@ function SearchBar() {
             placeholder="Search"
             type="search"
             name="search"
+            value={searchQuery}
+            onChange={onSearchChange}
           />
         </div>
       </form>
