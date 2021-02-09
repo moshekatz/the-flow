@@ -4,7 +4,11 @@ import { useTransactions } from "../../api/transactions/transactions-api-hooks";
 
 export { Subscriptions };
 
-function Subscriptions({ onSelectSubscription, searchQuery }) {
+function Subscriptions({
+  onCreateTransaction,
+  onSelectSubscription,
+  searchQuery,
+}) {
   const { transactions, deleteTransaction } = useTransactions();
   const [optionsOpenItemId, setOptionsOpenItemId] = React.useState(null);
 
@@ -94,83 +98,104 @@ function Subscriptions({ onSelectSubscription, searchQuery }) {
   });
 
   return (
-    <div className="space-y-3">
-      <h2 className="text-gray-600 text-sm font-medium uppercase tracking-wide">
-        Stats
-      </h2>
-      <SubscriptionStats subscriptions={subscriptions} />
-      <div className="flex justify-between items-center">
-        <h2 className="text-gray-600 text-sm font-medium uppercase tracking-wide">
-          Active
-        </h2>
+    <div className="py-3 space-y-3">
+      <div className="px-4 sm:px-6 lg:px-0 flex items-center justify-between ">
+        <h1 className="text-2xl font-semibold text-gray-900 tracking-wide">
+          {/*TODO: duplication?*/}
+          {/* {selectedNav} */}
+          Subscriptions
+        </h1>
         <div>
-          <div className="text-gray-700 text-sm flex justify-between">
-            <span className="font-semibold">Show paid: </span>
-            <button
-              onClick={() => setNormalizeAmountBy("monthly")}
-              className={`inline-block px-2 ${
-                normalizeAmountBy === "monthly"
-                  ? "font-semibold text-pink-600"
-                  : ""
-              }`}
-            >
-              Monthly
-            </button>
-            {" | "}
-            <button
-              onClick={() => setNormalizeAmountBy("annually")}
-              className={`inline-block px-2 ${
-                normalizeAmountBy === "annually"
-                  ? "font-semibold text-pink-600"
-                  : ""
-              }`}
-            >
-              Annually
-            </button>
-          </div>
-          <div className="text-gray-700 text-sm">
-            <span className="font-semibold">Order By: </span>
-            <button
-              onClick={() => handleSortChange("nextDue")}
-              className={`inline-block px-2 ${
-                sortBy === "nextDue" ? "font-semibold text-pink-600" : ""
-              }`}
-            >
-              {sortTypeNextDue === "ASC" ? "▼" : "▲"} Next Due
-            </button>
-            {" | "}
-            <button
-              onClick={() => handleSortChange("price")}
-              className={`inline-block px-2 ${
-                sortBy === "price" ? "font-semibold text-pink-600" : ""
-              }`}
-            >
-              {sortTypePrice === "ASC" ? "▼" : "▲"} Price
-            </button>
-          </div>
+          <button
+            type="button"
+            onClick={onCreateTransaction}
+            className="group inline-flex items-center mr-1 px-4 py-2 border border-blue-600 rounded-md shadow-sm text-sm font-medium text-blue-700 hover:bg-gray-50 hover:border-blue-700 focus:bg-gray-50 focus:border-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
+          >
+            Create
+          </button>
         </div>
       </div>
-      <ul className="mt-3 grid grid-cols-1 gap-5 sm:gap-6">
-        {sortedByDateSubscriptions.map((subscription) => (
-          <SubscriptionItem
-            key={subscription.id}
-            subscription={subscription}
-            normalizeAmountBy={normalizeAmountBy}
-            optionsOpen={subscription.id === optionsOpenItemId}
-            onOptionsClick={(selectedId) => {
-              const openedItemClicked = selectedId === optionsOpenItemId;
-              const clickedOutside = selectedId === undefined;
-              if (openedItemClicked || clickedOutside) {
-                setOptionsOpenItemId(null);
-                return;
-              }
-              setOptionsOpenItemId(selectedId);
-            }}
-            deleteTransaction={deleteTransaction}
-            onSelectSubscription={onSelectSubscription}
-          />
-        ))}
-      </ul>
+      <div className="px-4 sm:px-6 lg:px-0">
+        {" "}
+        <div className="space-y-3">
+          <h2 className="text-gray-600 text-sm font-medium uppercase tracking-wide">
+            Stats
+          </h2>
+          <SubscriptionStats subscriptions={subscriptions} />
+          <div className="flex justify-between items-center">
+            <h2 className="text-gray-600 text-sm font-medium uppercase tracking-wide">
+              Active
+            </h2>
+            <div>
+              <div className="text-gray-700 text-sm flex justify-between">
+                <span className="font-semibold">Show paid: </span>
+                <button
+                  onClick={() => setNormalizeAmountBy("monthly")}
+                  className={`inline-block px-2 ${
+                    normalizeAmountBy === "monthly"
+                      ? "font-semibold text-pink-600"
+                      : ""
+                  }`}
+                >
+                  Monthly
+                </button>
+                {" | "}
+                <button
+                  onClick={() => setNormalizeAmountBy("annually")}
+                  className={`inline-block px-2 ${
+                    normalizeAmountBy === "annually"
+                      ? "font-semibold text-pink-600"
+                      : ""
+                  }`}
+                >
+                  Annually
+                </button>
+              </div>
+              <div className="text-gray-700 text-sm">
+                <span className="font-semibold">Order By: </span>
+                <button
+                  onClick={() => handleSortChange("nextDue")}
+                  className={`inline-block px-2 ${
+                    sortBy === "nextDue" ? "font-semibold text-pink-600" : ""
+                  }`}
+                >
+                  {sortTypeNextDue === "ASC" ? "▼" : "▲"} Next Due
+                </button>
+                {" | "}
+                <button
+                  onClick={() => handleSortChange("price")}
+                  className={`inline-block px-2 ${
+                    sortBy === "price" ? "font-semibold text-pink-600" : ""
+                  }`}
+                >
+                  {sortTypePrice === "ASC" ? "▼" : "▲"} Price
+                </button>
+              </div>
+            </div>
+          </div>
+          <ul className="mt-3 grid grid-cols-1 gap-5 sm:gap-6">
+            {sortedByDateSubscriptions.map((subscription) => (
+              <SubscriptionItem
+                key={subscription.id}
+                subscription={subscription}
+                normalizeAmountBy={normalizeAmountBy}
+                optionsOpen={subscription.id === optionsOpenItemId}
+                onOptionsClick={(selectedId) => {
+                  const openedItemClicked = selectedId === optionsOpenItemId;
+                  const clickedOutside = selectedId === undefined;
+                  if (openedItemClicked || clickedOutside) {
+                    setOptionsOpenItemId(null);
+                    return;
+                  }
+                  setOptionsOpenItemId(selectedId);
+                }}
+                deleteTransaction={deleteTransaction}
+                onSelectSubscription={onSelectSubscription}
+              />
+            ))}
+          </ul>
+        </div>
+      </div>
     </div>
   );
 }

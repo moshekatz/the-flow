@@ -27,6 +27,7 @@ function AuthProvider(props) {
 
   React.useEffect(() => {
     const { authListener, error } = onAuthStateChange((event, session) => {
+      console.log({ event, session });
       /* type AuthChangeEvent = 'SIGNED_IN' | 'SIGNED_OUT' | 'USER_UPDATED' | 'PASSWORD_RECOVERY' */
       const isPasswordRecovery = event === "PASSWORD_RECOVERY";
       setAuthState({ user: session?.user, error: null, isPasswordRecovery });
@@ -39,6 +40,7 @@ function AuthProvider(props) {
     return () => authListener.unsubscribe();
   }, []);
 
+  // TODO: validate-optimization?
   const value = React.useMemo(
     () => ({
       user,

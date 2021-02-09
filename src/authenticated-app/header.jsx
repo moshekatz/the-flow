@@ -1,29 +1,34 @@
 import React from "react";
 import { useAuth } from "../auth/auth-context";
 import { useOutsideAlerter } from "../hooks/hooks";
+import { useNavigation } from "../context/navigation-context";
 
 export { Header };
 
-function Header({ setMenuOpen, onNavigate, searchQuery, onSearchChange }) {
+function Header({ searchQuery, onSearchQueryChange }) {
   return (
     <div className="relative z-10 flex-shrink-0 h-16 bg-white border-b border-gray-200 flex">
-      <MobileOpenSideBarButton handleClick={() => setMenuOpen(true)} />
+      <MobileOpenSideBarButton />
 
       <div className="flex-1 flex justify-between px-4 lg:px-0">
-        <SearchBar searchQuery={searchQuery} onSearchChange={onSearchChange} />
+        <SearchBar
+          searchQuery={searchQuery}
+          onSearchQueryChange={onSearchQueryChange}
+        />
 
         <div className="ml-4 flex items-center lg:ml-6">
-          <ProfileDropdown onNavigate={onNavigate} />
+          <ProfileDropdown />
         </div>
       </div>
     </div>
   );
 }
 
-function MobileOpenSideBarButton({ handleClick }) {
+function MobileOpenSideBarButton() {
+  const { openMobileNav } = useNavigation();
   return (
     <button
-      onClick={handleClick}
+      onClick={openMobileNav}
       className="lg:hidden border-r border-gray-200 px-4 text-gray-500 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-indigo-500"
     >
       <span className="sr-only">Open sidebar</span>
@@ -47,10 +52,10 @@ function MobileOpenSideBarButton({ handleClick }) {
   );
 }
 
-function SearchBar({ searchQuery, onSearchChange }) {
+function SearchBar({ searchQuery, onSearchQueryChange }) {
   return (
     <div className="flex-1 flex">
-      <form className="w-full flex lg:ml-0" action="#" method="GET">
+      <form className="w-full flex lg:ml-0">
         <label htmlFor="search_field" className="sr-only">
           Search
         </label>
@@ -78,7 +83,7 @@ function SearchBar({ searchQuery, onSearchChange }) {
             type="search"
             name="search"
             value={searchQuery}
-            onChange={onSearchChange}
+            onChange={onSearchQueryChange}
           />
         </div>
       </form>
@@ -86,19 +91,24 @@ function SearchBar({ searchQuery, onSearchChange }) {
   );
 }
 
-function ProfileDropdown({ onNavigate }) {
-  const [profileDropdownOpen, setProfileDropdownOpen] = React.useState(false);
+function ProfileDropdown() {
+  const {
+    isProfileDropdownOpen,
+    closeProfileDropdown,
+    toggleProfileDropdown,
+    gotoPage,
+  } = useNavigation();
   const profileDropdownRef = React.useRef();
   useOutsideAlerter(profileDropdownRef, () => {
-    if (profileDropdownOpen) {
-      setProfileDropdownOpen(false);
+    if (isProfileDropdownOpen) {
+      closeProfileDropdown();
     }
   });
 
   const { logout } = useAuth();
   const handleLogOut = async () => {
     await logout();
-    // TODO: handle-error-sign-out
+    // TODO: error-handling
     // if (error) {
     //   setError(error);
     // }
@@ -108,7 +118,7 @@ function ProfileDropdown({ onNavigate }) {
     <div ref={profileDropdownRef} className="ml-3 relative">
       <div>
         <button
-          onClick={() => setProfileDropdownOpen((isOpen) => !isOpen)}
+          onClick={toggleProfileDropdown}
           className="max-w-xs p-2 flex items-center text-sm rounded-full text-gray-400 hover:text-gray-600 focus:text-gray-600 focus:bg-gray-100 hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
           id="user-menu"
           aria-haspopup="true"
@@ -130,7 +140,7 @@ function ProfileDropdown({ onNavigate }) {
           </svg>
         </button>
       </div>
-      {/* TODO: Animations
+      {/* TODO: animations-support
         Profile dropdown panel, show/hide based on dropdown state.
 
         Entering: "transition ease-out duration-100"
@@ -140,44 +150,36 @@ function ProfileDropdown({ onNavigate }) {
           From: "transform opacity-100 scale-100"
           To: "transform opacity-0 scale-95"
       */}
-      <div
-        className={`${
-          profileDropdownOpen ? "" : "hidden"
-        } origin-top-right absolute right-0 mt-2 w-48 rounded-md shadow-lg bg-white ring-1 ring-black ring-opacity-5 py-1`}
-        role="menu"
-        aria-orientation="vertical"
-        aria-labelledby="user-menu"
-      >
-        {/* TODO: anchor or buttons? */}
-        <button
-          className="w-full text-left block py-2 px-4 text-sm text-gray-700 hover:bg-gray-100"
-          role="menuitem"
-          onClick={() => {
-            onNavigate("Your Profile");
-            setProfileDropdownOpen(false);
-          }}
+      {isProfileDropdownOpen ? (
+        <div
+          className="origin-top-right absolute right-0 mt-2 w-48 rounded-md shadow-lg bg-white ring-1 ring-black ring-opacity-5 py-1"
+          role="menu"
+          aria-orientation="vertical"
+          aria-labelledby="user-menu"
         >
-          Your Profile
-        </button>
-        <button
-          className="w-full text-left block py-2 px-4 text-sm text-gray-700 hover:bg-gray-100"
-          role="menuitem"
-          onClick={() => {
-            onNavigate("Settings");
-            setProfileDropdownOpen(false);
-          }}
-        >
-          Settings
-        </button>
-        <button
-          // href="/"
-          className="w-full text-left block py-2 px-4 text-sm text-gray-700 hover:bg-gray-100"
-          role="menuitem"
-          onClick={() => handleLogOut()}
-        >
-          Sign out
-        </button>
-      </div>
+          <ProfileDropdownMenuItem
+            title="Your Profile"
+            onClick={() => gotoPage("Your Profile")}
+          />
+          <ProfileDropdownMenuItem
+            title="Settings"
+            onClick={() => gotoPage("Settings")}
+          />
+          <ProfileDropdownMenuItem title="Sign out" onClick={handleLogOut} />
+        </div>
+      ) : null}
     </div>
+  );
+}
+
+function ProfileDropdownMenuItem({ title, onClick }) {
+  return (
+    <button
+      className="w-full text-left block py-2 px-4 text-sm text-gray-700 hover:bg-gray-100"
+      role="menuitem"
+      onClick={onClick}
+    >
+      {title}
+    </button>
   );
 }
