@@ -21,9 +21,12 @@ function TransactionSlideOver({ handleClose, transactionId }) {
     deleteTransaction,
     updateTransaction,
   } = useTransactions();
+
+  // TODO: perf-optimization (getById? O(1) < O(n))
   const selectedTransaction = transactions.find(
     (transaction) => transaction.id === transactionId
   );
+
   const [name, setName] = React.useState(
     selectedTransaction?.name || defaultTransaction.name
   );
@@ -52,6 +55,8 @@ function TransactionSlideOver({ handleClose, transactionId }) {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+
+    // TODO: upsert-transaction-support (hook exported method?)
     const shouldUpdate = transactionId !== null;
     if (shouldUpdate) {
       try {
@@ -64,6 +69,7 @@ function TransactionSlideOver({ handleClose, transactionId }) {
           due,
         });
         handleClose();
+        // TODO: error-handling
         // if (error) {
         //   alert(error.message);
         // }
@@ -81,6 +87,7 @@ function TransactionSlideOver({ handleClose, transactionId }) {
           due,
         });
         handleClose();
+        // TODO: error-handling
         // if (error) {
         //   alert(error.message);
         // }
@@ -94,6 +101,7 @@ function TransactionSlideOver({ handleClose, transactionId }) {
     try {
       await deleteTransaction(transactionId);
       handleClose();
+      // TODO: error-handling
       // if (error) {
       //   alert(error.message);
       // }
@@ -112,7 +120,7 @@ function TransactionSlideOver({ handleClose, transactionId }) {
           className="absolute inset-y-0 right-0 max-w-full flex"
           aria-labelledby="slide-over-heading"
         >
-          {/*
+          {/* TODO: animations-support
   Slide-over panel, show/hide based on slide-over state.
 
   Entering: "transform transition ease-in-out duration-500 sm:duration-700"

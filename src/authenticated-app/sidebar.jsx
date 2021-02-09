@@ -1,28 +1,58 @@
 import React from "react";
+import { useNavigation } from "../context/navigation-context";
 
 export { Sidebar };
 
-function Sidebar({ navLinks, menuOpen, setMenuOpen, selectedNav, onNavigate }) {
+const navLinks = [
+  {
+    title: "My Flow",
+    svgPath: (
+      /* Heroicon name: home */
+      <path
+        strokeLinecap="round"
+        strokeLinejoin="round"
+        strokeWidth={2}
+        d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"
+      />
+    ),
+  },
+  {
+    title: "Subscriptions",
+    svgPath: (
+      /* Heroicon name: refresh */
+      <path
+        strokeLinecap="round"
+        strokeLinejoin="round"
+        strokeWidth={2}
+        d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"
+      />
+    ),
+  },
+  {
+    title: "Dashboard",
+    svgPath: (
+      /* Heroicon name: chart-bar */
+      <path
+        strokeLinecap="round"
+        strokeLinejoin="round"
+        strokeWidth={2}
+        d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"
+      />
+    ),
+  },
+];
+function Sidebar() {
+  const { isMobileNavOpen } = useNavigation();
   return (
     <>
-      {menuOpen ? (
-        <MobileMenu
-          navLinks={navLinks}
-          setMenuOpen={setMenuOpen}
-          selectedNav={selectedNav}
-          onNavigate={onNavigate}
-        />
-      ) : null}
-      <DesktopMenu
-        navLinks={navLinks}
-        selectedNav={selectedNav}
-        onNavigate={onNavigate}
-      />
+      {isMobileNavOpen ? <MobileMenu /> : null}
+      <DesktopMenu />
     </>
   );
 }
 
-function DesktopMenu({ selectedNav, navLinks, onNavigate }) {
+function DesktopMenu() {
+  const { currentPage, gotoPage } = useNavigation();
   return (
     <div className="hidden lg:flex lg:flex-shrink-0">
       <div className="w-48 lg:w-64 flex flex-col">
@@ -32,8 +62,8 @@ function DesktopMenu({ selectedNav, navLinks, onNavigate }) {
           <div className="mt-5 flex flex-grow flex-col">
             <nav className="flex-1 bg-white px-2 space-y-1">
               {navLinks.map(({ title, svgPath }) => {
-                return createNavLink({ title, svgPath }, onNavigate, {
-                  isCurrent: title === selectedNav,
+                return createNavLink({ title, svgPath }, gotoPage, {
+                  isCurrent: title === currentPage,
                   isMobile: false,
                 });
               })}
@@ -45,17 +75,12 @@ function DesktopMenu({ selectedNav, navLinks, onNavigate }) {
   );
 }
 
-function MobileMenu({ setMenuOpen, selectedNav, navLinks, onNavigate }) {
+function MobileMenu() {
   return (
     <div className="lg:hidden">
       <div className="fixed inset-0 z-40 flex">
         <MobileMenuOverlay />
-        <MobileMenuContent
-          onNavigate={onNavigate}
-          setMenuOpen={setMenuOpen}
-          selectedNav={selectedNav}
-          navLinks={navLinks}
-        />
+        <MobileMenuContent />
         <div className="flex-shrink-0 w-14">
           {/* Dummy element to force sidebar to shrink to fit close icon */}
         </div>
@@ -64,8 +89,9 @@ function MobileMenu({ setMenuOpen, selectedNav, navLinks, onNavigate }) {
   );
 }
 
-function MobileMenuContent({ setMenuOpen, selectedNav, navLinks, onNavigate }) {
-  /* TODO: Animations
+function MobileMenuContent() {
+  const { closeMobileNav, currentPage, gotoPage } = useNavigation();
+  /* TODO: animations-support
   Off-canvas menu, show/hide based on off-canvas menu state.
 
   Entering: "transition ease-in-out duration-300 transform"
@@ -82,11 +108,7 @@ function MobileMenuContent({ setMenuOpen, selectedNav, navLinks, onNavigate }) {
       }
     >
       <div className="absolute top-0 right-0 -mr-12 pt-2">
-        <MobileOpenMenuButton
-          handleClick={() => {
-            setMenuOpen(false);
-          }}
-        />
+        <MobileOpenMenuButton handleClick={closeMobileNav} />
       </div>
 
       <MenuLogo />
@@ -94,8 +116,8 @@ function MobileMenuContent({ setMenuOpen, selectedNav, navLinks, onNavigate }) {
       <div className="mt-5 flex-1 h-0">
         <nav className="px-2 space-y-1">
           {navLinks.map(({ title, svgPath }) => {
-            return createNavLink({ title, svgPath }, onNavigate, {
-              isCurrent: title === selectedNav,
+            return createNavLink({ title, svgPath }, gotoPage, {
+              isCurrent: title === currentPage,
               isMobile: true,
             });
           })}
@@ -133,7 +155,7 @@ function MobileOpenMenuButton({ handleClick }) {
 }
 
 function MobileMenuOverlay() {
-  /* TODO: Animations
+  /* TODO: animations-support
   Off-canvas menu overlay, show/hide based on off-canvas menu state.
 
   Entering: "transition-opacity ease-linear duration-300"

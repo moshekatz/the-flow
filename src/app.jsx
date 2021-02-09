@@ -1,5 +1,6 @@
 import React from "react";
 import { AuthProvider } from "./auth/auth-context";
+import { NavigationProvider } from "./context/navigation-context"; //TODO: should be context and not a hook?
 
 //TODO: lazy-load
 import AuthenticatedApp from "./authenticated-app/authenticated-app";
@@ -13,7 +14,9 @@ function App() {
     <>
       <AuthProvider>
         <AuthProvider.Authenticated>
-          <AuthenticatedApp />
+          <NavigationProvider>
+            <AuthenticatedApp />
+          </NavigationProvider>
         </AuthProvider.Authenticated>
         <AuthProvider.Unauthenticated>
           <UnauthenticatedApp />
