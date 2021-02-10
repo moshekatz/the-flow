@@ -22,9 +22,9 @@ function TransactionsProviderForApi({ api, ...props }) {
   React.useEffect(() => {
     /* TODO: render-as-you-fetch */
     const transactionsPromise = api.getAllTransactions();
-    transactionsPromise.then(({ transactions }) =>
-      setTransactions(transactions)
-    );
+    transactionsPromise.then(({ transactions }) => {
+      setTransactions(transactions);
+    });
   }, [api, setTransactions]);
 
   const createTransaction = async (transaction) => {

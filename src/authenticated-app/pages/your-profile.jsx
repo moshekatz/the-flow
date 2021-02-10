@@ -1,18 +1,15 @@
 import { useAuth } from "../../auth/auth-context";
+import { PageHeading } from "../shared/components";
 
-export { YourProfile };
+export const title = "Your Profile";
 
-function YourProfile() {
+export function YourProfile() {
   const { user } = useAuth();
 
   return (
     <div className="py-3 space-y-3">
       <div className="px-4 sm:px-6 lg:px-0 flex items-center justify-between ">
-        <h1 className="text-2xl font-semibold text-gray-900 tracking-wide">
-          {/*TODO: duplication?*/}
-          {/* {selectedNav} */}
-          Your Profile
-        </h1>
+        <PageHeading title={title} />
         <div>
           <button
             type="button"

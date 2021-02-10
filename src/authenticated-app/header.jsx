@@ -3,6 +3,9 @@ import { useAuth } from "../auth/auth-context";
 import { useOutsideAlerter } from "../hooks/hooks";
 import { useNavigation } from "../context/navigation-context";
 
+import { title as settingsTitle } from "./pages/settings";
+import { title as yourProfileTitle } from "./pages/your-profile";
+
 export { Header };
 
 function Header({ searchQuery, onSearchQueryChange }) {
@@ -158,12 +161,12 @@ function ProfileDropdown() {
           aria-labelledby="user-menu"
         >
           <ProfileDropdownMenuItem
-            title="Your Profile"
-            onClick={() => gotoPage("Your Profile")}
+            title={yourProfileTitle}
+            onClick={() => gotoPage(yourProfileTitle)}
           />
           <ProfileDropdownMenuItem
-            title="Settings"
-            onClick={() => gotoPage("Settings")}
+            title={settingsTitle}
+            onClick={() => gotoPage(settingsTitle)}
           />
           <ProfileDropdownMenuItem title="Sign out" onClick={handleLogOut} />
         </div>

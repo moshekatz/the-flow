@@ -3,11 +3,14 @@ import React from "react";
 import { Header } from "./header";
 import { Sidebar } from "./sidebar";
 import { TransactionSlideOver } from "./transaction-slide-over";
-import { MyFlow } from "./pages/my-flow";
-import { Subscriptions } from "./pages/subscriptions";
-import { Dashboard } from "./pages/dashboard";
-import { Settings } from "./pages/settings";
-import { YourProfile } from "./pages/your-profile";
+import { MyFlow, title as myFlowTitle } from "./pages/my-flow";
+import {
+  Subscriptions,
+  title as subscriptionsTitle,
+} from "./pages/subscriptions";
+import { Dashboard, title as dashboardTitle } from "./pages/dashboard";
+import { Settings, title as settingsTitle } from "./pages/settings";
+import { YourProfile, title as YourProfileTitle } from "./pages/your-profile";
 import { NotFound } from "./pages/not-found";
 
 import { useNavigation } from "../context/navigation-context";
@@ -31,7 +34,7 @@ function AuthenticatedApp() {
 
   let page;
   switch (currentPage) {
-    case "My Flow": {
+    case myFlowTitle: {
       page = (
         <MyFlow
           onCreateTransaction={openTransactionSlideOver}
@@ -41,7 +44,7 @@ function AuthenticatedApp() {
       );
       break;
     }
-    case "Subscriptions": {
+    case subscriptionsTitle: {
       page = (
         <Subscriptions
           onCreateTransaction={openTransactionSlideOver}
@@ -51,15 +54,15 @@ function AuthenticatedApp() {
       );
       break;
     }
-    case "Dashboard": {
+    case dashboardTitle: {
       page = <Dashboard />;
       break;
     }
-    case "Settings": {
+    case settingsTitle: {
       page = <Settings />;
       break;
     }
-    case "Your Profile": {
+    case YourProfileTitle: {
       page = <YourProfile />;
       break;
     }
@@ -71,13 +74,13 @@ function AuthenticatedApp() {
 
   return (
     <div
-      className={`h-screen bg-white flex ${
+      className={`min-h-screen bg-white flex ${
         shouldHideScrollbar ? "overflow-y-hidden" : ""
       }`}
     >
       <Sidebar />
 
-      <div className="flex-1 lg:max-w-4xl mx-auto w-0 flex flex-col lg:px-8 xl:px-0">
+      <div className="mb-3 flex-1 lg:max-w-4xl mx-auto w-0 flex flex-col lg:px-8 xl:px-0">
         <Header
           searchQuery={searchQuery}
           onSearchQueryChange={(e) => setSearchQuery(e.target.value)}
