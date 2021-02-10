@@ -135,7 +135,6 @@ function TimelineItem({ timelineTransaction, isLast, onSelectTransaction }) {
     due,
     id,
     isOutgoing,
-    isFutureTransaction,
   } = timelineTransaction;
   return (
     <li>
@@ -243,8 +242,6 @@ function ToggleTransactions({ title, on, onToggle, children }) {
 function createTimelineTransaction(transaction) {
   const { amount, due, direction, currency } = transaction;
   const isOutgoing = direction === "outgoing";
-  // TODO: usable?
-  const isFutureTransaction = new Date(due) > new Date();
   const dueToShow = getTimelineDate(due);
   const amountToShow = amount.toLocaleString();
   const currencyToShow =
@@ -252,7 +249,6 @@ function createTimelineTransaction(transaction) {
   return {
     ...transaction,
     isOutgoing,
-    isFutureTransaction,
     dueToShow,
     amountToShow,
     currencyToShow,
