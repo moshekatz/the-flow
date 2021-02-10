@@ -54,7 +54,7 @@ function Subscriptions({
   };
 
   const subscriptions = transactions
-    .filter(({ repeat, name, next }) => {
+    .filter(({ repeat }) => {
       const isSubscription = ["Monthly", "Annually"].includes(repeat);
 
       return isSubscription;
@@ -78,6 +78,10 @@ function Subscriptions({
             );
       return matchesSearch;
     });
+
+  const { monthlyAverage, annuallyAverage } = calculateSubscriptionStats(
+    subscriptions
+  );
 
   // TODO: also gotta refactor
   const sortedByDateSubscriptions = subscriptions.sort((a, b) => {
@@ -116,12 +120,14 @@ function Subscriptions({
         </div>
       </div>
       <div className="px-4 sm:px-6 lg:px-0">
-        {" "}
         <div className="space-y-3">
           <h2 className="text-gray-600 text-sm font-medium uppercase tracking-wide">
             Stats
           </h2>
-          <SubscriptionStats subscriptions={subscriptions} />
+          <div className="mt-1 grid gap-3 sm:gap-5 grid-cols-2">
+            <StatCard title="Monthly Average" number={monthlyAverage} />
+            <StatCard title="Annually Average" number={annuallyAverage} />
+          </div>
           <div className="flex justify-between items-center">
             <h2 className="text-gray-600 text-sm font-medium uppercase tracking-wide">
               Active
@@ -343,17 +349,29 @@ function SubscriptionItem({
   );
 }
 
-function SubscriptionStats({ subscriptions }) {
-  const { monthlyAverage, annuallyAverage } = calculateSubscriptionStats(
-    subscriptions
-  );
-
+// TODO: fix the depandency graph, potential abstraction with myflow stat
+function StatCard({ title, number, bgColor }) {
   return (
-    <div>
-      <dl className="mt-1 grid gap-3 sm:gap-5 grid-cols-2">
-        <StatCard title="Monthly Average" number={monthlyAverage} />
-        <StatCard title="Annually Average" number={annuallyAverage} />
-      </dl>
+    <div
+      className={`${
+        bgColor === "green"
+          ? `bg-gradient-to-t from-green-100 via-white`
+          : bgColor === "red"
+          ? `bg-gradient-to-t from-red-100 via-white`
+          : "bg-white"
+      } overflow-hidden shadow rounded-lg`}
+    >
+      <div className="px-4 py-5 sm:p-6">
+        {/* <dl> */}
+        <dt className="text-xs sm:text-sm font-medium text-gray-500 truncate">
+          {title}
+        </dt>
+        <dd className="mt-1 text-lg sm:text-3xl font-semibold text-gray-900">
+          {Math.round(number).toLocaleString()}
+          <span className="font-normal">₪</span>
+        </dd>
+        {/* </dl> */}
+      </div>
     </div>
   );
 }
@@ -396,44 +414,14 @@ function calculateNextDue({ due, repeat }) {
   return nextDueDate;
 }
 
-// TODO: fix the depandency graph, potential abstraction with myflow stat
-function StatCard({ title, number, bgColor }) {
-  return (
-    <div
-      className={`${
-        bgColor === "green"
-          ? `bg-gradient-to-t from-green-100 via-white`
-          : bgColor === "red"
-          ? `bg-gradient-to-t from-red-100 via-white`
-          : "bg-white"
-      } overflow-hidden shadow rounded-lg`}
-    >
-      <div className="px-4 py-5 sm:p-6">
-        <dt className="text-xs sm:text-sm font-medium text-gray-500 truncate">
-          {/* <span className="inline bg-red-100 rounded-full px-2 py-0.5 text-xs tracking-wide uppercase font-medium">
-            <span className="text-red-700">{title}</span>
-          </span> */}
-          {title}
-        </dt>
-        <dd className="mt-1 text-lg sm:text-3xl font-semibold text-gray-900">
-          {Math.round(number).toLocaleString()}
-          <span className="font-normal">₪</span>
-        </dd>
-      </div>
-    </div>
-  );
-}
-
 const USDtoILSRate = 3.28; // Updated: Feb 08, 2021
 
-// TODO: USD support
 function calculatePaidMonthly({ amount, repeat, currency }) {
   const amountInILS = currency === "USD" ? amount * USDtoILSRate : amount;
   if (repeat === "Monthly") return amountInILS;
   return amountInILS / 12;
 }
 
-// TODO: USD support
 function calculatePaidAnnually({ amount, repeat, currency }) {
   const amountInILS = currency === "USD" ? amount * USDtoILSRate : amount;
   if (repeat === "Annually") return amountInILS;

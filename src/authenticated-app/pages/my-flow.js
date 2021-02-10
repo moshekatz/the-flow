@@ -4,7 +4,10 @@ import { useTransactions } from "../../api/transactions/transactions-api-hooks";
 export { MyFlow };
 
 function MyFlow({ onCreateTransaction, onSelectTransaction, searchQuery }) {
+  // Extract
   const { transactions } = useTransactions();
+
+  // Transform
   const timelineTransactions = transactions.map((transaction) => {
     const { amount, due, direction } = transaction;
     const isOutgoing = direction === "outgoing";
@@ -27,7 +30,9 @@ function MyFlow({ onCreateTransaction, onSelectTransaction, searchQuery }) {
       s.toLowerCase().includes(searchQuery.toLowerCase())
     );
   });
+  const { left, received, spent } = calculateStats(filteredTransactions);
 
+  // Load
   return (
     <div className="py-3 space-y-3">
       <div className="px-4 sm:px-6 lg:px-0 flex items-center justify-between ">
@@ -48,31 +53,21 @@ function MyFlow({ onCreateTransaction, onSelectTransaction, searchQuery }) {
       </div>
       <div className="px-4 sm:px-6 lg:px-0">
         <div className="space-y-3">
-          <MyFlowStats transactions={filteredTransactions} />
+          <div>
+            <h2 className="text-xl font-semibold text-gray-700 tracking-wide">
+              Stats
+            </h2>
+            <div className="mt-1 grid gap-3 sm:gap-5 grid-cols-3">
+              <StatCard title="Received" number={received} bgColor="green" />
+              <StatCard title="Left" number={left} />
+              <StatCard title="Spent" number={spent} bgColor="red" />
+            </div>
+          </div>
           <Timeline
             onSelectTransaction={onSelectTransaction}
             transactions={filteredTransactions}
           />
         </div>
-      </div>
-    </div>
-  );
-}
-
-function MyFlowStats({ transactions }) {
-  const { left, received, spent } = calculateStats(transactions);
-
-  return (
-    <div>
-      <h2 className="text-xl font-semibold text-gray-700 tracking-wide">
-        Stats
-      </h2>
-      <div>
-        <dl className="mt-1 grid gap-3 sm:gap-5 grid-cols-3">
-          <StatCard title="Received" number={received} bgColor="green" />
-          <StatCard title="Left" number={left} />
-          <StatCard title="Spent" number={spent} bgColor="red" />
-        </dl>
       </div>
     </div>
   );
@@ -90,16 +85,15 @@ function StatCard({ title, number, bgColor }) {
       } overflow-hidden shadow rounded-lg`}
     >
       <div className="px-4 py-5 sm:p-6">
-        <dt className="text-xs sm:text-sm font-medium text-gray-500 truncate">
-          {/* <span className="inline bg-red-100 rounded-full px-2 py-0.5 text-xs tracking-wide uppercase font-medium">
-            <span className="text-red-700">{title}</span>
-          </span> */}
-          {title}
-        </dt>
-        <dd className="mt-1 text-lg sm:text-3xl font-semibold text-gray-900">
-          {Math.round(number).toLocaleString()}
-          <span className="font-normal">₪</span>
-        </dd>
+        <dl>
+          <dt className="text-xs sm:text-sm font-medium text-gray-500 truncate">
+            {title}
+          </dt>
+          <dd className="mt-1 text-lg sm:text-3xl font-semibold text-gray-900">
+            {Math.round(number).toLocaleString()}
+            <span className="font-normal">₪</span>
+          </dd>
+        </dl>
       </div>
     </div>
   );

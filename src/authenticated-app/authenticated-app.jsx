@@ -30,7 +30,6 @@ function AuthenticatedApp() {
   const shouldHideScrollbar = showTransactionSlideOver || isMobileNavOpen;
 
   let page;
-
   switch (currentPage) {
     case "My Flow": {
       page = (
@@ -86,7 +85,7 @@ function AuthenticatedApp() {
         <TransactionsProvider>
           <div className="flex ">
             <main
-              className="flex-1 relative px-2  focus:outline-none"
+              className="flex-1 relative px-2 focus:outline-none"
               tabIndex={0}
             >
               {page}
