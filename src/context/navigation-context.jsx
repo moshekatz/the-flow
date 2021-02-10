@@ -1,8 +1,11 @@
 import React from "react";
 
+// TODO: does the dependency graph should look like that?
+import { title as myFlowTitle } from "../authenticated-app/pages/my-flow";
+
 export { NavigationProvider, useNavigation };
 
-const defaultPage = "My Flow";
+const defaultPage = myFlowTitle;
 const NavigationContext = React.createContext();
 NavigationContext.displayName = "NavigationContext";
 
@@ -22,6 +25,7 @@ function NavigationProvider(props) {
       isProfileDropdownOpen: false,
     });
   };
+
   const openMobileNav = () => {
     setNavigationState((navState) => {
       return { ...navState, isMobileNavOpen: true };
@@ -58,6 +62,7 @@ function NavigationProvider(props) {
       isMobileNavOpen,
       isProfileDropdownOpen,
       gotoPage,
+      goToDefault: () => gotoPage(defaultPage),
       openMobileNav,
       closeMobileNav,
       openProfileDropdown,

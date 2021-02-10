@@ -1,10 +1,20 @@
 import React from "react";
 import { useOutsideAlerter } from "../../hooks/hooks";
 import { useTransactions } from "../../api/transactions/transactions-api-hooks";
+import { PageHeading, PageSubHeading, StatCard } from "../shared/components";
 
-export { Subscriptions };
+export const title = "Subscriptions";
+export const iconSvgPath = (
+  /* Heroicon name: refresh */
+  <path
+    strokeLinecap="round"
+    strokeLinejoin="round"
+    strokeWidth={2}
+    d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"
+  />
+);
 
-function Subscriptions({
+export function Subscriptions({
   onCreateTransaction,
   onSelectSubscription,
   searchQuery,
@@ -54,7 +64,7 @@ function Subscriptions({
   };
 
   const subscriptions = transactions
-    .filter(({ repeat, name, next }) => {
+    .filter(({ repeat }) => {
       const isSubscription = ["Monthly", "Annually"].includes(repeat);
 
       return isSubscription;
@@ -79,6 +89,10 @@ function Subscriptions({
       return matchesSearch;
     });
 
+  const { monthlyAverage, annuallyAverage } = calculateSubscriptionStats(
+    subscriptions
+  );
+
   // TODO: also gotta refactor
   const sortedByDateSubscriptions = subscriptions.sort((a, b) => {
     if (sortBy === "nextDue") {
@@ -100,32 +114,26 @@ function Subscriptions({
   return (
     <div className="py-3 space-y-3">
       <div className="px-4 sm:px-6 lg:px-0 flex items-center justify-between ">
-        <h1 className="text-2xl font-semibold text-gray-900 tracking-wide">
-          {/*TODO: duplication?*/}
-          {/* {selectedNav} */}
-          Subscriptions
-        </h1>
+        <PageHeading title={title} />
         <div>
           <button
             type="button"
             onClick={onCreateTransaction}
-            className="group inline-flex items-center mr-1 px-4 py-2 border border-blue-600 rounded-md shadow-sm text-sm font-medium text-blue-700 hover:bg-gray-50 hover:border-blue-700 focus:bg-gray-50 focus:border-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
+            className="group inline-flex items-center px-4 py-2 border border-blue-600 rounded-md shadow-sm text-sm font-medium text-blue-700 hover:bg-gray-50 hover:border-blue-700 focus:bg-gray-50 focus:border-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
           >
             Create
           </button>
         </div>
       </div>
       <div className="px-4 sm:px-6 lg:px-0">
-        {" "}
         <div className="space-y-3">
-          <h2 className="text-gray-600 text-sm font-medium uppercase tracking-wide">
-            Stats
-          </h2>
-          <SubscriptionStats subscriptions={subscriptions} />
+          <PageSubHeading title="Stats" />
+          <div className="mt-1 grid gap-3 sm:gap-5 grid-cols-2">
+            <StatCard title="Monthly Average" number={monthlyAverage} />
+            <StatCard title="Annually Average" number={annuallyAverage} />
+          </div>
           <div className="flex justify-between items-center">
-            <h2 className="text-gray-600 text-sm font-medium uppercase tracking-wide">
-              Active
-            </h2>
+            <PageSubHeading title="Active" />
             <div>
               <div className="text-gray-700 text-sm flex justify-between">
                 <span className="font-semibold">Show paid: </span>
@@ -251,7 +259,7 @@ function SubscriptionItem({
         </div>
         <div></div>
         <div className="mr-1">
-          <span className="text-gray-700 font-semibold">
+          <span className="text-gray-700 text-xl">
             <span className="font-normal">
               {/* TODO: support for usd view */}₪
             </span>
@@ -343,21 +351,6 @@ function SubscriptionItem({
   );
 }
 
-function SubscriptionStats({ subscriptions }) {
-  const { monthlyAverage, annuallyAverage } = calculateSubscriptionStats(
-    subscriptions
-  );
-
-  return (
-    <div>
-      <dl className="mt-1 grid gap-3 sm:gap-5 grid-cols-2">
-        <StatCard title="Monthly Average" number={monthlyAverage} />
-        <StatCard title="Annually Average" number={annuallyAverage} />
-      </dl>
-    </div>
-  );
-}
-
 function calculateSubscriptionStats(subscriptions) {
   let monthlyAverage = 0;
   let annuallyAverage = 0;
@@ -396,44 +389,14 @@ function calculateNextDue({ due, repeat }) {
   return nextDueDate;
 }
 
-// TODO: fix the depandency graph, potential abstraction with myflow stat
-function StatCard({ title, number, bgColor }) {
-  return (
-    <div
-      className={`${
-        bgColor === "green"
-          ? `bg-gradient-to-t from-green-100 via-white`
-          : bgColor === "red"
-          ? `bg-gradient-to-t from-red-100 via-white`
-          : "bg-white"
-      } overflow-hidden shadow rounded-lg`}
-    >
-      <div className="px-4 py-5 sm:p-6">
-        <dt className="text-xs sm:text-sm font-medium text-gray-500 truncate">
-          {/* <span className="inline bg-red-100 rounded-full px-2 py-0.5 text-xs tracking-wide uppercase font-medium">
-            <span className="text-red-700">{title}</span>
-          </span> */}
-          {title}
-        </dt>
-        <dd className="mt-1 text-lg sm:text-3xl font-semibold text-gray-900">
-          {Math.round(number).toLocaleString()}
-          <span className="font-normal">₪</span>
-        </dd>
-      </div>
-    </div>
-  );
-}
-
 const USDtoILSRate = 3.28; // Updated: Feb 08, 2021
 
-// TODO: USD support
 function calculatePaidMonthly({ amount, repeat, currency }) {
   const amountInILS = currency === "USD" ? amount * USDtoILSRate : amount;
   if (repeat === "Monthly") return amountInILS;
   return amountInILS / 12;
 }
 
-// TODO: USD support
 function calculatePaidAnnually({ amount, repeat, currency }) {
   const amountInILS = currency === "USD" ? amount * USDtoILSRate : amount;
   if (repeat === "Annually") return amountInILS;
