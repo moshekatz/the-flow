@@ -1,3 +1,5 @@
+import React from "react";
+
 export function PageHeading({ title }) {
   return (
     <h1 className="text-2xl font-semibold text-gray-900 tracking-wide">
@@ -12,6 +14,44 @@ export function PageSubHeading({ title }) {
       {title}
     </h2>
   );
+}
+
+export function Accordion({ title, isOn = false, children }) {
+  const [on, toggleOn] = useToggle(isOn);
+  return (
+    <>
+      <button
+        type="button"
+        onClick={toggleOn}
+        className="block text-gray-600 tracking-wide hover:text-gray-800 hover:underline"
+      >
+        {title}
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          fill="none"
+          viewBox="0 0 24 24"
+          stroke="currentColor"
+          className={`${
+            on ? "rotate-90" : ""
+          } inline-block h-5 w-5 transform transition ease-in-out duration-200`}
+        >
+          <path
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            strokeWidth={2}
+            d="M9 5l7 7-7 7"
+          />
+        </svg>
+      </button>
+      {on ? children : null}
+    </>
+  );
+}
+function useToggle(initialValue = false) {
+  // Returns the tuple [state, dispatch]
+  // Normally with useReducer you pass a value to dispatch to indicate what action to
+  // take on the state, but in this case there's only one action.
+  return React.useReducer((state) => !state, initialValue);
 }
 
 export function StatCard({ title, number, bgColor = "bg-white" }) {
