@@ -1,6 +1,11 @@
 import React from "react";
 import { useTransactions } from "../../api/transactions/transactions-api-hooks";
-import { PageHeading, PageSubHeading, StatCard } from "../shared/components";
+import {
+  PageHeading,
+  PageSubHeading,
+  Accordion,
+  StatCard,
+} from "../shared/components";
 
 export const title = "My Flow";
 export const iconSvgPath = (
@@ -22,7 +27,6 @@ export function MyFlow({
   const { transactions } = useTransactions();
 
   // Transform
-
   const timelineTransactions = transactions.map(createTimelineTransaction);
   const filteredTimelineTransactions = timelineTransactions.filter(
     filterBySearchQuery(searchQuery)
@@ -37,9 +41,6 @@ export function MyFlow({
     splitByDate: new Date(),
     transactions: filteredTransactionsNewestFirst,
   });
-
-  const [showCurrent, toggleShowCurrent] = useToggle(true);
-  const [showUpcoming, toggleShowUpcoming] = useToggle();
 
   // Load
   return (
@@ -57,9 +58,9 @@ export function MyFlow({
       </div>
       <div className="px-4 sm:px-6 lg:px-0">
         <div className="space-y-3">
-          <div className="space-y-1">
+          <div className="space-y-3">
             <PageSubHeading title="Stats" />
-            <div className="grid gap-3 sm:gap-5 grid-cols-3">
+            <div className="grid grid-cols-3 gap-3 sm:gap-5">
               <StatCard
                 title="Received"
                 number={received}
@@ -74,17 +75,11 @@ export function MyFlow({
             </div>
           </div>
           <div className="space-y-3">
-            <div className="flex justify-between items-center">
-              <PageSubHeading title="Timeline" />
-            </div>
+            <PageSubHeading title="Timeline" />
             <div className="flow-root space-y-3">
-              <ToggleTransactions
-                title={"Upcoming Transactions"}
-                on={showUpcoming}
-                onToggle={toggleShowUpcoming}
-              >
+              <Accordion title={"Upcoming Transactions"}>
                 <ul className="border border-gray-300 p-1">
-                  {upcomingTransactions?.map(
+                  {upcomingTransactions.map(
                     (timelineTransaction, index, array) => {
                       return (
                         <TimelineItem
@@ -97,14 +92,10 @@ export function MyFlow({
                     }
                   )}
                 </ul>
-              </ToggleTransactions>
-              <ToggleTransactions
-                title={"Current Transactions"}
-                on={showCurrent}
-                onToggle={toggleShowCurrent}
-              >
-                <ul>
-                  {currentTransactions?.map(
+              </Accordion>
+              <Accordion title={"Current Transactions"} isOn={true}>
+                <ul className="p-1">
+                  {currentTransactions.map(
                     (timelineTransaction, index, array) => {
                       return (
                         <TimelineItem
@@ -117,7 +108,7 @@ export function MyFlow({
                     }
                   )}
                 </ul>
-              </ToggleTransactions>
+              </Accordion>
             </div>
           </div>
         </div>
@@ -131,7 +122,6 @@ function TimelineItem({ timelineTransaction, isLast, onSelectTransaction }) {
     name,
     amountToShow,
     dueToShow,
-    currencyToShow,
     due,
     id,
     isOutgoing,
@@ -164,7 +154,7 @@ function TimelineItem({ timelineTransaction, isLast, onSelectTransaction }) {
                 </svg>
               </span>
             ) : (
-              <span className="h-8 w-8 rounded-full bg-green-500 flex items-center justify-center ring-8 ring-white">
+              <span className="h-8 w-8 rounded-full bg-green-500 flex items-center justify-center ring-3 ring-white">
                 {/* Heroicon name: trending-up */}
                 <svg
                   className="h-5 w-5 text-white"
@@ -184,9 +174,8 @@ function TimelineItem({ timelineTransaction, isLast, onSelectTransaction }) {
           <div className="min-w-0 flex-1 pt-1.5 flex justify-between space-x-4">
             <div>
               <p className="text-sm text-gray-500">
-                {`${isOutgoing ? "Spent" : "Received"} `}
+                {/* {`${isOutgoing ? "Spent" : "Received"} `} */}
                 <span className="font-semibold text-gray-800">
-                  <span className="font-normal">{currencyToShow}</span>
                   {amountToShow}
                 </span>
                 {` ${isOutgoing ? "on" : "from"} `}
@@ -208,50 +197,18 @@ function TimelineItem({ timelineTransaction, isLast, onSelectTransaction }) {
   );
 }
 
-function ToggleTransactions({ title, on, onToggle, children }) {
-  return (
-    <>
-      <button
-        type="button"
-        onClick={onToggle}
-        className="block text-gray-600 tracking-wide hover:text-gray-800 hover:underline"
-      >
-        {title}
-        <svg
-          xmlns="http://www.w3.org/2000/svg"
-          fill="none"
-          viewBox="0 0 24 24"
-          stroke="currentColor"
-          className={`${
-            on ? "rotate-90" : ""
-          } inline-block h-5 w-5 transform transition ease-in-out duration-200`}
-        >
-          <path
-            strokeLinecap="round"
-            strokeLinejoin="round"
-            strokeWidth={2}
-            d="M9 5l7 7-7 7"
-          />
-        </svg>
-      </button>
-      {on ? children : null}
-    </>
-  );
-}
-
 function createTimelineTransaction(transaction) {
   const { amount, due, direction, currency } = transaction;
   const isOutgoing = direction === "outgoing";
   const dueToShow = getTimelineDate(due);
-  const amountToShow = amount.toLocaleString();
   const currencyToShow =
     currency === "ILS" ? "₪" : currency === "USD" ? "$" : "?";
+  const amountToShow = `${currencyToShow}${amount.toLocaleString()}`;
   return {
     ...transaction,
     isOutgoing,
     dueToShow,
     amountToShow,
-    currencyToShow,
   };
 }
 
@@ -267,9 +224,8 @@ function getTimelineTransactionSearchableProps({
   name,
   amountToShow,
   dueToShow,
-  currencyToShow,
 }) {
-  return [name, amountToShow, currencyToShow, dueToShow];
+  return [name, amountToShow, dueToShow];
 }
 
 function newestTransactionFirst(transactionA, transactionB) {
@@ -293,12 +249,16 @@ function splitTransactionsByDate({ splitByDate, transactions }) {
   return [transactionsBefore, transactionsAfter];
 }
 
+// TODO: Calculation is duplicated
+const USDtoILSRate = 3.28; // Updated: Feb 08, 2021
+
 function calculateStats(transactions) {
   let received = 0;
   let spent = 0;
-  transactions.forEach(({ amount, direction }) => {
-    if (direction === "outgoing") spent += amount;
-    if (direction === "incoming") received += amount;
+  transactions.forEach(({ amount, direction, currency }) => {
+    const amountInILS = currency === "USD" ? amount * USDtoILSRate : amount;
+    if (direction === "outgoing") spent += amountInILS;
+    if (direction === "incoming") received += amountInILS;
   });
   return { left: received - spent, received, spent };
 }
@@ -306,11 +266,4 @@ function calculateStats(transactions) {
 function getTimelineDate(date) {
   const [, month, day] = new Date(date).toDateString().split(" ");
   return `${day} ${month}`;
-}
-
-function useToggle(initialValue = false) {
-  // Returns the tuple [state, dispatch]
-  // Normally with useReducer you pass a value to dispatch to indicate what action to
-  // take on the state, but in this case there's only one action.
-  return React.useReducer((state) => !state, initialValue);
 }
