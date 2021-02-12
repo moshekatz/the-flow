@@ -1,3 +1,11 @@
 @tailwind base;
+
+@layer base {
+  html {
+    overflow-y: scroll;
+    /* margin-left: calc(100vw - 100%); */
+  }
+}
+
 @tailwind components;
 @tailwind utilities;
