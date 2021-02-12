@@ -1,11 +1,14 @@
 import React from "react";
 import { useTransactions } from "../../api/transactions/transactions-api-hooks";
+// import { useSWRTransactions } from "../../api/transactions/transactions-swr";
 import {
   PageHeading,
   PageSubHeading,
   Accordion,
   StatCard,
+  SkeletonStatCard,
 } from "../shared/components";
+import { calculateMyFlowStats } from "../shared/calculation-utils";
 
 export const title = "My Flow";
 export const iconSvgPath = (
@@ -24,14 +27,84 @@ export function MyFlow({
   searchQuery,
 }) {
   // Extract
-  const { transactions } = useTransactions();
+  const { error, loading, transactions } = useTransactions();
+  // const { transactions, error, loading } = useSWRTransactions();
+
+  if (error) {
+    return <div>Error: {error.message}</div>;
+  }
+
+  if (loading) {
+    return (
+      <div className="py-3 space-y-3">
+        <div className="px-4 sm:px-6 lg:px-0 flex items-center justify-between ">
+          <PageHeading title={title} />
+
+          <button
+            type="button"
+            onClick={onCreateTransaction}
+            className="group inline-flex items-center px-4 py-2 border border-blue-600 rounded-md shadow-sm text-sm font-medium text-blue-700 hover:bg-gray-50 hover:border-blue-700 focus:bg-gray-50 focus:border-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
+          >
+            Create
+          </button>
+        </div>
+        <div className="px-4 sm:px-6 lg:px-0">
+          <div className="space-y-3">
+            <div className="space-y-3">
+              <PageSubHeading title="Stats" />
+              <div className="grid grid-cols-3 gap-3 sm:gap-5">
+                <SkeletonStatCard />
+                <SkeletonStatCard />
+                <SkeletonStatCard />
+              </div>
+            </div>
+            <div className="space-y-3">
+              <PageSubHeading title="Timeline" />
+              <div className="flow-root space-y-3">
+                <Accordion title={"Upcoming Transactions"}>
+                  {/* <ul className="border border-gray-300 p-1">
+                  {upcomingTransactions.map(
+                    (timelineTransaction, index, array) => {
+                      return (
+                        <TimelineItem
+                          key={timelineTransaction.id}
+                          timelineTransaction={timelineTransaction}
+                          isLast={index === array.length - 1}
+                          onSelectTransaction={onSelectTransaction}
+                        />
+                      );
+                    }
+                  )}
+                </ul> */}
+                </Accordion>
+                <Accordion title={"Current Transactions"} isOn={true}>
+                  <ul className="p-1">
+                    {[1, 2, 3, 4].map((_, index, array) => {
+                      return (
+                        <SkeletonTimelineItem
+                          key={index}
+                          isLast={index === array.length - 1}
+                        />
+                      );
+                    })}
+                  </ul>
+                </Accordion>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  // TODO: put loading here and remove the nullables from the tranasform
 
   // Transform
   const timelineTransactions = transactions.map(createTimelineTransaction);
   const filteredTimelineTransactions = timelineTransactions.filter(
     filterBySearchQuery(searchQuery)
   );
-  const { left, received, spent } = calculateStats(
+  const { left, received, spent } = calculateMyFlowStats(
     filteredTimelineTransactions
   );
   const filteredTransactionsNewestFirst = filteredTimelineTransactions.sort(
@@ -197,6 +270,32 @@ function TimelineItem({ timelineTransaction, isLast, onSelectTransaction }) {
   );
 }
 
+function SkeletonTimelineItem({ isLast }) {
+  return (
+    <li>
+      <div className={`relative ${isLast ? "" : "pb-8"}`}>
+        {isLast ? null : (
+          <span
+            className="animate-pulse absolute top-4 left-4 -ml-px h-full w-0.5 bg-gray-200"
+            aria-hidden="true"
+          />
+        )}
+        <div className="relative flex space-x-3">
+          <div>
+            <span className="h-8 w-8 rounded-full bg-gray-200 flex items-center justify-center ring-3 ring-white"></span>
+          </div>
+          <div className="min-w-0 flex-1 pt-1.5 flex justify-between space-x-4">
+            <div>
+              <div className="animate-pulse h-5 w-28 bg-gray-200"></div>
+            </div>
+            <div className="animate-pulse h-5 w-12 bg-gray-200"></div>
+          </div>
+        </div>
+      </div>
+    </li>
+  );
+}
+
 function createTimelineTransaction(transaction) {
   const { amount, due, direction, currency } = transaction;
   const isOutgoing = direction === "outgoing";
@@ -247,20 +346,6 @@ function splitTransactionsByDate({ splitByDate, transactions }) {
   });
 
   return [transactionsBefore, transactionsAfter];
-}
-
-// TODO: Calculation is duplicated
-const USDtoILSRate = 3.28; // Updated: Feb 08, 2021
-
-function calculateStats(transactions) {
-  let received = 0;
-  let spent = 0;
-  transactions.forEach(({ amount, direction, currency }) => {
-    const amountInILS = currency === "USD" ? amount * USDtoILSRate : amount;
-    if (direction === "outgoing") spent += amountInILS;
-    if (direction === "incoming") received += amountInILS;
-  });
-  return { left: received - spent, received, spent };
 }
 
 function getTimelineDate(date) {

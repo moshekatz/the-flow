@@ -58,15 +58,28 @@ export function StatCard({ title, number, bgColor = "bg-white" }) {
   return (
     <div className={`${bgColor} overflow-hidden shadow rounded-lg`}>
       <div className="px-4 py-5 sm:p-6">
-        <dl>
+        <dl className="space-y-1">
           <dt className="text-xs sm:text-sm font-medium text-gray-500 truncate">
             {title}
           </dt>
-          <dd className="mt-1 text-lg sm:text-3xl font-semibold text-gray-900">
+          <dd className="text-lg sm:text-3xl font-semibold text-gray-900">
             {Math.round(number).toLocaleString()}
             <span className="font-normal">₪</span>
           </dd>
         </dl>
+      </div>
+    </div>
+  );
+}
+
+export function SkeletonStatCard() {
+  return (
+    <div className={`bg-white overflow-hidden shadow rounded-lg`}>
+      <div className="px-4 py-5 sm:p-6">
+        <div className="space-y-1">
+          <div className="animate-pulse h-3 w-10 sm:h-4 sm:w-16 bg-gray-200"></div>
+          <div className="animate-pulse h-9 w-28 sm:h-10 sm:w-40 bg-gray-200"></div>
+        </div>
       </div>
     </div>
   );
