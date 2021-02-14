@@ -17,9 +17,12 @@ function AuthProvider(props) {
   const [{ user, error, isPasswordRecovery }, setAuthState] = React.useState(
     () => ({
       // TODO: secure-persist-session?
-      user: localStorage["supabase.auth.token"]
+      user: !(process.env.NODE_ENV === "production")
+        ? null
+        : localStorage["supabase.auth.token"]
         ? JSON.parse(localStorage["supabase.auth.token"]).currentSession.user
         : null,
+      // user: null,
       error: null,
       isPasswordRecovery: false,
     })
