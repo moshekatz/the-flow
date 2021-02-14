@@ -78,7 +78,7 @@ export function SkeletonStatCard() {
       <div className="px-4 py-5 sm:p-6">
         <div className="space-y-1">
           <div className="animate-pulse h-3 w-10 sm:h-4 sm:w-16 bg-gray-200"></div>
-          <div className="animate-pulse h-9 w-28 sm:h-10 sm:w-40 bg-gray-200"></div>
+          <div className="animate-pulse h-9 w-16 sm:h-10 sm:w-40 bg-gray-200"></div>
         </div>
       </div>
     </div>
