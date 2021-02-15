@@ -28,7 +28,7 @@ export function MyFlow({
 }) {
   // Extract
   const { error, loading, transactions } = useTransactions();
-  // const { transactions, error, loading } = useSWRTransactions();
+  // const { error, loading, transactions } = useSWRTransactions();
 
   if (error) {
     return <div>Error: {error.message}</div>;
