@@ -12,6 +12,7 @@ const defaultTransaction = {
   currency: "ILS",
   repeat: "One Time",
   due: todayAsInputValue,
+  due_end: null,
 };
 
 function TransactionSlideOver({ handleClose, transactionId }) {
@@ -45,6 +46,9 @@ function TransactionSlideOver({ handleClose, transactionId }) {
   const [due, setDue] = React.useState(
     selectedTransaction?.due || defaultTransaction.due
   );
+  const [dueEnd, setDueEnd] = React.useState(
+    selectedTransaction?.due_end || defaultTransaction.due_end
+  );
 
   const nameInputRef = React.useRef();
   React.useEffect(() => {
@@ -67,6 +71,7 @@ function TransactionSlideOver({ handleClose, transactionId }) {
           currency,
           repeat,
           due,
+          due_end: dueEnd ? dueEnd : undefined,
         });
         handleClose();
         // TODO: error-handling
@@ -85,6 +90,7 @@ function TransactionSlideOver({ handleClose, transactionId }) {
           currency,
           repeat,
           due,
+          due_end: dueEnd ? dueEnd : undefined,
         });
         handleClose();
         // TODO: error-handling
@@ -368,6 +374,30 @@ function TransactionSlideOver({ handleClose, transactionId }) {
                           />
                         </div>
                       </div>
+
+                      {repeat !== "One Time" ? (
+                        <div className="pt-6 sm:pt-5">
+                          <label
+                            htmlFor="due"
+                            className="block text-sm font-medium text-gray-700"
+                          >
+                            Due End{" "}
+                            <span className="text-sm text-gray-400">
+                              (optional)
+                            </span>
+                          </label>
+                          <div className="mt-1">
+                            <input
+                              value={dueEnd}
+                              onChange={(e) => setDueEnd(e.target.value)}
+                              type="date"
+                              name="dueEnd"
+                              id="dueEnd"
+                              className="shadow-sm focus:ring-blue-500 focus:border-blue-500 block w-full sm:text-sm border-gray-300 rounded-md"
+                            />
+                          </div>
+                        </div>
+                      ) : null}
                     </div>
                   </div>
 

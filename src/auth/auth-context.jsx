@@ -15,17 +15,20 @@ AuthContext.displayName = "AuthContext";
 
 function AuthProvider(props) {
   const [{ user, error, isPasswordRecovery }, setAuthState] = React.useState(
-    () => ({
-      // TODO: secure-persist-session?
-      user: !(process.env.NODE_ENV === "production")
-        ? null
-        : localStorage["supabase.auth.token"]
-        ? JSON.parse(localStorage["supabase.auth.token"]).currentSession.user
-        : null,
-      // user: null,
-      error: null,
-      isPasswordRecovery: false,
-    })
+    () => {
+      return {
+        // TODO: secure-persist-session?
+        user:
+          process.env.NODE_ENV === "development" &&
+          localStorage["supabase.auth.token"]
+            ? JSON.parse(localStorage["supabase.auth.token"]).currentSession
+                .user
+            : null,
+        // user: null,
+        error: null,
+        isPasswordRecovery: false,
+      };
+    }
   );
 
   React.useEffect(() => {
