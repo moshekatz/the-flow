@@ -8,7 +8,12 @@ import {
   StatCard,
   SkeletonStatCard,
 } from "../shared/components";
-import { calculateMyFlowStats } from "../shared/calculation-utils";
+import {
+  calculateMyFlowStats,
+  todayAsFilterMonth,
+  calculateTimelineTransactionsForPeriod,
+  calculateYearAndMonth,
+} from "../shared/calculation-utils";
 
 export const title = "My Flow";
 export const iconSvgPath = (
@@ -25,6 +30,7 @@ export function MyFlow({
   onCreateTransaction,
   onSelectTransaction,
   searchQuery,
+  filterMonth,
 }) {
   // Extract
   const { error, loading, transactions } = useTransactions();
@@ -61,23 +67,8 @@ export function MyFlow({
             <div className="space-y-3">
               <PageSubHeading title="Timeline" />
               <div className="flow-root space-y-3">
-                <Accordion title={"Upcoming Transactions"}>
-                  {/* <ul className="border border-gray-300 p-1">
-                  {upcomingTransactions.map(
-                    (timelineTransaction, index, array) => {
-                      return (
-                        <TimelineItem
-                          key={timelineTransaction.id}
-                          timelineTransaction={timelineTransaction}
-                          isLast={index === array.length - 1}
-                          onSelectTransaction={onSelectTransaction}
-                        />
-                      );
-                    }
-                  )}
-                </ul> */}
-                </Accordion>
-                <Accordion title={"Current Transactions"} isOn={true}>
+                <Accordion title={"Upcoming Transactions"}></Accordion>
+                <Accordion title={"Transactions"} isOn={true}>
                   <ul className="p-1">
                     {[1, 2, 3, 4].map((_, index, array) => {
                       return (
@@ -97,21 +88,32 @@ export function MyFlow({
     );
   }
 
-  // TODO: put loading here and remove the nullables from the tranasform
-
   // Transform
-  const timelineTransactions = transactions.map(createTimelineTransaction);
+  const transactionsForPeriod = calculateTimelineTransactionsForPeriod(
+    transactions,
+    filterMonth
+  );
+  const timelineTransactions = transactionsForPeriod.map(
+    createTimelineTransaction
+  );
+
   const filteredTimelineTransactions = timelineTransactions.filter(
     filterBySearchQuery(searchQuery)
   );
+
+  // const filteredTimelineTransactions = timelineTransactions.filter(
+  //   filterBySearchQuery(searchQuery) && filterByMonth(filterMonth)
+  // );
   const { left, received, spent } = calculateMyFlowStats(
     filteredTimelineTransactions
   );
   const filteredTransactionsNewestFirst = filteredTimelineTransactions.sort(
     newestTransactionFirst
   );
+  const today = new Date();
   const [currentTransactions, upcomingTransactions] = splitTransactionsByDate({
-    splitByDate: new Date(),
+    splitByDate: today,
+    filterMonth,
     transactions: filteredTransactionsNewestFirst,
   });
 
@@ -119,8 +121,11 @@ export function MyFlow({
   return (
     <div className="py-3 space-y-3">
       <div className="px-4 sm:px-6 lg:px-0 flex items-center justify-between ">
-        <PageHeading title={title} />
-
+        <div>
+          <PageHeading
+            title={`${title} - ${calculateYearAndMonth(filterMonth)}`}
+          />
+        </div>
         <button
           type="button"
           onClick={onCreateTransaction}
@@ -150,23 +155,25 @@ export function MyFlow({
           <div className="space-y-3">
             <PageSubHeading title="Timeline" />
             <div className="flow-root space-y-3">
-              <Accordion title={"Upcoming Transactions"}>
-                <ul className="border border-gray-300 p-1">
-                  {upcomingTransactions.map(
-                    (timelineTransaction, index, array) => {
-                      return (
-                        <TimelineItem
-                          key={timelineTransaction.id}
-                          timelineTransaction={timelineTransaction}
-                          isLast={index === array.length - 1}
-                          onSelectTransaction={onSelectTransaction}
-                        />
-                      );
-                    }
-                  )}
-                </ul>
-              </Accordion>
-              <Accordion title={"Current Transactions"} isOn={true}>
+              {upcomingTransactions && (
+                <Accordion title={"Upcoming Transactions"}>
+                  <ul className="border border-gray-300 p-1">
+                    {upcomingTransactions.map(
+                      (timelineTransaction, index, array) => {
+                        return (
+                          <TimelineItem
+                            key={timelineTransaction.id}
+                            timelineTransaction={timelineTransaction}
+                            isLast={index === array.length - 1}
+                            onSelectTransaction={onSelectTransaction}
+                          />
+                        );
+                      }
+                    )}
+                  </ul>
+                </Accordion>
+              )}
+              <Accordion title={"Transactions"} isOn={true}>
                 <ul className="p-1">
                   {currentTransactions.map(
                     (timelineTransaction, index, array) => {
@@ -336,7 +343,10 @@ function newestTransactionFirst(transactionA, transactionB) {
   return new Date(transactionB.due) - new Date(transactionA.due);
 }
 
-function splitTransactionsByDate({ splitByDate, transactions }) {
+function splitTransactionsByDate({ splitByDate, filterMonth, transactions }) {
+  const showEverything = !filterMonth;
+  if (!(filterMonth === todayAsFilterMonth || showEverything))
+    return [transactions];
   const transactionsBefore = [];
   const transactionsAfter = [];
   transactions.forEach((transaction) => {

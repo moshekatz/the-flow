@@ -6,6 +6,7 @@ import {
   calculateNextDue,
   calculatePaidMonthly,
   calculatePaidAnnually,
+  calculateLastDue,
 } from "../shared/calculation-utils";
 
 export const title = "Subscriptions";
@@ -52,10 +53,6 @@ export function Subscriptions({
     filterBySearchQuery(searchQuery)
   );
 
-  const { monthlyAverage, annuallyAverage } = calculateSubscriptionStats(
-    filteredSubscriptions
-  );
-
   const sortedFilteredSubscriptions = filteredSubscriptions.sort(
     sortSubscriptions({
       isSortByNextDue,
@@ -63,6 +60,14 @@ export function Subscriptions({
       isSortByNextDueASC,
       isSortByAmountASC,
     })
+  );
+
+  const [activeSubscriptions, expiredSubscriptions] = splitSubscriptions(
+    sortedFilteredSubscriptions
+  );
+
+  const { monthlyAverage, annuallyAverage } = calculateSubscriptionStats(
+    activeSubscriptions
   );
 
   // Load
@@ -137,11 +142,23 @@ export function Subscriptions({
             </div>
           </div>
           <ul className="grid grid-cols-1 gap-5 sm:gap-6">
-            {sortedFilteredSubscriptions.map((subscription) => (
+            {activeSubscriptions.map((subscription) => (
               <SubscriptionItem
                 key={subscription.id}
                 subscription={subscription}
                 onSelectSubscription={onSelectSubscription}
+                isActive={true}
+              />
+            ))}
+          </ul>
+          <PageSubHeading title="Expired" />
+          <ul className="grid grid-cols-1 gap-5 sm:gap-6">
+            {expiredSubscriptions.map((subscription) => (
+              <SubscriptionItem
+                key={subscription.id}
+                subscription={subscription}
+                onSelectSubscription={onSelectSubscription}
+                isActive={false}
               />
             ))}
           </ul>
@@ -151,7 +168,7 @@ export function Subscriptions({
   );
 }
 
-function SubscriptionItem({ subscription, onSelectSubscription }) {
+function SubscriptionItem({ subscription, onSelectSubscription, isActive }) {
   const {
     id,
     name,
@@ -159,6 +176,7 @@ function SubscriptionItem({ subscription, onSelectSubscription }) {
     amountToShow,
     nextDueToShow,
     normalizedAmountToShow,
+    expiredDueToShow,
   } = subscription;
   return (
     <li className="flex-1 flex items-center justify-between border border-gray-200 bg-white rounded px-4 py-2 shadow-sm">
@@ -170,10 +188,18 @@ function SubscriptionItem({ subscription, onSelectSubscription }) {
           {name}
         </button>
         <p className="text-gray-500 text-xs">{repeat}</p>
-        <p className="text-gray-400 text-xs">
-          Next billing date: {nextDueToShow}
-        </p>
-        <p className="text-gray-400 text-xs">{amountToShow} will be charged</p>
+        {isActive ? (
+          <>
+            <p className="text-gray-400 text-xs">
+              Next billing date: {nextDueToShow}
+            </p>
+            <p className="text-gray-400 text-xs">
+              {amountToShow} will be charged
+            </p>
+          </>
+        ) : (
+          <p className="text-gray-400 text-xs"> Expired {expiredDueToShow}</p>
+        )}
       </div>
       <div>
         <span className="text-gray-700 text-xl">
@@ -192,7 +218,7 @@ function getSubscriptionDateToShow(date) {
 
 function createSubscriptionNormalizedBy(isAmountNormalizedByMonth) {
   return function (transaction) {
-    const { due, repeat, amount, currency } = transaction;
+    const { due, repeat, amount, currency, due_end } = transaction;
     const nextDue = calculateNextDue({ due, repeat });
     const paidMonthly = calculatePaidMonthly({ amount, repeat, currency });
     const paidAnnually = calculatePaidAnnually({ amount, repeat, currency });
@@ -208,6 +234,7 @@ function createSubscriptionNormalizedBy(isAmountNormalizedByMonth) {
         paidAnnually,
         paidMonthly,
       }),
+      expiredDueToShow: getSubscriptionDateToShow(new Date(due_end)),
     };
   };
 }
@@ -240,6 +267,22 @@ function filterBySearchQuery(query) {
       s.toLowerCase().includes(query.toLowerCase())
     );
   };
+}
+
+function splitSubscriptions(subscriptions) {
+  const activeSubscriptions = [];
+  const expiredSubscriptions = [];
+  subscriptions.forEach((subscription) => {
+    if (subscription.due_end) {
+      new Date() <= calculateLastDue(subscription)
+        ? activeSubscriptions.push(subscription)
+        : expiredSubscriptions.push(subscription);
+    } else {
+      activeSubscriptions.push(subscription);
+    }
+  });
+
+  return [activeSubscriptions, expiredSubscriptions];
 }
 
 function getSubscriptionSearchableProps({

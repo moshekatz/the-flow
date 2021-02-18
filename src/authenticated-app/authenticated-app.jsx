@@ -3,6 +3,7 @@ import React from "react";
 import { Header } from "./header";
 import { Sidebar } from "./sidebar";
 import { TransactionSlideOver } from "./transaction-slide-over";
+import { todayAsFilterMonth } from "./shared/calculation-utils";
 import { MyFlow, title as myFlowTitle } from "./pages/my-flow";
 import {
   Subscriptions,
@@ -18,8 +19,11 @@ import { TransactionsProvider } from "../api/transactions/transactions-api-hooks
 
 export default AuthenticatedApp;
 
+const supportsFilter = [myFlowTitle];
+
 function AuthenticatedApp() {
   const [searchQuery, setSearchQuery] = React.useState("");
+  const [filterMonth, setFilterMonth] = React.useState(todayAsFilterMonth);
   const { isMobileNavOpen, currentPage } = useNavigation();
 
   const {
@@ -40,6 +44,7 @@ function AuthenticatedApp() {
           onCreateTransaction={openTransactionSlideOver}
           onSelectTransaction={openTransactionSlideOverForId}
           searchQuery={searchQuery}
+          filterMonth={filterMonth}
         />
       );
       break;
@@ -72,6 +77,8 @@ function AuthenticatedApp() {
     }
   }
 
+  const showFilterDropdown = supportsFilter.includes(currentPage);
+
   return (
     <div
       className={`min-h-screen bg-white flex ${
@@ -84,6 +91,11 @@ function AuthenticatedApp() {
         <Header
           searchQuery={searchQuery}
           onSearchQueryChange={(e) => setSearchQuery(e.target.value)}
+          filterMonth={filterMonth}
+          onFilterMonthSelected={(selectedFilterMonth) =>
+            setFilterMonth(selectedFilterMonth)
+          }
+          showFilterDropdown={showFilterDropdown}
         />
         <TransactionsProvider>
           <div className="flex ">
