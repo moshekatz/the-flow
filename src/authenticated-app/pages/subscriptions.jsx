@@ -177,6 +177,7 @@ function SubscriptionItem({ subscription, onSelectSubscription, isActive }) {
     nextDueToShow,
     normalizedAmountToShow,
     expiredDueToShow,
+    lastDueToShow,
   } = subscription;
   return (
     <li className="flex-1 flex items-center justify-between border border-gray-200 bg-white rounded px-4 py-2 shadow-sm">
@@ -198,7 +199,13 @@ function SubscriptionItem({ subscription, onSelectSubscription, isActive }) {
             </p>
           </>
         ) : (
-          <p className="text-gray-400 text-xs"> Expired {expiredDueToShow}</p>
+          <>
+            <p className="text-gray-400 text-xs"> Expired {expiredDueToShow}</p>
+            <p className="text-gray-400 text-xs">
+              Last billing date: {lastDueToShow}
+            </p>
+            <p className="text-gray-400 text-xs">{amountToShow} was charged</p>
+          </>
         )}
       </div>
       <div>
@@ -222,12 +229,15 @@ function createSubscriptionNormalizedBy(isAmountNormalizedByMonth) {
     const nextDue = calculateNextDue({ due, repeat });
     const paidMonthly = calculatePaidMonthly({ amount, repeat, currency });
     const paidAnnually = calculatePaidAnnually({ amount, repeat, currency });
+    const lastDue = calculateLastDue({ due, due_end, repeat });
     return {
       ...transaction,
       nextDue,
+      lastDue,
       paidMonthly,
       paidAnnually,
       nextDueToShow: getSubscriptionDateToShow(nextDue),
+      lastDueToShow: getSubscriptionDateToShow(lastDue),
       amountToShow: getSubscriptionAmountToShow({ amount, currency }),
       normalizedAmountToShow: getSubscriptionNormalizetAmountToShow({
         isAmountNormalizedByMonth,
@@ -274,7 +284,7 @@ function splitSubscriptions(subscriptions) {
   const expiredSubscriptions = [];
   subscriptions.forEach((subscription) => {
     if (subscription.due_end) {
-      new Date() <= calculateLastDue(subscription)
+      new Date() <= subscription.lastDue
         ? activeSubscriptions.push(subscription)
         : expiredSubscriptions.push(subscription);
     } else {
