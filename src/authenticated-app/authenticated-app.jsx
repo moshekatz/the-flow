@@ -13,7 +13,6 @@ import { Dashboard, title as dashboardTitle } from "./pages/dashboard";
 import { Settings, title as settingsTitle } from "./pages/settings";
 import { YourProfile, title as YourProfileTitle } from "./pages/your-profile";
 import { NotFound } from "./pages/not-found";
-import { createExpense } from "../splitwise";
 
 import { useNavigation } from "../context/navigation-context";
 import { TransactionsProvider } from "../api/transactions/transactions-api-hooks";
@@ -42,8 +41,7 @@ function AuthenticatedApp() {
     case myFlowTitle: {
       page = (
         <MyFlow
-          // onCreateTransaction={openTransactionSlideOver}
-          onCreateTransaction={() => createExpense()}
+          onCreateTransaction={openTransactionSlideOver}
           onSelectTransaction={openTransactionSlideOverForId}
           searchQuery={searchQuery}
           filterMonth={filterMonth}
