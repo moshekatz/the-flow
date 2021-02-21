@@ -1,5 +1,6 @@
 import React from "react";
 import { useTransactions } from "../api/transactions/transactions-api-hooks";
+import { categoryToColorMap } from "./shared/components";
 
 export { TransactionSlideOver };
 
@@ -13,6 +14,7 @@ const defaultTransaction = {
   repeat: "One Time",
   due: todayAsInputValue,
   due_end: null,
+  category: "",
 };
 
 function TransactionSlideOver({ handleClose, transactionId }) {
@@ -43,6 +45,11 @@ function TransactionSlideOver({ handleClose, transactionId }) {
   const [repeat, setRepeat] = React.useState(
     selectedTransaction?.repeat || defaultTransaction.repeat
   );
+  const [category, setCategory] = React.useState(
+    selectedTransaction?.category !== undefined
+      ? selectedTransaction?.category
+      : defaultTransaction.category
+  );
   const [due, setDue] = React.useState(
     selectedTransaction?.due || defaultTransaction.due
   );
@@ -70,6 +77,7 @@ function TransactionSlideOver({ handleClose, transactionId }) {
           amount,
           currency,
           repeat,
+          category: category ? category : undefined,
           due,
           due_end: dueEnd ? dueEnd : undefined,
         });
@@ -89,6 +97,7 @@ function TransactionSlideOver({ handleClose, transactionId }) {
           amount,
           currency,
           repeat,
+          category: category ? category : undefined,
           due,
           due_end: dueEnd ? dueEnd : undefined,
         });
@@ -354,6 +363,36 @@ function TransactionSlideOver({ handleClose, transactionId }) {
                             </div>
                           </div>
                         </div>
+                      </div>
+
+                      <div className="pt-6 sm:pt-5">
+                        <label
+                          htmlFor="category"
+                          className="block text-sm font-medium text-gray-700"
+                        >
+                          Category
+                        </label>
+                        <select
+                          id="category"
+                          name="category"
+                          value={category}
+                          onChange={(e) => setCategory(e.target.value)}
+                          className="mt-1 block w-full pl-3 pr-10 py-2 text-base border-gray-300 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm rounded-md"
+                        >
+                          <option value="">Select a Category</option>
+                          {Object.keys(categoryToColorMap).map(
+                            (categoryValue) => {
+                              return (
+                                <option
+                                  key={categoryValue}
+                                  value={categoryValue}
+                                >
+                                  {categoryValue}
+                                </option>
+                              );
+                            }
+                          )}
+                        </select>
                       </div>
 
                       <div className="pt-6 sm:pt-5">
