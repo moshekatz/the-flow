@@ -18,13 +18,7 @@ function AuthProvider(props) {
     () => {
       return {
         // TODO: secure-persist-session?
-        user:
-          process.env.NODE_ENV === "development" &&
-          localStorage["supabase.auth.token"]
-            ? JSON.parse(localStorage["supabase.auth.token"]).currentSession
-                .user
-            : null,
-        // user: null,
+        user: null,
         error: null,
         isPasswordRecovery: false,
       };
