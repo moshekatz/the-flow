@@ -84,3 +84,16 @@ export function SkeletonStatCard() {
     </div>
   );
 }
+
+export const categoryToColorMap = {
+  Apartment: "bg-red-500",
+  Food: "bg-rose-500",
+  Essentials: "bg-fuchsia-500",
+  Entertainment: "bg-emerald-500",
+  DevTools: "bg-indigo-500",
+  Savings: "bg-pink-500",
+  Transportation: "bg-orange-500",
+  Clothing: "bg-blue-500",
+  Health: "bg-green-500",
+  Other: "bg-gray-500",
+};

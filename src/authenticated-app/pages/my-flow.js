@@ -7,6 +7,7 @@ import {
   Accordion,
   StatCard,
   SkeletonStatCard,
+  categoryToColorMap,
 } from "../shared/components";
 import {
   calculateMyFlowStats,
@@ -205,6 +206,7 @@ function TimelineItem({ timelineTransaction, isLast, onSelectTransaction }) {
     due,
     id,
     isOutgoing,
+    category,
   } = timelineTransaction;
   return (
     <li>
@@ -268,6 +270,19 @@ function TimelineItem({ timelineTransaction, isLast, onSelectTransaction }) {
               </p>
             </div>
             <div className="text-right text-sm whitespace-nowrap text-gray-500">
+              {category ? (
+                <span className="relative inline-flex items-center rounded-full border border-gray-300 px-3 py-0.5 text-sm">
+                  <span className="absolute flex-shrink-0 flex items-center justify-center">
+                    <span
+                      className={`h-1.5 w-1.5 rounded-full ${categoryToColorMap[category]}`}
+                      aria-hidden="true"
+                    />
+                  </span>
+                  <span className="ml-3.5 font-medium text-gray-900">
+                    {category}
+                  </span>
+                </span>
+              ) : null}{" "}
               <time dateTime={due}>{dueToShow}</time>
             </div>
           </div>
