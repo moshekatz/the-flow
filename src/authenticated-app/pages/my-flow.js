@@ -10,7 +10,7 @@ import {
   categoryToColorMap,
 } from "../shared/components";
 import {
-  calculateMyFlowStats,
+  calculateLeftReceivedSpent,
   todayAsFilterMonth,
   calculateTimelineTransactionsForPeriod,
   calculateYearAndMonth,
@@ -44,7 +44,7 @@ export function MyFlow({
   if (loading) {
     return (
       <div className="py-3 space-y-3">
-        <div className="px-4 sm:px-6 lg:px-0 flex items-center justify-between ">
+        <div className="px-4 sm:px-6 lg:px-0 flex items-center justify-between">
           <PageHeading title={title} />
 
           <button
@@ -105,7 +105,7 @@ export function MyFlow({
   // const filteredTimelineTransactions = timelineTransactions.filter(
   //   filterBySearchQuery(searchQuery) && filterByMonth(filterMonth)
   // );
-  const { left, received, spent } = calculateMyFlowStats(
+  const { left, received, spent } = calculateLeftReceivedSpent(
     filteredTimelineTransactions
   );
   const filteredTransactionsNewestFirst = filteredTimelineTransactions.sort(
@@ -271,7 +271,7 @@ function TimelineItem({ timelineTransaction, isLast, onSelectTransaction }) {
             </div>
             <div className="text-right text-sm whitespace-nowrap text-gray-500">
               {category ? (
-                <span className="relative inline-flex items-center rounded-full border border-gray-300 px-3 py-0.5 text-sm">
+                <span className="relative inline-flex items-center rounded-full border border-gray-300 px-3 py-0.5 text-xs md:text-sm">
                   <span className="absolute flex-shrink-0 flex items-center justify-center">
                     <span
                       className={`h-1.5 w-1.5 rounded-full ${categoryToColorMap[category]}`}

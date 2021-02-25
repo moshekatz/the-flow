@@ -158,7 +158,7 @@ function FilterDropdown({ filterMonth, onFilterMonthSelected }) {
     <div ref={filterDropdownRef}>
       <button
         onClick={toggleIsFilterOpen}
-        className="bg-gray-100 hover:bg-gray-200 h-10 focus:outline-none focus:shadow-outline-gray text-sm px-3 pr-2 flex items-center text-gray-800 truncate text-center md:text-left font-semibold rounded-lg relative md:shadow overflow-hidden"
+        className="bg-gray-100 hover:bg-gray-200 h-10 focus:outline-none focus:shadow-outline-gray text-xs md:text-sm px-2 md:px-3 flex items-center text-gray-800 truncate text-center md:text-left font-semibold rounded-lg relative md:shadow overflow-hidden"
       >
         {filterMonthToShow}
         <svg

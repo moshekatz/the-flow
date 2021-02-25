@@ -1,6 +1,6 @@
 const USDtoILSRate = 3.28; // Updated: Feb 08, 2021
 
-export function calculateMyFlowStats(transactions) {
+export function calculateLeftReceivedSpent(transactions) {
   let received = 0;
   let spent = 0;
   transactions?.forEach(({ amount, direction, currency }) => {
