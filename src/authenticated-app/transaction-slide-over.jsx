@@ -279,6 +279,8 @@ function TransactionSlideOver({ handleClose, transactionId }) {
                             type="number"
                             name="amount"
                             id="amount"
+                            step="any"
+                            min="0"
                             className="focus:ring-blue-500 focus:border-blue-500 block w-full pl-7 pr-16 sm:text-sm border-gray-300 rounded-md"
                             placeholder={0}
                           />
