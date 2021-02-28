@@ -13,7 +13,7 @@ const defaultTransaction = {
   currency: "ILS",
   repeat: "One Time",
   due: todayAsInputValue,
-  due_end: null,
+  due_end: undefined,
   category: "",
 };
 
@@ -46,7 +46,7 @@ function TransactionSlideOver({ handleClose, transactionId }) {
     selectedTransaction?.repeat || defaultTransaction.repeat
   );
   const [category, setCategory] = React.useState(
-    selectedTransaction?.category !== undefined
+    selectedTransaction?.category
       ? selectedTransaction?.category
       : defaultTransaction.category
   );

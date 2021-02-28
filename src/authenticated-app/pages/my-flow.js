@@ -269,7 +269,7 @@ function TimelineItem({ timelineTransaction, isLast, onSelectTransaction }) {
                 </button>
               </p>
             </div>
-            <div className="text-right text-sm whitespace-nowrap text-gray-500">
+            <div className="space-x-1 flex flex-col-reverse sm:block text-right text-sm whitespace-nowrap text-gray-500">
               {category ? (
                 <span className="relative inline-flex items-center rounded-full border border-gray-300 px-3 py-0.5 text-xs md:text-sm">
                   <span className="absolute flex-shrink-0 flex items-center justify-center">
@@ -282,7 +282,7 @@ function TimelineItem({ timelineTransaction, isLast, onSelectTransaction }) {
                     {category}
                   </span>
                 </span>
-              ) : null}{" "}
+              ) : null}
               <time dateTime={due}>{dueToShow}</time>
             </div>
           </div>
@@ -345,8 +345,9 @@ function getTimelineTransactionSearchableProps({
   name,
   amountToShow,
   dueToShow,
+  category,
 }) {
-  return [name, amountToShow, dueToShow];
+  return [name, amountToShow, dueToShow, category];
 }
 
 function newestTransactionFirst(transactionA, transactionB) {
