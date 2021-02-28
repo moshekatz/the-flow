@@ -42,8 +42,8 @@ function Sidebar() {
 function DesktopMenu() {
   const { currentPage, gotoPage } = useNavigation();
   return (
-    <div className="hidden lg:flex lg:flex-shrink-0">
-      <div className="w-48 lg:w-64 flex flex-col">
+    <div className="fixed hidden lg:flex lg:flex-shrink-0">
+      <div className="w-48 lg:w-64 h-screen flex flex-col">
         <div className="border-r border-gray-200 pt-5 pb-4 flex flex-col flex-grow">
           <MenuLogo />
 

@@ -118,37 +118,11 @@ function OutgoingByCategory({ transactions, filterMonths }) {
       <div className="absolute w-full h-full">
         <ResponsivePie
           data={dataSortedByValue}
-          margin={{ top: 40, bottom: 60 }}
+          margin={{ top: 50, bottom: 50, left: 80, right: 80 }}
           animate={true}
           sliceLabelsSkipAngle={15}
-          // isInteractive={false}
-          innerRadius={0.4}
-          enableRadialLabels={false}
-          legends={[
-            {
-              anchor: "right",
-              direction: "column",
-              justify: false,
-              translateX: 0,
-              translateY: 0,
-              itemsSpacing: 0,
-              itemWidth: 100,
-              itemHeight: 30,
-              itemTextColor: "#999",
-              itemDirection: "left-to-right",
-              itemOpacity: 1,
-              symbolSize: 19,
-              symbolShape: "circle",
-              effects: [
-                {
-                  on: "hover",
-                  style: {
-                    itemTextColor: "#000",
-                  },
-                },
-              ],
-            },
-          ]}
+          innerRadius={0.5}
+          radialLabelsSkipAngle={10}
         />
       </div>
     </div>
@@ -169,8 +143,8 @@ function calculateIncomingVsOutgoingVisualizationsData({
     );
     return {
       month: calculateYearAndMonth(filterMonth),
-      outgoing: spent,
-      incoming: received,
+      outgoing: spent.toFixed(),
+      incoming: received.toFixed(),
     };
   });
 }
@@ -202,7 +176,6 @@ function calculateOutgoingByCategoryVisualizationsData({
     },
     {}
   );
-  // const categories = Object.keys(categoryToColorMap);
   return Object.entries(outgoingTransactionsByCategory).map(
     ([category, sum]) => {
       return {

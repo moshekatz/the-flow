@@ -87,7 +87,7 @@ function AuthenticatedApp() {
     >
       <Sidebar />
 
-      <div className="mb-3 flex-1 lg:max-w-4xl mx-auto w-0 flex flex-col lg:px-8 xl:px-0">
+      <div className="ml-0 lg:ml-64 xl:ml-96 mb-3 flex-1 lg:max-w-4xl mx-auto w-0 flex flex-col lg:px-8 xl:px-0">
         <Header
           searchQuery={searchQuery}
           onSearchQueryChange={(e) => setSearchQuery(e.target.value)}
