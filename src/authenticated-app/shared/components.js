@@ -123,7 +123,7 @@ export function Dropdown({ dropdownOptions, onOptionSelected }) {
         </svg>
       </button>
       {isDropdownOpen ? (
-        <div className="absolute top-12 z-10">
+        <div className="absolute top-14 z-10">
           <div
             className="bg-white shadow-lg rounded-lg text-cool-gray-900 overflow-hidden"
             style={{ opacity: 1, transform: "none" }}

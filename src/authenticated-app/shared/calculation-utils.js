@@ -84,6 +84,11 @@ function calculateTodayAsFilterMonth() {
   return calculateFilterMonthOf(today);
 }
 export const todayAsFilterMonth = calculateTodayAsFilterMonth();
+function calculateNextMonthAsFilterMonth() {
+  const today = new Date();
+  return calculateFilterMonthOf(new Date(today.setMonth(today.getMonth() + 1)));
+}
+export const nextMonthAsFilterMonth = calculateNextMonthAsFilterMonth();
 
 export function calculateLastXMonthsAsFilterMonths(x) {
   const filterMonths = [];
