@@ -1,5 +1,5 @@
 import React from "react";
-import { PageHeading, PageSubHeading } from "../shared/components";
+import { PageHeading, PageSubHeading, Dropdown } from "../shared/components";
 import { useTransactions } from "../../api/transactions/transactions-api-hooks";
 import { ResponsiveBar } from "@nivo/bar";
 import { ResponsivePie } from "@nivo/pie";
@@ -7,6 +7,8 @@ import {
   calculateTimelineTransactionsForPeriod,
   calculateLeftReceivedSpent,
   calculateYearAndMonth,
+  calculateLastXMonthsAsFilterMonths,
+  todayAsFilterMonth,
 } from "../shared/calculation-utils";
 
 export const title = "Dashboard";
@@ -21,25 +23,63 @@ export const iconSvgPath = (
 );
 
 export function Dashboard() {
-  const { error, loading, transactions } = useTransactions();
-
-  if (error) {
-    return <div>Error: {error.message}</div>;
-  }
+  const { loading, error, transactions } = useTransactions();
 
   if (loading) {
     return <div>Loading...</div>;
   }
 
-  const filterMonths = ["2021-01-01", "2021-02-01", "2021-03-01"];
+  if (error) {
+    return <div>Error: {error.message}</div>;
+  }
+
+  return <DashboardDetails transactions={transactions} />;
+}
+
+const periods = {
+  LAST_3_MONTHS: {
+    key: "LAST_3_MONTHS",
+    title: "Last 3 Months",
+    value: calculateLastXMonthsAsFilterMonths(3),
+  },
+  LAST_6_MONTHS: {
+    key: "LAST_6_MONTHS",
+    title: "Last 6 Months",
+    value: calculateLastXMonthsAsFilterMonths(6),
+  },
+  LAST_12_MONTHS: {
+    key: "LAST_12_MONTHS",
+    title: "Last 12 Months",
+    value: calculateLastXMonthsAsFilterMonths(12),
+  },
+  THIS_MONTH: {
+    key: "THIS_MONTH",
+    title: "This Month",
+    value: [todayAsFilterMonth],
+  },
+};
+
+function DashboardDetails({ transactions }) {
+  const [filteredPeriodKey, setFilteredPeriodKey] = React.useState(
+    periods.LAST_3_MONTHS.key
+  );
+  const { selectedOptionValue, filterOptions } = React.useMemo(() => {
+    const { value } = periods[filteredPeriodKey];
+    const filterOptions = Object.values(periods).map(({ key, title }) => {
+      return { title, key, isSelected: key === filteredPeriodKey };
+    });
+    return { selectedOptionValue: value, filterOptions };
+  }, [filteredPeriodKey]);
 
   return (
     <div className="py-3 space-y-3">
-      <div className="px-4 sm:px-6 lg:px-0">
-        <PageHeading
-          title={`${title} - ${filterMonths
-            .map(calculateYearAndMonth)
-            .join(", ")}`}
+      <div className="px-4 sm:px-6 lg:px-0 flex justify-between">
+        <PageHeading title={title} />
+        <Dropdown
+          dropdownOptions={filterOptions}
+          onOptionSelected={(key) => {
+            setFilteredPeriodKey(key);
+          }}
         />
       </div>
       <div className="px-4 sm:px-6 lg:px-0">
@@ -47,12 +87,12 @@ export function Dashboard() {
           <PageSubHeading title="Incoming vs. Outgoing" />
           <IncomingVsOutgoing
             transactions={transactions}
-            filterMonths={filterMonths}
+            filterMonths={selectedOptionValue}
           />
           <PageSubHeading title="Outgoing by Category" />
           <OutgoingByCategory
             transactions={transactions}
-            filterMonths={filterMonths}
+            filterMonths={selectedOptionValue}
           />
         </div>
       </div>
@@ -97,7 +137,7 @@ function IncomingVsOutgoing({ transactions, filterMonths }) {
             { match: { id: "outgoing" }, id: "red-gradient" },
             { match: { id: "incoming" }, id: "green-gradient" },
           ]}
-          margin={{ top: 40, bottom: 40, left: 40 }}
+          margin={{ top: 5, bottom: 20, left: 40 }}
           animate={true}
           isInteractive={false}
         />
@@ -118,7 +158,7 @@ function OutgoingByCategory({ transactions, filterMonths }) {
       <div className="absolute w-full h-full">
         <ResponsivePie
           data={dataSortedByValue}
-          margin={{ top: 50, bottom: 50, left: 80, right: 80 }}
+          margin={{ top: 5, bottom: 10, left: 80, right: 80 }}
           animate={true}
           sliceLabelsSkipAngle={15}
           innerRadius={0.5}

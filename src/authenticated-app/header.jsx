@@ -19,11 +19,21 @@ function Header({
     <div className="relative z-10 flex-shrink-0 h-16 bg-white border-b border-gray-200 flex">
       <MobileOpenSideBarButton />
 
-      <div className="flex-1 flex justify-between px-4 lg:px-0">
+      <div className="flex-1 flex justify-between items-center px-4 lg:px-0">
         <SearchBar
           searchQuery={searchQuery}
           onSearchQueryChange={onSearchQueryChange}
         />
+
+        {/* <div className="ml-1">
+          <button
+            type="button"
+            onClick={() => {}}
+            className="group inline-flex items-center px-4 py-2 border border-blue-600 rounded-md shadow-sm text-sm font-medium text-blue-700 hover:bg-gray-50 hover:border-blue-700 focus:bg-gray-50 focus:border-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
+          >
+            Create
+          </button>
+        </div> */}
 
         <div className="ml-4 flex items-center lg:ml-6 relative">
           {showFilterDropdown ? (
@@ -110,8 +120,8 @@ function FilterDropdown({ filterMonth, onFilterMonthSelected }) {
   const [isFilterDropdownOpen, setIsFilterDropdownOpen] = React.useState(false);
   const toggleIsFilterOpen = () =>
     setIsFilterDropdownOpen((isFilterOpen) => !isFilterOpen);
-  const filterDropdownRef = React.useRef();
   const closeFilterDropdown = () => setIsFilterDropdownOpen(false);
+  const filterDropdownRef = React.useRef();
   useOutsideAlerter(filterDropdownRef, () => {
     if (isFilterDropdownOpen) {
       closeFilterDropdown();
@@ -208,15 +218,14 @@ function FilterDropdown({ filterMonth, onFilterMonthSelected }) {
   );
 }
 
-function calculateFilterMonthToShow(filterButtons) {
+function calculateFilterMonthToShow(filterOptions) {
   let monthToShow;
-  filterButtons.forEach(({ isSelected, title }) => {
+  filterOptions.forEach(({ isSelected, title }) => {
     if (isSelected) {
       monthToShow = title;
     }
   });
   return monthToShow;
-  // return calculateYearAndMonth(filterMonth);
 }
 
 function calculateRelativeMonthFilters() {

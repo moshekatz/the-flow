@@ -1,4 +1,5 @@
 import React from "react";
+import { useOutsideAlerter } from "../../hooks/hooks";
 
 export function PageHeading({ title }) {
   return (
@@ -83,6 +84,85 @@ export function SkeletonStatCard() {
       </div>
     </div>
   );
+}
+
+export function Dropdown({ dropdownOptions, onOptionSelected }) {
+  // TODO: const {isDropdownOpen, toggle, close, open, ref} = useDropdown()
+  const [isDropdownOpen, setIsDropdownOpen] = React.useState(false);
+  const toggleIsDropdownOpen = () =>
+    setIsDropdownOpen((isDropdownOpen) => !isDropdownOpen);
+  const closeDropdown = () => setIsDropdownOpen(false);
+  const dropdownRef = React.useRef();
+  useOutsideAlerter(dropdownRef, () => {
+    if (isDropdownOpen) {
+      closeDropdown();
+    }
+  });
+
+  const selectedOptionTitle = calculateOptionToShow(dropdownOptions);
+
+  return (
+    <div ref={dropdownRef}>
+      <button
+        onClick={toggleIsDropdownOpen}
+        className="bg-gray-100 hover:bg-gray-200 h-10 focus:outline-none focus:shadow-outline-gray text-xs md:text-sm px-2 md:px-3 flex items-center text-gray-800 truncate text-center md:text-left font-semibold rounded-lg relative md:shadow overflow-hidden"
+      >
+        {selectedOptionTitle}
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          viewBox="0 0 20 20"
+          fill="currentColor"
+          height={20}
+          className="ml-2 text-gray-600 transform rotate-90"
+        >
+          <path
+            fillRule="evenodd"
+            d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z"
+            clipRule="evenodd"
+          />
+        </svg>
+      </button>
+      {isDropdownOpen ? (
+        <div className="absolute top-12 z-10">
+          <div
+            className="bg-white shadow-lg rounded-lg text-cool-gray-900 overflow-hidden"
+            style={{ opacity: 1, transform: "none" }}
+          >
+            <div className="flex flex-1">
+              <div className="flex flex-col p-1 space-y-1">
+                {dropdownOptions.map(({ title, key, isSelected }) => {
+                  return (
+                    <button
+                      key={title}
+                      onClick={() => {
+                        closeDropdown();
+                        onOptionSelected(key);
+                      }}
+                      className={`flex items-start py-2 text-xs rounded px-5 justify-center hover:bg-gray-200 focus:outline-none focus:bg-gray-300 font-medium ${
+                        isSelected ? "bg-gray-300" : ""
+                      }`}
+                    >
+                      {title}
+                    </button>
+                  );
+                })}
+              </div>
+            </div>
+          </div>
+        </div>
+      ) : null}
+    </div>
+  );
+}
+
+function calculateOptionToShow(dropdownOptions) {
+  let optionToShow;
+  dropdownOptions.forEach(({ isSelected, title }) => {
+    if (isSelected) {
+      optionToShow = title;
+    }
+  });
+  return optionToShow;
 }
 
 export const categoryToColorMap = {

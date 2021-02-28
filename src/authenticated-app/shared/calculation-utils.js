@@ -75,12 +75,29 @@ export function calculateLastDue({ due, due_end, repeat }) {
   return lastDueDate;
 }
 
-function CalculateTodayAsFilterMonth() {
-  let today = new Date();
-  const [thisMonthYear, thisMonthMonth] = today.toISOString().split("-");
+function calculateFilterMonthOf(date) {
+  const [thisMonthYear, thisMonthMonth] = date.toISOString().split("-");
   return `${thisMonthYear}-${thisMonthMonth}-01`;
 }
-export const todayAsFilterMonth = CalculateTodayAsFilterMonth();
+function calculateTodayAsFilterMonth() {
+  const today = new Date();
+  return calculateFilterMonthOf(today);
+}
+export const todayAsFilterMonth = calculateTodayAsFilterMonth();
+
+export function calculateLastXMonthsAsFilterMonths(x) {
+  const filterMonths = [];
+  for (let i = x - 1; i >= 0; i--) {
+    const xMonthsAgoDate = getXMonthsAgoDate(i);
+    filterMonths.push(calculateFilterMonthOf(xMonthsAgoDate));
+  }
+  return filterMonths;
+}
+
+function getXMonthsAgoDate(i) {
+  const today = new Date();
+  return new Date(today.setMonth(today.getMonth() - i));
+}
 
 export function calculateTimelineTransactionsForPeriod(
   timelineTransactions,
