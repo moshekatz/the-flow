@@ -9,6 +9,7 @@ import {
   calculateYearAndMonth,
   calculateLastXMonthsAsFilterMonths,
   todayAsFilterMonth,
+  nextMonthAsFilterMonth,
 } from "../shared/calculation-utils";
 
 export const title = "Dashboard";
@@ -56,6 +57,11 @@ const periods = {
     key: "THIS_MONTH",
     title: "This Month",
     value: [todayAsFilterMonth],
+  },
+  NEXT_MONTH: {
+    key: "NEXT_MONTH",
+    title: "Next Month",
+    value: [nextMonthAsFilterMonth],
   },
 };
 
@@ -137,7 +143,7 @@ function IncomingVsOutgoing({ transactions, filterMonths }) {
             { match: { id: "outgoing" }, id: "red-gradient" },
             { match: { id: "incoming" }, id: "green-gradient" },
           ]}
-          margin={{ top: 5, bottom: 20, left: 40 }}
+          margin={{ top: 5, bottom: 30, left: 40 }}
           animate={true}
           isInteractive={false}
         />
@@ -158,7 +164,7 @@ function OutgoingByCategory({ transactions, filterMonths }) {
       <div className="absolute w-full h-full">
         <ResponsivePie
           data={dataSortedByValue}
-          margin={{ top: 5, bottom: 10, left: 80, right: 80 }}
+          margin={{ top: 20, bottom: 30, left: 80, right: 80 }}
           animate={true}
           sliceLabelsSkipAngle={15}
           innerRadius={0.5}

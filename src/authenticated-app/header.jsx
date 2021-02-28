@@ -1,10 +1,6 @@
 import React from "react";
-import { useAuth } from "../auth/auth-context";
 import { useOutsideAlerter } from "../hooks/hooks";
 import { useNavigation } from "../context/navigation-context";
-
-import { title as settingsTitle } from "./pages/settings";
-import { title as yourProfileTitle } from "./pages/your-profile";
 
 export { Header };
 
@@ -42,7 +38,6 @@ function Header({
               onFilterMonthSelected={onFilterMonthSelected}
             />
           ) : null}
-          <ProfileDropdown />
         </div>
       </div>
     </div>
@@ -248,97 +243,4 @@ function calculateRelativeMonthFilters() {
     filterNextMonth,
     filterLastMonth,
   };
-}
-
-function ProfileDropdown() {
-  const {
-    isProfileDropdownOpen,
-    closeProfileDropdown,
-    toggleProfileDropdown,
-    gotoPage,
-  } = useNavigation();
-  const profileDropdownRef = React.useRef();
-  useOutsideAlerter(profileDropdownRef, () => {
-    if (isProfileDropdownOpen) {
-      closeProfileDropdown();
-    }
-  });
-
-  const { logout } = useAuth();
-  const handleLogOut = async () => {
-    await logout();
-    // TODO: error-handling
-    // if (error) {
-    //   setError(error);
-    // }
-  };
-
-  return (
-    <div ref={profileDropdownRef} className="ml-3 relative">
-      <div>
-        <button
-          onClick={toggleProfileDropdown}
-          className="max-w-xs p-2 flex items-center text-sm rounded-full text-gray-400 hover:text-gray-600 focus:text-gray-600 focus:bg-gray-100 hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
-          id="user-menu"
-          aria-haspopup="true"
-        >
-          <span className="sr-only">Open user menu</span>
-          <svg
-            className="h-6 w-6"
-            xmlns="http://www.w3.org/2000/svg"
-            fill="none"
-            viewBox="0 0 24 24"
-            stroke="currentColor"
-          >
-            <path
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              strokeWidth={2}
-              d="M5.121 17.804A13.937 13.937 0 0112 16c2.5 0 4.847.655 6.879 1.804M15 10a3 3 0 11-6 0 3 3 0 016 0zm6 2a9 9 0 11-18 0 9 9 0 0118 0z"
-            />
-          </svg>
-        </button>
-      </div>
-      {/* TODO: animations-support
-        Profile dropdown panel, show/hide based on dropdown state.
-
-        Entering: "transition ease-out duration-100"
-          From: "transform opacity-0 scale-95"
-          To: "transform opacity-100 scale-100"
-        Leaving: "transition ease-in duration-75"
-          From: "transform opacity-100 scale-100"
-          To: "transform opacity-0 scale-95"
-      */}
-      {isProfileDropdownOpen ? (
-        <div
-          className="origin-top-right absolute right-0 mt-2 w-48 rounded-md shadow-lg bg-white ring-1 ring-black ring-opacity-5 py-1"
-          role="menu"
-          aria-orientation="vertical"
-          aria-labelledby="user-menu"
-        >
-          <ProfileDropdownMenuItem
-            title={yourProfileTitle}
-            onClick={() => gotoPage(yourProfileTitle)}
-          />
-          <ProfileDropdownMenuItem
-            title={settingsTitle}
-            onClick={() => gotoPage(settingsTitle)}
-          />
-          <ProfileDropdownMenuItem title="Sign out" onClick={handleLogOut} />
-        </div>
-      ) : null}
-    </div>
-  );
-}
-
-function ProfileDropdownMenuItem({ title, onClick }) {
-  return (
-    <button
-      className="w-full text-left block py-2 px-4 text-sm text-gray-700 hover:bg-gray-100"
-      role="menuitem"
-      onClick={onClick}
-    >
-      {title}
-    </button>
-  );
 }
