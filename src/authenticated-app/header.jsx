@@ -1,44 +1,20 @@
 import React from "react";
-import { useOutsideAlerter } from "../hooks/hooks";
 import { useNavigation } from "../context/navigation-context";
+import { PrimaryButton } from "./shared/components";
 
 export { Header };
 
-function Header({
-  searchQuery,
-  onSearchQueryChange,
-  filterMonth,
-  onFilterMonthSelected,
-  showFilterDropdown,
-}) {
+function Header({ searchQuery, onSearchQueryChange, onCreateTransaction }) {
   return (
     <div className="relative z-10 flex-shrink-0 h-16 bg-white border-b border-gray-200 flex">
       <MobileOpenSideBarButton />
 
-      <div className="flex-1 flex justify-between items-center px-4 lg:px-0">
+      <div className="flex-1 flex justify-between items-center space-x-1 px-4 sm:px-6 lg:px-0">
         <SearchBar
           searchQuery={searchQuery}
           onSearchQueryChange={onSearchQueryChange}
         />
-
-        {/* <div className="ml-1">
-          <button
-            type="button"
-            onClick={() => {}}
-            className="group inline-flex items-center px-4 py-2 border border-blue-600 rounded-md shadow-sm text-sm font-medium text-blue-700 hover:bg-gray-50 hover:border-blue-700 focus:bg-gray-50 focus:border-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
-          >
-            Create
-          </button>
-        </div> */}
-
-        <div className="ml-4 flex items-center lg:ml-6 relative">
-          {showFilterDropdown ? (
-            <FilterDropdown
-              filterMonth={filterMonth}
-              onFilterMonthSelected={onFilterMonthSelected}
-            />
-          ) : null}
-        </div>
+        <PrimaryButton onClick={onCreateTransaction}>Create</PrimaryButton>
       </div>
     </div>
   );
@@ -109,138 +85,4 @@ function SearchBar({ searchQuery, onSearchQueryChange }) {
       </form>
     </div>
   );
-}
-
-function FilterDropdown({ filterMonth, onFilterMonthSelected }) {
-  const [isFilterDropdownOpen, setIsFilterDropdownOpen] = React.useState(false);
-  const toggleIsFilterOpen = () =>
-    setIsFilterDropdownOpen((isFilterOpen) => !isFilterOpen);
-  const closeFilterDropdown = () => setIsFilterDropdownOpen(false);
-  const filterDropdownRef = React.useRef();
-  useOutsideAlerter(filterDropdownRef, () => {
-    if (isFilterDropdownOpen) {
-      closeFilterDropdown();
-    }
-  });
-
-  const {
-    filterThisMonth,
-    filterNextMonth,
-    filterLastMonth,
-  } = calculateRelativeMonthFilters();
-
-  const isThisMonthSelected = filterMonth === filterThisMonth;
-  const isNextMonthSelected = filterMonth === filterNextMonth;
-  const isLastMonthSelected = filterMonth === filterLastMonth;
-  const isApril2021Selected = filterMonth === "2021-04-01";
-
-  const filterButtons = [
-    {
-      title: "This Month",
-      value: filterThisMonth,
-      isSelected: isThisMonthSelected,
-    },
-    {
-      title: "Last Month",
-      value: filterLastMonth,
-      isSelected: isLastMonthSelected,
-    },
-    {
-      title: "Next Month",
-      value: filterNextMonth,
-      isSelected: isNextMonthSelected,
-    },
-    {
-      title: "April 2021",
-      value: "2021-04-01",
-      isSelected: isApril2021Selected,
-    },
-  ];
-
-  const filterMonthToShow = calculateFilterMonthToShow(filterButtons);
-
-  return (
-    <div ref={filterDropdownRef}>
-      <button
-        onClick={toggleIsFilterOpen}
-        className="bg-gray-100 hover:bg-gray-200 h-10 focus:outline-none focus:shadow-outline-gray text-xs md:text-sm px-2 md:px-3 flex items-center text-gray-800 truncate text-center md:text-left font-semibold rounded-lg relative md:shadow overflow-hidden"
-      >
-        {filterMonthToShow}
-        <svg
-          xmlns="http://www.w3.org/2000/svg"
-          viewBox="0 0 20 20"
-          fill="currentColor"
-          height={20}
-          className="ml-2 text-gray-600 transform rotate-90"
-        >
-          <path
-            fillRule="evenodd"
-            d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z"
-            clipRule="evenodd"
-          />
-        </svg>
-      </button>
-      {isFilterDropdownOpen ? (
-        <div className="absolute top-16">
-          <div
-            className="bg-white shadow-lg rounded-lg text-cool-gray-900 overflow-hidden"
-            style={{ opacity: 1, transform: "none" }}
-          >
-            <div className="flex flex-1">
-              <div className="flex flex-col p-1 space-y-1">
-                {filterButtons.map(({ title, value, isSelected }) => {
-                  return (
-                    <button
-                      key={title}
-                      onClick={() => {
-                        closeFilterDropdown();
-                        onFilterMonthSelected(value);
-                      }}
-                      className={`flex items-start py-2 text-xs rounded px-5 justify-center hover:bg-gray-200 focus:outline-none focus:bg-gray-300 font-medium ${
-                        isSelected ? "bg-gray-300" : ""
-                      }`}
-                    >
-                      {title}
-                    </button>
-                  );
-                })}
-              </div>
-            </div>
-          </div>
-        </div>
-      ) : null}
-    </div>
-  );
-}
-
-function calculateFilterMonthToShow(filterOptions) {
-  let monthToShow;
-  filterOptions.forEach(({ isSelected, title }) => {
-    if (isSelected) {
-      monthToShow = title;
-    }
-  });
-  return monthToShow;
-}
-
-function calculateRelativeMonthFilters() {
-  let today = new Date();
-  const [thisMonthYear, thisMonthMonth] = today.toISOString().split("-");
-  const filterThisMonth = `${thisMonthYear}-${thisMonthMonth}-01`;
-
-  today = new Date();
-  const lastMonth = new Date(today.setMonth(today.getMonth() - 1));
-  const [lastMonthYear, lastMonthMonth] = lastMonth.toISOString().split("-");
-  const filterLastMonth = `${lastMonthYear}-${lastMonthMonth}-01`;
-
-  today = new Date();
-  const nextMonth = new Date(today.setMonth(today.getMonth() + 1));
-  const [nextMonthYear, nextMonthMonth] = nextMonth.toISOString().split("-");
-  const filterNextMonth = `${nextMonthYear}-${nextMonthMonth}-01`;
-
-  return {
-    filterThisMonth,
-    filterNextMonth,
-    filterLastMonth,
-  };
 }

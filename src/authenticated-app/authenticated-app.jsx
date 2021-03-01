@@ -3,7 +3,6 @@ import React from "react";
 import { Header } from "./header";
 import { Sidebar } from "./sidebar";
 import { TransactionSlideOver } from "./transaction-slide-over";
-import { todayAsFilterMonth } from "./shared/calculation-utils";
 import { MyFlow, title as myFlowTitle } from "./pages/my-flow";
 import {
   Subscriptions,
@@ -19,11 +18,8 @@ import { TransactionsProvider } from "../api/transactions/transactions-api-hooks
 
 export default AuthenticatedApp;
 
-const supportsFilter = [myFlowTitle];
-
 function AuthenticatedApp() {
   const [searchQuery, setSearchQuery] = React.useState("");
-  const [filterMonth, setFilterMonth] = React.useState(todayAsFilterMonth);
   const { isMobileNavOpen, currentPage } = useNavigation();
 
   const {
@@ -41,10 +37,8 @@ function AuthenticatedApp() {
     case myFlowTitle: {
       page = (
         <MyFlow
-          onCreateTransaction={openTransactionSlideOver}
           onSelectTransaction={openTransactionSlideOverForId}
           searchQuery={searchQuery}
-          filterMonth={filterMonth}
         />
       );
       break;
@@ -52,7 +46,6 @@ function AuthenticatedApp() {
     case subscriptionsTitle: {
       page = (
         <Subscriptions
-          onCreateTransaction={openTransactionSlideOver}
           onSelectSubscription={openTransactionSlideOverForId}
           searchQuery={searchQuery}
         />
@@ -60,7 +53,7 @@ function AuthenticatedApp() {
       break;
     }
     case dashboardTitle: {
-      page = <Dashboard />;
+      page = <Dashboard searchQuery={searchQuery} />;
       break;
     }
     case settingsTitle: {
@@ -77,8 +70,6 @@ function AuthenticatedApp() {
     }
   }
 
-  const showFilterDropdown = supportsFilter.includes(currentPage);
-
   return (
     <div
       className={`min-h-screen bg-white flex ${
@@ -86,33 +77,27 @@ function AuthenticatedApp() {
       }`}
     >
       <Sidebar />
-
-      <div className="ml-0 lg:ml-64 xl:ml-96 mb-3 flex-1 lg:max-w-4xl mx-auto w-0 flex flex-col lg:px-8 xl:px-0">
-        <Header
-          searchQuery={searchQuery}
-          onSearchQueryChange={(e) => setSearchQuery(e.target.value)}
-          filterMonth={filterMonth}
-          onFilterMonthSelected={(selectedFilterMonth) =>
-            setFilterMonth(selectedFilterMonth)
-          }
-          showFilterDropdown={showFilterDropdown}
-        />
-        <TransactionsProvider>
-          <div className="flex ">
-            <main
-              className="flex-1 relative px-2 focus:outline-none"
-              tabIndex={0}
-            >
-              {page}
-            </main>
-            {showTransactionSlideOver ? (
-              <TransactionSlideOver
-                handleClose={closeTransactionSlideOver}
-                transactionId={editableTransactionId}
-              />
-            ) : null}
-          </div>
-        </TransactionsProvider>
+      <div className="ml-0 lg:ml-64 min-h-screen w-full">
+        <div className="mb-3 flex-1 lg:max-w-4xl mx-auto flex flex-col lg:px-8 xl:px-0">
+          <Header
+            searchQuery={searchQuery}
+            onSearchQueryChange={(e) => setSearchQuery(e.target.value)}
+            onCreateTransaction={openTransactionSlideOver}
+          />
+          <TransactionsProvider>
+            <div className="flex ">
+              <main className="flex-1 relative focus:outline-none" tabIndex={0}>
+                {page}
+              </main>
+              {showTransactionSlideOver ? (
+                <TransactionSlideOver
+                  handleClose={closeTransactionSlideOver}
+                  transactionId={editableTransactionId}
+                />
+              ) : null}
+            </div>
+          </TransactionsProvider>
+        </div>
       </div>
     </div>
   );
