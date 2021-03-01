@@ -11,7 +11,7 @@ import {
 export { MagicLinkOrPasswordView };
 
 function MagicLinkOrPasswordView({ email, onBack, onMagicLink }) {
-  const { login, resetPasswordForEmail } = useAuth();
+  const { signIn, resetPasswordForEmail } = useAuth();
   const [password, setPassword] = React.useState("");
   const [error, setError] = React.useState(null);
   const onPasswordChanged = (e) => {
@@ -20,7 +20,7 @@ function MagicLinkOrPasswordView({ email, onBack, onMagicLink }) {
   const onSignIn = async (e) => {
     e.preventDefault();
     try {
-      const { error } = await login({ email, password });
+      const { error } = await signIn({ email, password });
       if (error) {
         setError(error);
       }
@@ -31,7 +31,7 @@ function MagicLinkOrPasswordView({ email, onBack, onMagicLink }) {
 
   const handleMagicLink = async () => {
     try {
-      const { error } = await login({ email });
+      const { error } = await signIn({ email });
       if (error) {
         setError(error);
       } else {

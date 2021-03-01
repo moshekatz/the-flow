@@ -133,7 +133,6 @@ let transactions = [
   },
 ];
 
-/* TODO: error-handling */
 async function getAllTransactions() {
   await delay(DELAY_MS);
   return { transactions, error };

@@ -22,8 +22,9 @@ function TransactionsProviderForApi({ api, ...props }) {
     transactions: null,
     error: null,
   });
-  const onError = (error) =>
+  const onError = (error) => {
     setTransactionsState({ error, transactions: null });
+  };
   React.useEffect(() => {
     /* TODO: render-as-you-fetch */
     const transactionsPromise = api.getAllTransactions();
@@ -39,10 +40,14 @@ function TransactionsProviderForApi({ api, ...props }) {
       const { createdTransaction, error } = await api.createTransaction(
         transaction
       );
-      setTransactionsState(({ transactions }) => ({
-        transactions: [...transactions, createdTransaction],
-        error,
-      }));
+      if (error) {
+        onError(error);
+      } else {
+        setTransactionsState(({ transactions }) => ({
+          transactions: [...transactions, createdTransaction],
+          error: null,
+        }));
+      }
     } catch (error) {
       onError(error);
     }
@@ -51,12 +56,16 @@ function TransactionsProviderForApi({ api, ...props }) {
   const deleteTransaction = async (id) => {
     try {
       const { deletedTransaction, error } = await api.deleteTransaction(id);
-      setTransactionsState(({ transactions }) => ({
-        transactions: transactions.filter(
-          (transaction) => transaction.id !== deletedTransaction.id
-        ),
-        error,
-      }));
+      if (error) {
+        onError(error);
+      } else {
+        setTransactionsState(({ transactions }) => ({
+          transactions: transactions.filter(
+            (transaction) => transaction.id !== deletedTransaction.id
+          ),
+          error: null,
+        }));
+      }
     } catch (error) {
       onError(error);
     }
@@ -68,15 +77,19 @@ function TransactionsProviderForApi({ api, ...props }) {
         id,
         updates
       );
-      setTransactionsState(({ transactions }) => ({
-        transactions: transactions.map((transaction) => {
-          if (transaction.id === updatedTransaction.id) {
-            transaction = updatedTransaction;
-          }
-          return transaction;
-        }),
-        error,
-      }));
+      if (error) {
+        onError(error);
+      } else {
+        setTransactionsState(({ transactions }) => ({
+          transactions: transactions.map((transaction) => {
+            if (transaction.id === updatedTransaction.id) {
+              transaction = updatedTransaction;
+            }
+            return transaction;
+          }),
+          error: null,
+        }));
+      }
     } catch (error) {
       onError(error);
     }

@@ -13,7 +13,7 @@ export { SignUp };
 function SignUp({ onBack, onSignUp, onEmailChanged, email }) {
   const [password, setPassword] = React.useState("");
   const [error, setError] = React.useState(null);
-  const { register } = useAuth();
+  const { signUp } = useAuth();
 
   const onPasswordChanged = (e) => {
     setPassword(e.target.value);
@@ -22,7 +22,7 @@ function SignUp({ onBack, onSignUp, onEmailChanged, email }) {
   const handleSignUp = async (e) => {
     e.preventDefault();
     try {
-      const { error } = await register({ email, password });
+      const { error } = await signUp({ email, password });
       if (error) {
         setError(error);
       } else {

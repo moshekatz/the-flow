@@ -1,67 +1,95 @@
 import React from "react";
-import {
-  login,
-  register,
-  logout,
-  resetPasswordForEmail,
-  updatePassword,
-  onAuthStateChange,
-} from "./auth-provider";
+import * as authApi from "./auth-provider";
 
 export { AuthProvider, useAuth };
 
 const AuthContext = React.createContext();
 AuthContext.displayName = "AuthContext";
 
-function AuthProvider(props) {
-  const [{ user, error, isPasswordRecovery }, setAuthState] = React.useState(
-    () => {
-      return {
-        // TODO: secure-persist-session?
-        user: null,
-        error: null,
-        isPasswordRecovery: false,
-      };
-    }
-  );
+function AuthProvider({
+  LoadingFallback = DeafultLoadingFallback,
+  ErrorFallback = DeafultErrorFallback,
+  ...props
+}) {
+  return AuthProviderForApi({
+    api: authApi,
+    LoadingFallback,
+    ErrorFallback,
+    ...props,
+  });
+}
 
+function AuthProviderForApi({ api, LoadingFallback, ErrorFallback, ...props }) {
+  const [{ session, error, mode }, setAuthState] = React.useState({
+    session: null,
+    error: null,
+    mode: "IDLE", // 'IDLE' | 'LOADING' | 'ERROR' | 'SIGNED_IN' | 'SIGNED_OUT' | 'USER_UPDATED' | 'PASSWORD_RECOVERY'
+  });
+  const onError = (error) => {
+    setAuthState({ mode: "ERROR", error, session: null });
+  };
   React.useEffect(() => {
-    const { authListener, error } = onAuthStateChange((event, session) => {
-      console.log({ event, session });
+    api.getSession().then((session) => {
+      setAuthState({ mode: "LOADING", session, error: null });
+      if (session) {
+        console.log({ session });
+        setAuthState({ mode: "SIGNED_IN", session, error: null });
+      } else {
+        setAuthState({ mode: "SIGNED_OUT", session: null, error: null });
+      }
+    });
+
+    const { authListener, error } = api.onAuthStateChange((event, session) => {
       /* type AuthChangeEvent = 'SIGNED_IN' | 'SIGNED_OUT' | 'USER_UPDATED' | 'PASSWORD_RECOVERY' */
-      const isPasswordRecovery = event === "PASSWORD_RECOVERY";
-      setAuthState({ user: session?.user, error: null, isPasswordRecovery });
+      console.log({ event, session });
+      setAuthState({
+        mode: event,
+        session,
+        error: null,
+      });
     });
 
     if (error) {
-      setAuthState({ error, user: null, isPasswordRecovery: false });
+      onError(error);
     }
 
     return () => authListener.unsubscribe();
-  }, []);
+  }, [api]);
 
-  // TODO: validate-optimization?
-  const value = React.useMemo(
-    () => ({
-      user,
-      login,
-      logout,
-      register,
-      resetPasswordForEmail,
-      isPasswordRecovery,
-      updatePassword,
-    }),
-    [isPasswordRecovery, user]
-  );
+  const isIdle = mode === "IDLE";
+  const isLoading = mode === "LOADING";
+  if (isIdle || isLoading) return <LoadingFallback />;
+  const isError = mode === "ERROR";
+  if (isError) return <ErrorFallback error={error} />;
 
-  // TODO: idle-loading-state: isLoading || isIdle handling? Should change flags to status? Check slow connection.
+  const isPasswordRecovery = mode === "PASSWORD_RECOVERY";
+  const isSignedOut = mode === "SIGNED_OUT";
+  const isSignedIn = mode === "SIGNED_IN";
 
-  if (error) {
-    return <div style={{ color: "red" }}>Fullpage error: {error.message}</div>;
-  }
+  const {
+    signIn,
+    signOut,
+    signUp,
+    resetPasswordForEmail,
+    updatePassword,
+  } = api;
+
+  const value = {
+    user: session?.user,
+    error,
+    signIn,
+    signOut,
+    signUp,
+    resetPasswordForEmail,
+    updatePassword,
+    isPasswordRecovery,
+    isSignedOut,
+    isSignedIn,
+  };
 
   return <AuthContext.Provider value={value} {...props} />;
 }
+
 AuthProvider.Authenticated = Authenticated;
 AuthProvider.Unauthenticated = Unauthenticated;
 AuthProvider.PasswordRecovery = PasswordRecovery;
@@ -75,16 +103,32 @@ function useAuth() {
 }
 
 function Authenticated({ children }) {
-  const { user, isPasswordRecovery } = useAuth();
-  return user && !isPasswordRecovery ? children : null;
+  const { isSignedIn } = useAuth();
+  return isSignedIn ? children : null;
 }
 
 function Unauthenticated({ children }) {
-  const { user, isPasswordRecovery } = useAuth();
-  return !user && !isPasswordRecovery ? children : null;
+  const { isSignedOut } = useAuth();
+  return isSignedOut ? children : null;
 }
 
 function PasswordRecovery({ children }) {
   const { isPasswordRecovery } = useAuth();
   return isPasswordRecovery ? children : null;
+}
+
+function DeafultLoadingFallback() {
+  return (
+    <div className="min-h-screen flex justify-center items-center">
+      Loading...
+    </div>
+  );
+}
+
+function DeafultErrorFallback({ error }) {
+  return (
+    <div className="min-h-screen flex justify-center items-center">
+      There was an error: {error.message}
+    </div>
+  );
 }
