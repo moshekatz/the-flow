@@ -23,7 +23,7 @@ export const iconSvgPath = (
   />
 );
 
-export function Dashboard() {
+export function Dashboard({ searchQuery }) {
   const { loading, error, transactions } = useTransactions();
 
   if (loading) {
@@ -34,7 +34,9 @@ export function Dashboard() {
     return <div>Error: {error.message}</div>;
   }
 
-  return <DashboardDetails transactions={transactions} />;
+  return (
+    <DashboardDetails transactions={transactions} searchQuery={searchQuery} />
+  );
 }
 
 const periods = {
@@ -65,7 +67,7 @@ const periods = {
   },
 };
 
-function DashboardDetails({ transactions }) {
+function DashboardDetails({ transactions, searchQuery }) {
   const [filteredPeriodKey, setFilteredPeriodKey] = React.useState(
     periods.LAST_3_MONTHS.key
   );
@@ -77,9 +79,13 @@ function DashboardDetails({ transactions }) {
     return { selectedOptionValue: value, filterOptions };
   }, [filteredPeriodKey]);
 
+  const filteredTransactions = transactions.filter(
+    filterBySearchQuery(searchQuery)
+  );
+
   return (
     <div className="py-3 space-y-3">
-      <div className="px-4 sm:px-6 lg:px-0 flex justify-between">
+      <div className="px-4 sm:px-6 lg:px-0 flex justify-between items-center">
         <PageHeading title={title} />
         <Dropdown
           dropdownOptions={filterOptions}
@@ -92,12 +98,12 @@ function DashboardDetails({ transactions }) {
         <div className="space-y-3">
           <PageSubHeading title="Incoming vs. Outgoing" />
           <IncomingVsOutgoing
-            transactions={transactions}
+            transactions={filteredTransactions}
             filterMonths={selectedOptionValue}
           />
           <PageSubHeading title="Outgoing by Category" />
           <OutgoingByCategory
-            transactions={transactions}
+            transactions={filteredTransactions}
             filterMonths={selectedOptionValue}
           />
         </div>
@@ -173,6 +179,18 @@ function OutgoingByCategory({ transactions, filterMonths }) {
       </div>
     </div>
   );
+}
+
+function filterBySearchQuery(query) {
+  return function (transaction) {
+    return getTransactionSearchableProps(transaction).some((s) =>
+      s?.toLowerCase().includes(query.toLowerCase())
+    );
+  };
+}
+
+function getTransactionSearchableProps({ name, category }) {
+  return [name, category];
 }
 
 function calculateIncomingVsOutgoingVisualizationsData({

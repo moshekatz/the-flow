@@ -20,11 +20,7 @@ export const iconSvgPath = (
   />
 );
 
-export function Subscriptions({
-  onCreateTransaction,
-  onSelectSubscription,
-  searchQuery,
-}) {
+export function Subscriptions({ onSelectSubscription, searchQuery }) {
   // Load
   const {
     isAmountNormalizedByMonth,
@@ -73,17 +69,8 @@ export function Subscriptions({
   // Load
   return (
     <div className="py-3 space-y-3">
-      <div className="px-4 sm:px-6 lg:px-0 flex items-center justify-between ">
+      <div className="px-4 sm:px-6 lg:px-0">
         <PageHeading title={title} />
-        <div>
-          <button
-            type="button"
-            onClick={onCreateTransaction}
-            className="group inline-flex items-center px-4 py-2 border border-blue-600 rounded-md shadow-sm text-sm font-medium text-blue-700 hover:bg-gray-50 hover:border-blue-700 focus:bg-gray-50 focus:border-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
-          >
-            Create
-          </button>
-        </div>
       </div>
       <div className="px-4 sm:px-6 lg:px-0">
         <div className="space-y-3">
@@ -274,7 +261,7 @@ function getSubscriptionNormalizetAmountToShow({
 function filterBySearchQuery(query) {
   return function (timelineTransaction) {
     return getSubscriptionSearchableProps(timelineTransaction).some((s) =>
-      s.toLowerCase().includes(query.toLowerCase())
+      s?.toLowerCase().includes(query.toLowerCase())
     );
   };
 }

@@ -155,6 +155,18 @@ export function Dropdown({ dropdownOptions, onOptionSelected }) {
   );
 }
 
+export function PrimaryButton({ onClick, children }) {
+  return (
+    <button
+      type="button"
+      onClick={onClick}
+      className="group inline-flex items-center px-4 py-2 border border-blue-600 rounded-md shadow-sm text-sm font-medium text-blue-700 hover:bg-gray-50 hover:border-blue-700 focus:bg-gray-50 focus:border-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
+    >
+      {children}
+    </button>
+  );
+}
+
 function calculateOptionToShow(dropdownOptions) {
   let optionToShow;
   dropdownOptions.forEach(({ isSelected, title }) => {

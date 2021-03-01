@@ -98,6 +98,11 @@ export function calculateLastXMonthsAsFilterMonths(x) {
   }
   return filterMonths;
 }
+function calculateLastMonthAsFilterMonth() {
+  const today = new Date();
+  return calculateFilterMonthOf(new Date(today.setMonth(today.getMonth() - 1)));
+}
+export const lastMonthAsFilterMonth = calculateLastMonthAsFilterMonth();
 
 function getXMonthsAgoDate(i) {
   const today = new Date();

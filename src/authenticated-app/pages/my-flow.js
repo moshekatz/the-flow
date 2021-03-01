@@ -1,6 +1,5 @@
 import React from "react";
 import { useTransactions } from "../../api/transactions/transactions-api-hooks";
-// import { useSWRTransactions } from "../../api/transactions/transactions-swr";
 import {
   PageHeading,
   PageSubHeading,
@@ -8,12 +7,14 @@ import {
   StatCard,
   SkeletonStatCard,
   categoryToColorMap,
+  Dropdown,
 } from "../shared/components";
 import {
   calculateLeftReceivedSpent,
-  todayAsFilterMonth,
   calculateTimelineTransactionsForPeriod,
-  calculateYearAndMonth,
+  todayAsFilterMonth,
+  nextMonthAsFilterMonth,
+  lastMonthAsFilterMonth,
 } from "../shared/calculation-utils";
 
 export const title = "My Flow";
@@ -27,33 +28,14 @@ export const iconSvgPath = (
   />
 );
 
-export function MyFlow({
-  onCreateTransaction,
-  onSelectTransaction,
-  searchQuery,
-  filterMonth,
-}) {
-  // Extract
-  const { error, loading, transactions } = useTransactions();
-  // const { error, loading, transactions } = useSWRTransactions();
-
-  if (error) {
-    return <div>Error: {error.message}</div>;
-  }
+export function MyFlow({ onSelectTransaction, searchQuery }) {
+  const { loading, error, transactions } = useTransactions();
 
   if (loading) {
     return (
       <div className="py-3 space-y-3">
         <div className="px-4 sm:px-6 lg:px-0 flex items-center justify-between">
           <PageHeading title={title} />
-
-          <button
-            type="button"
-            onClick={onCreateTransaction}
-            className="group inline-flex items-center px-4 py-2 border border-blue-600 rounded-md shadow-sm text-sm font-medium text-blue-700 hover:bg-gray-50 hover:border-blue-700 focus:bg-gray-50 focus:border-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
-          >
-            Create
-          </button>
         </div>
         <div className="px-4 sm:px-6 lg:px-0">
           <div className="space-y-3">
@@ -89,6 +71,51 @@ export function MyFlow({
     );
   }
 
+  if (error) {
+    return <div>Error: {error.message}</div>;
+  }
+
+  return (
+    <MyFlowDetails
+      transactions={transactions}
+      onSelectTransaction={onSelectTransaction}
+      searchQuery={searchQuery}
+    />
+  );
+}
+
+const periods = {
+  THIS_MONTH: {
+    key: "THIS_MONTH",
+    title: "This Month",
+    value: todayAsFilterMonth,
+  },
+  LAST_MONTH: {
+    key: "LAST_MONTH",
+    title: "Last Month",
+    value: lastMonthAsFilterMonth,
+  },
+  NEXT_MONTH: {
+    key: "NEXT_MONTH",
+    title: "Next Month",
+    value: nextMonthAsFilterMonth,
+  },
+};
+
+function MyFlowDetails({ transactions, onSelectTransaction, searchQuery }) {
+  const [filteredPeriodKey, setFilteredPeriodKey] = React.useState(
+    periods.THIS_MONTH.key
+  );
+  const {
+    selectedOptionValue: filterMonth,
+    filterOptions,
+  } = React.useMemo(() => {
+    const { value } = periods[filteredPeriodKey];
+    const filterOptions = Object.values(periods).map(({ key, title }) => {
+      return { title, key, isSelected: key === filteredPeriodKey };
+    });
+    return { selectedOptionValue: value, filterOptions };
+  }, [filteredPeriodKey]);
   // Transform
   const transactionsForPeriod = calculateTimelineTransactionsForPeriod(
     transactions,
@@ -102,9 +129,6 @@ export function MyFlow({
     filterBySearchQuery(searchQuery)
   );
 
-  // const filteredTimelineTransactions = timelineTransactions.filter(
-  //   filterBySearchQuery(searchQuery) && filterByMonth(filterMonth)
-  // );
   const { left, received, spent } = calculateLeftReceivedSpent(
     filteredTimelineTransactions
   );
@@ -121,19 +145,14 @@ export function MyFlow({
   // Load
   return (
     <div className="py-3 space-y-3">
-      <div className="px-4 sm:px-6 lg:px-0 flex items-center justify-between ">
-        <div>
-          <PageHeading
-            title={`${title} - ${calculateYearAndMonth(filterMonth)}`}
-          />
-        </div>
-        <button
-          type="button"
-          onClick={onCreateTransaction}
-          className="group inline-flex items-center px-4 py-2 border border-blue-600 rounded-md shadow-sm text-sm font-medium text-blue-700 hover:bg-gray-50 hover:border-blue-700 focus:bg-gray-50 focus:border-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
-        >
-          Create
-        </button>
+      <div className="px-4 sm:px-6 lg:px-0 flex justify-between items-center">
+        <PageHeading title={title} />
+        <Dropdown
+          dropdownOptions={filterOptions}
+          onOptionSelected={(key) => {
+            setFilteredPeriodKey(key);
+          }}
+        />
       </div>
       <div className="px-4 sm:px-6 lg:px-0">
         <div className="space-y-3">
@@ -337,7 +356,7 @@ function filterBySearchQuery(query) {
   return function (timelineTransaction) {
     return getTimelineTransactionSearchableProps(
       timelineTransaction
-    ).some((s) => s.toLowerCase().includes(query.toLowerCase()));
+    ).some((s) => s?.toLowerCase().includes(query.toLowerCase()));
   };
 }
 

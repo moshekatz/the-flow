@@ -62,18 +62,12 @@ function DesktopMenu({ onLogout }) {
 
   return (
     <div className="fixed hidden lg:flex lg:flex-shrink-0">
-      <div className="w-48 lg:w-64 h-screen flex flex-col border-r border-gray-200 pt-5 pb-4 justify-between">
+      <div className="w-64 h-screen flex flex-col border-r border-gray-200 pt-5 pb-4 justify-between">
         <nav>
           <MenuLogo />
 
           <div className="mt-5 flex flex-col">
             <div className=" bg-white px-2 space-y-1">
-              {/* {navLinks.map(({ title, svgPath }) => {
-                return createNavLink({ title, svgPath }, gotoPage, {
-                  isCurrent: title === currentPage,
-                  isMobile: false,
-                });
-              })} */}
               {navLinks.map(({ title, svgPath }) => {
                 return createNavLink({
                   title,
@@ -86,7 +80,7 @@ function DesktopMenu({ onLogout }) {
             </div>
           </div>
         </nav>
-        <div className="mt-5 flex flex-col">
+        <div className="mt-5 flex flex-col px-2">
           <button
             onClick={() => {
               // TODO: give-feedback
