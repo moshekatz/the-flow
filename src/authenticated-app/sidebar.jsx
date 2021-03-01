@@ -41,23 +41,16 @@ const navLinks = [
 
 function Sidebar() {
   const { isMobileNavOpen } = useNavigation();
-  const { logout } = useAuth();
-  const handleLogOut = async () => {
-    await logout();
-    // TODO: error-handling
-    // if (error) {
-    //   setError(error);
-    // }
-  };
+  const { signOut } = useAuth();
   return (
     <>
-      {isMobileNavOpen ? <MobileMenu onLogout={handleLogOut} /> : null}
-      <DesktopMenu onLogout={handleLogOut} />
+      {isMobileNavOpen ? <MobileMenu onSignOut={signOut} /> : null}
+      <DesktopMenu onSignOut={signOut} />
     </>
   );
 }
 
-function DesktopMenu({ onLogout }) {
+function DesktopMenu({ onSignOut }) {
   const { currentPage, gotoPage } = useNavigation();
 
   return (
@@ -107,7 +100,7 @@ function DesktopMenu({ onLogout }) {
             Give Feedback
           </button>
           <button
-            onClick={onLogout}
+            onClick={onSignOut}
             className="text-gray-600 hover:text-gray-900 text-sm group rounded-md py-2 px-2 flex items-center font-medium w-full"
           >
             <svg
@@ -133,12 +126,12 @@ function DesktopMenu({ onLogout }) {
   );
 }
 
-function MobileMenu({ onLogout }) {
+function MobileMenu({ onSignOut }) {
   return (
     <div className="lg:hidden">
       <div className="fixed inset-0 z-40 flex">
         <MobileMenuOverlay />
-        <MobileMenuContent onLogout={onLogout} />
+        <MobileMenuContent onSignOut={onSignOut} />
         <div className="flex-shrink-0 w-14">
           {/* Dummy element to force sidebar to shrink to fit close icon */}
         </div>
@@ -147,7 +140,7 @@ function MobileMenu({ onLogout }) {
   );
 }
 
-function MobileMenuContent({ onLogout }) {
+function MobileMenuContent({ onSignOut }) {
   const { closeMobileNav, currentPage, gotoPage } = useNavigation();
   /* TODO: animations-support
   Off-canvas menu, show/hide based on off-canvas menu state.
@@ -206,7 +199,7 @@ function MobileMenuContent({ onLogout }) {
             Give Feedback
           </button>
           <button
-            onClick={onLogout}
+            onClick={onSignOut}
             className="text-gray-600 hover:text-gray-900 text-base group rounded-md py-2 px-2 flex items-center font-medium w-full"
           >
             <svg

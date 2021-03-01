@@ -12,7 +12,7 @@ export default App;
 function App() {
   return (
     <>
-      <AuthProvider>
+      <AuthProvider LoadingFallback={LoadingWave}>
         <AuthProvider.Authenticated>
           <NavigationProvider>
             <AuthenticatedApp />
@@ -26,5 +26,13 @@ function App() {
         </AuthProvider.PasswordRecovery>
       </AuthProvider>
     </>
+  );
+}
+
+function LoadingWave() {
+  return (
+    <div className="min-h-screen flex justify-center items-center text-xl animate-spin">
+      🌊
+    </div>
   );
 }

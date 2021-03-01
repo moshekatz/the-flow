@@ -1,58 +1,60 @@
 import { supabase } from "../supabase";
 
-// TODO: better-responses-and-no-logging
 const createSupabaseAuth = (supabaseClient) => ({
-  /* TODO: persist-session: Check for user already logged in? */
-  // getUser: () => {
-  //   supabaseClient.auth.user();
-  // },
-  login: async ({ email, password, provider }) => {
-    const loginResponse = await supabaseClient.auth.signIn({
+  signUp: async ({ email, password }) => {
+    const { user, session, error } = await supabaseClient.auth.signUp({
+      email,
+      password,
+    });
+    return { user, session, error };
+  },
+  signIn: async ({ email, password, provider }) => {
+    const { user, session, error } = await supabaseClient.auth.signIn({
       email,
       password,
       provider,
     });
-    return loginResponse;
+    return { user, session, error };
   },
-  register: async ({ email, password }) => {
-    const registerResponse = await supabaseClient.auth.signUp({
-      email,
-      password,
-    });
-    return registerResponse;
-  },
-  logout: async () => {
-    const logoutResponse = await supabaseClient.auth.signOut();
-    return logoutResponse;
+  signOut: async () => {
+    const { error } = await supabaseClient.auth.signOut();
+    return { error };
   },
   resetPasswordForEmail: async (email) => {
-    const resetPasswordForEmailResponse = await supabaseClient.auth.api.resetPasswordForEmail(
+    const { data, error } = await supabaseClient.auth.api.resetPasswordForEmail(
       email
     );
 
-    return resetPasswordForEmailResponse;
+    return { data, error };
   },
   updatePassword: async (newPassword) => {
-    const updatePasswordResponse = await supabaseClient.auth.update({
+    const { user, error } = await supabaseClient.auth.update({
       password: newPassword,
     });
-    return updatePasswordResponse;
+    return { user, error };
   },
   onAuthStateChange: (...props) => {
-    const onAuthStateChangeResponse = supabaseClient.auth.onAuthStateChange(
+    const { data: authListener, error } = supabaseClient.auth.onAuthStateChange(
       ...props
     );
-    const { data: authListener, error } = onAuthStateChangeResponse;
     return { authListener, error };
+  },
+  getUser: async () => {
+    return supabase.auth.user();
+  },
+  getSession: async () => {
+    return supabase.auth.session();
   },
 });
 
 const auth = createSupabaseAuth(supabase);
 export const {
-  login,
-  register,
-  logout,
+  signUp,
+  signIn,
+  signOut,
   resetPasswordForEmail,
   updatePassword,
   onAuthStateChange,
+  getUser,
+  getSession,
 } = auth;

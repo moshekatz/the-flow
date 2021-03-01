@@ -19,12 +19,37 @@ const defaultTransaction = {
 
 function TransactionSlideOver({ handleClose, transactionId }) {
   const {
+    error,
     transactions,
     createTransaction,
     deleteTransaction,
     updateTransaction,
   } = useTransactions();
 
+  if (error) {
+    return <Alert error={error} />;
+  }
+
+  return (
+    <TransactionSlideOverDetails
+      transactionId={transactionId}
+      transactions={transactions}
+      createTransaction={createTransaction}
+      deleteTransaction={deleteTransaction}
+      updateTransaction={updateTransaction}
+      handleClose={handleClose}
+    />
+  );
+}
+
+function TransactionSlideOverDetails({
+  transactionId,
+  transactions,
+  createTransaction,
+  deleteTransaction,
+  updateTransaction,
+  handleClose,
+}) {
   // TODO: perf-optimization (getById? O(1) < O(n))
   const selectedTransaction = transactions.find(
     (transaction) => transaction.id === transactionId
@@ -70,59 +95,34 @@ function TransactionSlideOver({ handleClose, transactionId }) {
     // TODO: upsert-transaction-support (hook exported method?)
     const shouldUpdate = transactionId !== null;
     if (shouldUpdate) {
-      try {
-        await updateTransaction(transactionId, {
-          name,
-          direction,
-          amount,
-          currency,
-          repeat,
-          category: category ? category : undefined,
-          due,
-          due_end: dueEnd ? dueEnd : undefined,
-        });
-        handleClose();
-        // TODO: error-handling
-        // if (error) {
-        //   alert(error.message);
-        // }
-      } catch (error) {
-        alert(error.message);
-      }
+      await updateTransaction(transactionId, {
+        name,
+        direction,
+        amount,
+        currency,
+        repeat,
+        category: category ? category : undefined,
+        due,
+        due_end: dueEnd ? dueEnd : undefined,
+      });
     } else {
-      try {
-        await createTransaction({
-          name,
-          direction,
-          amount,
-          currency,
-          repeat,
-          category: category ? category : undefined,
-          due,
-          due_end: dueEnd ? dueEnd : undefined,
-        });
-        handleClose();
-        // TODO: error-handling
-        // if (error) {
-        //   alert(error.message);
-        // }
-      } catch (error) {
-        alert(error.message);
-      }
+      await createTransaction({
+        name,
+        direction,
+        amount,
+        currency,
+        repeat,
+        category: category ? category : undefined,
+        due,
+        due_end: dueEnd ? dueEnd : undefined,
+      });
     }
+    handleClose();
   };
 
   const handleDelete = async () => {
-    try {
-      await deleteTransaction(transactionId);
-      handleClose();
-      // TODO: error-handling
-      // if (error) {
-      //   alert(error.message);
-      // }
-    } catch (error) {
-      alert(error.message);
-    }
+    await deleteTransaction(transactionId);
+    handleClose();
   };
 
   return (
@@ -147,7 +147,7 @@ function TransactionSlideOver({ handleClose, transactionId }) {
 */}
           <div className="w-screen sm:max-w-md">
             <div className="h-full flex flex-col py-6 bg-white shadow-xl">
-              <div className="lg:mt-6 relative flex-1 px-4 sm:px-6">
+              <div className="lg:mt-6 relative flex-1 px-4 sm:px-6 space-y-1">
                 <div className="flex items-start justify-between">
                   <h2
                     id="slide-over-heading"
@@ -181,6 +181,7 @@ function TransactionSlideOver({ handleClose, transactionId }) {
                     </button>
                   </div>
                 </div>
+
                 <form onSubmit={handleSubmit}>
                   <div className="min-h-0 flex-1 flex flex-col">
                     <div className="mt-6 relative flex-1 ">
@@ -468,6 +469,37 @@ function TransactionSlideOver({ handleClose, transactionId }) {
             </div>
           </div>
         </section>
+      </div>
+    </div>
+  );
+}
+
+function Alert({ error }) {
+  return (
+    <div className="rounded-md bg-red-50 p-4">
+      <div className="flex">
+        <div className="flex-shrink-0">
+          {/* Heroicon name: solid/x-circle */}
+          <svg
+            className="h-5 w-5 text-red-400"
+            xmlns="http://www.w3.org/2000/svg"
+            viewBox="0 0 20 20"
+            fill="currentColor"
+            aria-hidden="true"
+          >
+            <path
+              fillRule="evenodd"
+              d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z"
+              clipRule="evenodd"
+            />
+          </svg>
+        </div>
+        <div className="ml-3">
+          <h3 className="text-sm font-medium text-red-800">
+            There was an error with your submission:
+          </h3>
+          <p className="mt-2 text-sm text-red-700">{error.message}</p>
+        </div>
       </div>
     </div>
   );
