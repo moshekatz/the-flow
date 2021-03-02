@@ -1,9 +1,7 @@
 import React from "react";
 import * as transactionsApi from "./transactions-api";
-// import * as transactionsMockApi from "./transactions-mock-api";
 
 export { TransactionsProvider, useTransactions };
-// export { TransactionsMockProvider as TransactionsProvider, useTransactions };
 
 const TransactionsContext = React.createContext();
 TransactionsContext.displayName = "TransactionsContext";
@@ -11,10 +9,6 @@ TransactionsContext.displayName = "TransactionsContext";
 function TransactionsProvider(props) {
   return TransactionsProviderForApi({ api: transactionsApi, ...props });
 }
-
-// function TransactionsMockProvider(props) {
-//   return TransactionsProviderForApi({ api: transactionsMockApi, ...props });
-// }
 
 /* TODO: error-handling */
 function TransactionsProviderForApi({ api, ...props }) {
@@ -26,9 +20,8 @@ function TransactionsProviderForApi({ api, ...props }) {
     setTransactionsState({ error, transactions: null });
   };
   React.useEffect(() => {
-    /* TODO: render-as-you-fetch */
-    const transactionsPromise = api.getAllTransactions();
-    transactionsPromise
+    api
+      .getAllTransactions()
       .then(({ transactions, error }) => {
         setTransactionsState({ transactions, error });
       })

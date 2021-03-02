@@ -128,7 +128,8 @@ function DeafultLoadingFallback() {
 function DeafultErrorFallback({ error }) {
   return (
     <div className="min-h-screen flex justify-center items-center">
-      There was an error: {error.message}
+      <p>There was an error:</p>
+      <p>{error.message}</p>
     </div>
   );
 }
