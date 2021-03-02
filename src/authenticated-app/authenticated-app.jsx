@@ -89,12 +89,11 @@ function AuthenticatedApp() {
               <main className="flex-1 relative focus:outline-none" tabIndex={0}>
                 {page}
               </main>
-              {showTransactionSlideOver ? (
-                <TransactionSlideOver
-                  handleClose={closeTransactionSlideOver}
-                  transactionId={editableTransactionId}
-                />
-              ) : null}
+              <TransactionSlideOver
+                handleClose={closeTransactionSlideOver}
+                transactionId={editableTransactionId}
+                showTransactionSlideOver={showTransactionSlideOver}
+              />
             </div>
           </TransactionsProvider>
         </div>

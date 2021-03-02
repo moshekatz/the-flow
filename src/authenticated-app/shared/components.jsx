@@ -1,4 +1,5 @@
 import React from "react";
+import { Transition } from "@tailwindui/react";
 import { useOutsideAlerter } from "../../hooks/hooks";
 
 export function PageHeading({ title }) {
@@ -102,7 +103,7 @@ export function Dropdown({ dropdownOptions, onOptionSelected }) {
   const selectedOptionTitle = calculateOptionToShow(dropdownOptions);
 
   return (
-    <div ref={dropdownRef}>
+    <div ref={dropdownRef} className="z-10">
       <button
         onClick={toggleIsDropdownOpen}
         className="bg-gray-100 hover:bg-gray-200 h-10 focus:outline-none focus:shadow-outline-gray text-xs md:text-sm px-2 md:px-3 flex items-center text-gray-800 truncate text-center md:text-left font-semibold rounded-lg relative md:shadow overflow-hidden"
@@ -122,35 +123,42 @@ export function Dropdown({ dropdownOptions, onOptionSelected }) {
           />
         </svg>
       </button>
-      {isDropdownOpen ? (
-        <div className="absolute top-14 z-10">
-          <div
-            className="bg-white shadow-lg rounded-lg text-cool-gray-900 overflow-hidden"
-            style={{ opacity: 1, transform: "none" }}
-          >
-            <div className="flex flex-1">
-              <div className="flex flex-col p-1 space-y-1">
-                {dropdownOptions.map(({ title, key, isSelected }) => {
-                  return (
-                    <button
-                      key={title}
-                      onClick={() => {
-                        closeDropdown();
-                        onOptionSelected(key);
-                      }}
-                      className={`flex items-start py-2 text-xs rounded px-5 justify-center hover:bg-gray-200 focus:outline-none focus:bg-gray-300 font-medium ${
-                        isSelected ? "bg-gray-300" : ""
-                      }`}
-                    >
-                      {title}
-                    </button>
-                  );
-                })}
+      <Transition
+        show={isDropdownOpen}
+        enter="transition ease-out duration-100"
+        enterFrom="transform opacity-0 scale-95"
+        enterTo="transform opacity-100 scale-100"
+        leave="transition ease-in duration-75"
+        leaveFrom="transform opacity-100 scale-100"
+        leaveTo="transform opacity-0 scale-95"
+      >
+        {(ref) => (
+          <div ref={ref} className="absolute">
+            <div className="bg-white shadow-lg rounded-lg text-cool-gray-900 overflow-hidden">
+              <div className="flex flex-1">
+                <div className="flex flex-col p-1 space-y-1">
+                  {dropdownOptions.map(({ title, key, isSelected }) => {
+                    return (
+                      <button
+                        key={title}
+                        onClick={() => {
+                          closeDropdown();
+                          onOptionSelected(key);
+                        }}
+                        className={`flex items-start py-2 text-xs rounded px-5 justify-center hover:bg-gray-200 focus:outline-none focus:bg-gray-300 font-medium ${
+                          isSelected ? "bg-gray-300" : ""
+                        }`}
+                      >
+                        {title}
+                      </button>
+                    );
+                  })}
+                </div>
               </div>
             </div>
           </div>
-        </div>
-      ) : null}
+        )}
+      </Transition>
     </div>
   );
 }
