@@ -2,6 +2,7 @@ import React from "react";
 import { Transition } from "@tailwindui/react";
 import { useNavigation } from "../context/navigation-context";
 import { useAuth } from "../auth/auth-context";
+import { FeedbackFish } from "@feedback-fish/react";
 import {
   title as myFlowTitle,
   iconSvgPath as myFlowIconSvgPath,
@@ -20,6 +21,8 @@ import {
 } from "./pages/settings";
 
 export { Sidebar };
+
+const FeedbackFishProjectId = "1d639ced013e2d";
 
 const navLinks = [
   {
@@ -42,17 +45,17 @@ const navLinks = [
 
 function Sidebar() {
   const { isMobileNavOpen } = useNavigation();
-  const { signOut } = useAuth();
   return (
     <>
-      <MobileMenu onSignOut={signOut} isMobileNavOpen={isMobileNavOpen} />
-      <DesktopMenu onSignOut={signOut} />
+      <MobileMenu isMobileNavOpen={isMobileNavOpen} />
+      <DesktopMenu />
     </>
   );
 }
 
-function DesktopMenu({ onSignOut }) {
+function DesktopMenu() {
   const { currentPage, gotoPage } = useNavigation();
+  const { signOut, user } = useAuth();
 
   return (
     <div className="fixed hidden lg:flex lg:flex-shrink-0">
@@ -75,33 +78,29 @@ function DesktopMenu({ onSignOut }) {
           </div>
         </nav>
         <div className="mt-5 flex flex-col px-2">
+          <FeedbackFish projectId={FeedbackFishProjectId} userId={user.email}>
+            <button className="text-gray-600 hover:text-gray-900 group rounded-md py-2 px-2 flex items-center font-medium w-full text-sm">
+              <svg
+                className="text-gray-400 group-hover:text-gray-500 h-6 w-6 mr-3"
+                xmlns="http://www.w3.org/2000/svg"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
+                aria-hidden="true"
+              >
+                {/* Heroicon name: light bulb */}
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z"
+                />
+              </svg>
+              Give Feedback
+            </button>
+          </FeedbackFish>
           <button
-            onClick={() => {
-              // TODO: give-feedback
-              alert("TODO");
-            }}
-            className="text-gray-600 hover:text-gray-900 text-sm group rounded-md py-2 px-2 flex items-center font-medium w-full"
-          >
-            <svg
-              className="text-gray-400 group-hover:text-gray-500 h-6 w-6 mr-3"
-              xmlns="http://www.w3.org/2000/svg"
-              fill="none"
-              viewBox="0 0 24 24"
-              stroke="currentColor"
-              aria-hidden="true"
-            >
-              {/* Heroicon name: light bulb */}
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth={2}
-                d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z"
-              />
-            </svg>
-            Give Feedback
-          </button>
-          <button
-            onClick={onSignOut}
+            onClick={signOut}
             className="text-gray-600 hover:text-gray-900 text-sm group rounded-md py-2 px-2 flex items-center font-medium w-full"
           >
             <svg
@@ -127,13 +126,13 @@ function DesktopMenu({ onSignOut }) {
   );
 }
 
-function MobileMenu({ onSignOut, isMobileNavOpen }) {
+function MobileMenu({ isMobileNavOpen }) {
   return (
     <div className="lg:hidden">
       <Transition show={isMobileNavOpen}>
         <div className="fixed inset-0 z-40 flex">
           <MobileMenuOverlay />
-          <MobileMenuContent onSignOut={onSignOut} />
+          <MobileMenuContent />
           <div className="flex-shrink-0 w-14">
             {/* Dummy element to force sidebar to shrink to fit close icon */}
           </div>
@@ -143,8 +142,10 @@ function MobileMenu({ onSignOut, isMobileNavOpen }) {
   );
 }
 
-function MobileMenuContent({ onSignOut }) {
+function MobileMenuContent() {
   const { closeMobileNav, currentPage, gotoPage } = useNavigation();
+  const { signOut, user } = useAuth();
+
   return (
     <Transition.Child
       enter="transition ease-in-out duration-300 transform"
@@ -176,33 +177,32 @@ function MobileMenuContent({ onSignOut }) {
               })}
             </nav>
             <div className="px-2 space-y-1">
-              <button
-                onClick={() => {
-                  // TODO: give-feedback
-                  alert("TODO");
-                }}
-                className="text-gray-600 hover:text-gray-900 text-base group rounded-md py-2 px-2 flex items-center font-medium w-full"
+              <FeedbackFish
+                projectId={FeedbackFishProjectId}
+                userId={user.email}
               >
-                <svg
-                  className="text-gray-400 group-hover:text-gray-500 h-6 w-6 mr-4"
-                  xmlns="http://www.w3.org/2000/svg"
-                  fill="none"
-                  viewBox="0 0 24 24"
-                  stroke="currentColor"
-                  aria-hidden="true"
-                >
-                  {/* Heroicon name: light bulb */}
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={2}
-                    d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z"
-                  />
-                </svg>
-                Give Feedback
-              </button>
+                <button className="text-gray-600 hover:text-gray-900 group rounded-md py-2 px-2 flex items-center font-medium w-full text-base">
+                  <svg
+                    className="text-gray-400 group-hover:text-gray-500 h-6 w-6 mr-4"
+                    xmlns="http://www.w3.org/2000/svg"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    stroke="currentColor"
+                    aria-hidden="true"
+                  >
+                    {/* Heroicon name: light bulb */}
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z"
+                    />
+                  </svg>
+                  Give Feedback
+                </button>
+              </FeedbackFish>
               <button
-                onClick={onSignOut}
+                onClick={signOut}
                 className="text-gray-600 hover:text-gray-900 text-base group rounded-md py-2 px-2 flex items-center font-medium w-full"
               >
                 <svg
