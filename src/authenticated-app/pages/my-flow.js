@@ -8,6 +8,7 @@ import {
   SkeletonStatCard,
   categoryToColorMap,
   Dropdown,
+  SkeletonDropdown,
 } from "../shared/components";
 import {
   calculateLeftReceivedSpent,
@@ -34,8 +35,9 @@ export function MyFlow({ onSelectTransaction, searchQuery }) {
   if (loading) {
     return (
       <div className="py-3 space-y-3">
-        <div className="px-4 sm:px-6 lg:px-0 flex items-center justify-between">
+        <div className="px-4 sm:px-6 lg:px-0 flex justify-between items-center">
           <PageHeading title={title} />
+          <SkeletonDropdown placeholderText="This Month" />
         </div>
         <div className="px-4 sm:px-6 lg:px-0">
           <div className="space-y-3">
