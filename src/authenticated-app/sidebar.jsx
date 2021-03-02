@@ -22,6 +22,8 @@ import {
 
 export { Sidebar };
 
+const FeedbackFishProjectId = "1d639ced013e2d";
+
 const navLinks = [
   {
     title: myFlowTitle,
@@ -76,8 +78,8 @@ function DesktopMenu() {
           </div>
         </nav>
         <div className="mt-5 flex flex-col px-2">
-          <FeedbackFish projectId="1d639ced013e2d" userId={user.email}>
-            <button className="text-gray-600 hover:text-gray-900 text-sm group rounded-md py-2 px-2 flex items-center font-medium w-full">
+          <FeedbackFish projectId={FeedbackFishProjectId} userId={user.email}>
+            <button className="text-gray-600 hover:text-gray-900 group rounded-md py-2 px-2 flex items-center font-medium w-full text-sm">
               <svg
                 className="text-gray-400 group-hover:text-gray-500 h-6 w-6 mr-3"
                 xmlns="http://www.w3.org/2000/svg"
@@ -175,8 +177,11 @@ function MobileMenuContent() {
               })}
             </nav>
             <div className="px-2 space-y-1">
-              <FeedbackFish projectId="1d639ced013e2d" userId={user.email}>
-                <button className="text-gray-600 hover:text-gray-900 text-base group rounded-md py-2 px-2 flex items-center font-medium w-full">
+              <FeedbackFish
+                projectId={FeedbackFishProjectId}
+                userId={user.email}
+              >
+                <button className="text-gray-600 hover:text-gray-900 group rounded-md py-2 px-2 flex items-center font-medium w-full text-base">
                   <svg
                     className="text-gray-400 group-hover:text-gray-500 h-6 w-6 mr-4"
                     xmlns="http://www.w3.org/2000/svg"
