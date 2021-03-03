@@ -1,38 +1,35 @@
 import React from "react";
 import * as authApi from "./auth-provider";
+import { useErrorHandler } from "react-error-boundary";
 
 export { AuthProvider, useAuth };
 
 const AuthContext = React.createContext();
 AuthContext.displayName = "AuthContext";
 
-function AuthProvider({
-  LoadingFallback = DeafultLoadingFallback,
-  ErrorFallback = DeafultErrorFallback,
-  ...props
-}) {
+function AuthProvider({ LoadingFallback = DeafultLoadingFallback, ...props }) {
   return AuthProviderForApi({
     api: authApi,
     LoadingFallback,
-    ErrorFallback,
     ...props,
   });
 }
 
-function AuthProviderForApi({ api, LoadingFallback, ErrorFallback, ...props }) {
+function AuthProviderForApi({ api, LoadingFallback, ...props }) {
   const [{ session, error, mode }, setAuthState] = React.useState({
     session: null,
     error: null,
     mode: "IDLE", // 'IDLE' | 'LOADING' | 'ERROR' | 'SIGNED_IN' | 'SIGNED_OUT' | 'USER_UPDATED' | 'PASSWORD_RECOVERY'
   });
-  const onError = (error) => {
+  useErrorHandler(error);
+
+  const handleError = (error) => {
     setAuthState({ mode: "ERROR", error, session: null });
   };
   React.useEffect(() => {
+    setAuthState({ mode: "LOADING", session: null, error: null });
     api.getSession().then((session) => {
-      setAuthState({ mode: "LOADING", session, error: null });
       if (session) {
-        console.log({ session });
         setAuthState({ mode: "SIGNED_IN", session, error: null });
       } else {
         setAuthState({ mode: "SIGNED_OUT", session: null, error: null });
@@ -50,7 +47,7 @@ function AuthProviderForApi({ api, LoadingFallback, ErrorFallback, ...props }) {
     });
 
     if (error) {
-      onError(error);
+      handleError(error);
     }
 
     return () => authListener.unsubscribe();
@@ -59,24 +56,55 @@ function AuthProviderForApi({ api, LoadingFallback, ErrorFallback, ...props }) {
   const isIdle = mode === "IDLE";
   const isLoading = mode === "LOADING";
   if (isIdle || isLoading) return <LoadingFallback />;
-  const isError = mode === "ERROR";
-  if (isError) return <ErrorFallback error={error} />;
 
   const isPasswordRecovery = mode === "PASSWORD_RECOVERY";
   const isSignedOut = mode === "SIGNED_OUT";
   const isSignedIn = mode === "SIGNED_IN";
 
-  const {
-    signIn,
-    signOut,
-    signUp,
-    resetPasswordForEmail,
-    updatePassword,
-  } = api;
+  const signIn = async ({ email, password, provider }) => {
+    const { error } = await api.signIn({
+      email,
+      password,
+      provider,
+    });
+    if (error) {
+      handleError(error);
+    }
+  };
+
+  const signOut = async () => {
+    const { error } = await api.signOut();
+    if (error) {
+      handleError(error);
+    }
+  };
+
+  const signUp = async ({ email, password }) => {
+    const { error } = await api.signUp({
+      email,
+      password,
+    });
+    if (error) {
+      handleError(error);
+    }
+  };
+
+  const resetPasswordForEmail = async (email) => {
+    const { error } = await api.resetPasswordForEmail(email);
+    if (error) {
+      handleError(error);
+    }
+  };
+
+  const updatePassword = async (newPassword) => {
+    const { error } = await api.updatePassword(newPassword);
+    if (error) {
+      handleError(error);
+    }
+  };
 
   const value = {
     user: session?.user,
-    error,
     signIn,
     signOut,
     signUp,
@@ -121,15 +149,6 @@ function DeafultLoadingFallback() {
   return (
     <div className="min-h-screen flex justify-center items-center">
       Loading...
-    </div>
-  );
-}
-
-function DeafultErrorFallback({ error }) {
-  return (
-    <div className="min-h-screen flex justify-center items-center">
-      <p>There was an error:</p>
-      <p>{error.message}</p>
     </div>
   );
 }

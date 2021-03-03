@@ -1,5 +1,6 @@
 import React from "react";
 import * as transactionsApi from "./transactions-api";
+import { useErrorHandler } from "react-error-boundary";
 
 export { TransactionsProvider, useTransactions };
 
@@ -10,22 +11,28 @@ function TransactionsProvider(props) {
   return TransactionsProviderForApi({ api: transactionsApi, ...props });
 }
 
-/* TODO: error-handling */
 function TransactionsProviderForApi({ api, ...props }) {
   const [{ transactions, error }, setTransactionsState] = React.useState({
     transactions: null,
     error: null,
   });
-  const onError = (error) => {
+
+  useErrorHandler(error);
+
+  const handleError = (error) => {
     setTransactionsState({ error, transactions: null });
   };
   React.useEffect(() => {
     api
       .getAllTransactions()
       .then(({ transactions, error }) => {
-        setTransactionsState({ transactions, error });
+        if (error) {
+          handleError(error);
+        } else {
+          setTransactionsState({ transactions, error: null });
+        }
       })
-      .catch(onError);
+      .catch(handleError);
   }, [api, setTransactionsState]);
 
   const createTransaction = async (transaction) => {
@@ -34,7 +41,7 @@ function TransactionsProviderForApi({ api, ...props }) {
         transaction
       );
       if (error) {
-        onError(error);
+        handleError(error);
       } else {
         setTransactionsState(({ transactions }) => ({
           transactions: [...transactions, createdTransaction],
@@ -42,7 +49,7 @@ function TransactionsProviderForApi({ api, ...props }) {
         }));
       }
     } catch (error) {
-      onError(error);
+      handleError(error);
     }
   };
 
@@ -50,7 +57,7 @@ function TransactionsProviderForApi({ api, ...props }) {
     try {
       const { deletedTransaction, error } = await api.deleteTransaction(id);
       if (error) {
-        onError(error);
+        handleError(error);
       } else {
         setTransactionsState(({ transactions }) => ({
           transactions: transactions.filter(
@@ -60,7 +67,7 @@ function TransactionsProviderForApi({ api, ...props }) {
         }));
       }
     } catch (error) {
-      onError(error);
+      handleError(error);
     }
   };
 
@@ -71,7 +78,7 @@ function TransactionsProviderForApi({ api, ...props }) {
         updates
       );
       if (error) {
-        onError(error);
+        handleError(error);
       } else {
         setTransactionsState(({ transactions }) => ({
           transactions: transactions.map((transaction) => {
@@ -84,13 +91,12 @@ function TransactionsProviderForApi({ api, ...props }) {
         }));
       }
     } catch (error) {
-      onError(error);
+      handleError(error);
     }
   };
 
   const value = {
     transactions,
-    error,
     loading: !transactions && !error,
     createTransaction,
     deleteTransaction,

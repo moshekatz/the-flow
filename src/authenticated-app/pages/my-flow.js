@@ -30,7 +30,7 @@ export const iconSvgPath = (
 );
 
 export function MyFlow({ onSelectTransaction, searchQuery }) {
-  const { loading, error, transactions } = useTransactions();
+  const { loading, transactions } = useTransactions();
 
   if (loading) {
     return (
@@ -71,10 +71,6 @@ export function MyFlow({ onSelectTransaction, searchQuery }) {
         </div>
       </div>
     );
-  }
-
-  if (error) {
-    return <div>Error: {error.message}</div>;
   }
 
   return (
