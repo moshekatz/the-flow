@@ -19,7 +19,7 @@ function AuthProviderForApi({ api, LoadingFallback, ...props }) {
   const [{ session, error, mode }, setAuthState] = React.useState({
     session: null,
     error: null,
-    mode: "IDLE", // 'IDLE' | 'LOADING' | 'ERROR' | 'SIGNED_IN' | 'SIGNED_OUT' | 'USER_UPDATED' | 'PASSWORD_RECOVERY'
+    mode: "LOADING", // 'LOADING' | 'ERROR' | 'SIGNED_IN' | 'SIGNED_OUT' | 'USER_UPDATED' | 'PASSWORD_RECOVERY'
   });
   useErrorHandler(error);
 
@@ -27,14 +27,12 @@ function AuthProviderForApi({ api, LoadingFallback, ...props }) {
     setAuthState({ mode: "ERROR", error, session: null });
   };
   React.useEffect(() => {
-    setAuthState({ mode: "LOADING", session: null, error: null });
-    api.getSession().then((session) => {
-      if (session) {
-        setAuthState({ mode: "SIGNED_IN", session, error: null });
-      } else {
-        setAuthState({ mode: "SIGNED_OUT", session: null, error: null });
-      }
-    });
+    const session = api.getSession();
+    if (session) {
+      setAuthState({ mode: "SIGNED_IN", session, error: null });
+    } else {
+      setAuthState({ mode: "SIGNED_OUT", session: null, error: null });
+    }
 
     const { authListener, error } = api.onAuthStateChange((event, session) => {
       /* type AuthChangeEvent = 'SIGNED_IN' | 'SIGNED_OUT' | 'USER_UPDATED' | 'PASSWORD_RECOVERY' */
@@ -53,9 +51,8 @@ function AuthProviderForApi({ api, LoadingFallback, ...props }) {
     return () => authListener.unsubscribe();
   }, [api]);
 
-  const isIdle = mode === "IDLE";
   const isLoading = mode === "LOADING";
-  if (isIdle || isLoading) return <LoadingFallback />;
+  if (isLoading) return <LoadingFallback />;
 
   const isPasswordRecovery = mode === "PASSWORD_RECOVERY";
   const isSignedOut = mode === "SIGNED_OUT";

@@ -39,12 +39,7 @@ const createSupabaseAuth = (supabaseClient) => ({
     );
     return { authListener, error };
   },
-  // TODO: isAsync?
-  getUser: async () => {
-    return supabase.auth.user();
-  },
-  // TODO: isAsync?
-  getSession: async () => {
+  getSession: () => {
     return supabase.auth.session();
   },
 });
@@ -57,6 +52,5 @@ export const {
   resetPasswordForEmail,
   updatePassword,
   onAuthStateChange,
-  getUser,
   getSession,
 } = auth;

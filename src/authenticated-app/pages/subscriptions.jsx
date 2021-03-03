@@ -21,7 +21,25 @@ export const iconSvgPath = (
 );
 
 export function Subscriptions({ onSelectSubscription, searchQuery }) {
-  // Load
+  const { loading, transactions } = useTransactions();
+  if (loading) {
+    return <div>Loading...</div>;
+  }
+
+  return (
+    <SubscriptionsDetails
+      transactions={transactions}
+      onSelectSubscription={onSelectSubscription}
+      searchQuery={searchQuery}
+    />
+  );
+}
+
+function SubscriptionsDetails({
+  transactions,
+  onSelectSubscription,
+  searchQuery,
+}) {
   const {
     isAmountNormalizedByMonth,
     isAmountNormalizedByYear,
@@ -38,9 +56,6 @@ export function Subscriptions({ onSelectSubscription, searchQuery }) {
     sortByAmount,
   } = useSortByNextDueAndAmount();
 
-  const { transactions } = useTransactions();
-
-  // Transform
   const subscriptions = transactions
     .filter(isSubscription)
     .map(createSubscriptionNormalizedBy(isAmountNormalizedByMonth));
@@ -66,7 +81,6 @@ export function Subscriptions({ onSelectSubscription, searchQuery }) {
     activeSubscriptions
   );
 
-  // Load
   return (
     <div className="py-3 space-y-3">
       <div className="px-4 sm:px-6 lg:px-0">
@@ -322,10 +336,6 @@ function sortSubscriptions({
         return subscriptionA.paidMonthly - subscriptionB.paidMonthly;
       }
     }
-
-    throw new Error(
-      "This should not be possible - unsupported subscriptions sort."
-    );
   };
 }
 

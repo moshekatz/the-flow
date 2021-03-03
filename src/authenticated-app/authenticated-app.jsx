@@ -9,8 +9,6 @@ import {
 } from "./pages/subscriptions";
 import { Dashboard, title as dashboardTitle } from "./pages/dashboard";
 import { Settings, title as settingsTitle } from "./pages/settings";
-import { YourProfile, title as YourProfileTitle } from "./pages/your-profile";
-import { NotFound } from "./pages/not-found";
 
 import { useNavigation } from "../context/navigation-context";
 import { TransactionsProvider } from "../api/transactions/transactions-api-hooks";
@@ -62,15 +60,10 @@ function AuthenticatedApp() {
       page = <Settings />;
       break;
     }
-    case YourProfileTitle: {
-      // TODO: cleanup should delete this
-      page = <YourProfile />;
-      break;
-    }
     default: {
-      // TODO: cleanup throw an error instead?
-      page = <NotFound />;
-      break;
+      throw new Error(
+        `Unsupported page ${currentPage} on <AuthenticatedApp/>.`
+      );
     }
   }
 
@@ -89,9 +82,10 @@ function AuthenticatedApp() {
             onCreateTransaction={openTransactionSlideOver}
           />
           <ErrorBoundary
-            FallbackComponent={ErrorFallback}
+            FallbackComponent={ErrorFallback(
+              "There was an error while loading your transactions:"
+            )}
             onError={logReactErrorBoundaryToAnalyticsService}
-            message="There was an error while loading your transactions:"
           >
             <TransactionsProvider>
               <div className="flex ">
