@@ -6,18 +6,10 @@ export default PasswordRecovery;
 // TODO: reset-password-flow: design/refactor & testing -> https://security.stackexchange.com/questions/105124/why-should-you-redirect-the-user-to-a-login-page-after-a-password-reset
 function PasswordRecovery() {
   const { updatePassword } = useAuth();
-  const [error, setError] = React.useState(null);
   const handleResetPassword = async (e) => {
     e.preventDefault();
     const newPassword = e.target.elements.newpassword.value;
-    try {
-      const { error } = await updatePassword(newPassword);
-      if (error) {
-        setError(error);
-      }
-    } catch (error) {
-      setError(error);
-    }
+    await updatePassword(newPassword);
   };
 
   return (
@@ -48,14 +40,6 @@ function PasswordRecovery() {
           Reset my password
         </button>
       </form>
-      {error ? (
-        <div role="alert" style={{ color: "red" }}>
-          <span>There was an error: </span>
-          <pre style={{ whiteSpace: "break-spaces", marginBottom: "-5" }}>
-            {error.message}
-          </pre>
-        </div>
-      ) : null}
     </main>
   );
 }

@@ -16,9 +16,8 @@ export default App;
 function App() {
   return (
     <ErrorBoundary
-      FallbackComponent={ErrorFallback}
+      FallbackComponent={ErrorFallback("Something went wrong app:")}
       onError={logReactErrorBoundaryToAnalyticsService}
-      message="Something went wrong:"
     >
       <AuthProvider LoadingFallback={LoadingWave}>
         <AuthProvider.Authenticated>
