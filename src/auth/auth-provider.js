@@ -39,9 +39,11 @@ const createSupabaseAuth = (supabaseClient) => ({
     );
     return { authListener, error };
   },
+  // TODO: isAsync?
   getUser: async () => {
     return supabase.auth.user();
   },
+  // TODO: isAsync?
   getSession: async () => {
     return supabase.auth.session();
   },

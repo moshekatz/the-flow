@@ -1,5 +1,4 @@
 import React from "react";
-
 import { Header } from "./header";
 import { Sidebar } from "./sidebar";
 import { TransactionSlideOver } from "./transaction-slide-over";
@@ -15,6 +14,9 @@ import { NotFound } from "./pages/not-found";
 
 import { useNavigation } from "../context/navigation-context";
 import { TransactionsProvider } from "../api/transactions/transactions-api-hooks";
+import { ErrorBoundary } from "react-error-boundary";
+import { ErrorFallback } from "./shared/components";
+import { logReactErrorBoundaryToAnalyticsService } from "../analytics";
 
 export default AuthenticatedApp;
 
@@ -61,10 +63,12 @@ function AuthenticatedApp() {
       break;
     }
     case YourProfileTitle: {
+      // TODO: cleanup should delete this
       page = <YourProfile />;
       break;
     }
     default: {
+      // TODO: cleanup throw an error instead?
       page = <NotFound />;
       break;
     }
@@ -84,18 +88,27 @@ function AuthenticatedApp() {
             onSearchQueryChange={(e) => setSearchQuery(e.target.value)}
             onCreateTransaction={openTransactionSlideOver}
           />
-          <TransactionsProvider>
-            <div className="flex ">
-              <main className="flex-1 relative focus:outline-none" tabIndex={0}>
-                {page}
-              </main>
-              <TransactionSlideOver
-                handleClose={closeTransactionSlideOver}
-                transactionId={editableTransactionId}
-                showTransactionSlideOver={showTransactionSlideOver}
-              />
-            </div>
-          </TransactionsProvider>
+          <ErrorBoundary
+            FallbackComponent={ErrorFallback}
+            onError={logReactErrorBoundaryToAnalyticsService}
+            message="There was an error while loading your transactions:"
+          >
+            <TransactionsProvider>
+              <div className="flex ">
+                <main
+                  className="flex-1 relative focus:outline-none"
+                  tabIndex={0}
+                >
+                  {page}
+                </main>
+                <TransactionSlideOver
+                  handleClose={closeTransactionSlideOver}
+                  transactionId={editableTransactionId}
+                  showTransactionSlideOver={showTransactionSlideOver}
+                />
+              </div>
+            </TransactionsProvider>
+          </ErrorBoundary>
         </div>
       </div>
     </div>
