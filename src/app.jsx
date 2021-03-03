@@ -1,6 +1,10 @@
 import React from "react";
 import { AuthProvider } from "./auth/auth-context";
-import { NavigationProvider } from "./context/navigation-context"; //TODO: should be context and not a hook?
+import { NavigationProvider } from "./context/navigation-context";
+import { ErrorBoundary } from "react-error-boundary";
+// TODO: fix the dependency (app should not rely on authenticated)
+import { ErrorFallback } from "./authenticated-app/shared/components";
+import { logReactErrorBoundaryToAnalyticsService } from "./analytics";
 
 //TODO: lazy-load
 import AuthenticatedApp from "./authenticated-app/authenticated-app";
@@ -11,7 +15,11 @@ export default App;
 
 function App() {
   return (
-    <>
+    <ErrorBoundary
+      FallbackComponent={ErrorFallback}
+      onError={logReactErrorBoundaryToAnalyticsService}
+      message="Something went wrong:"
+    >
       <AuthProvider LoadingFallback={LoadingWave}>
         <AuthProvider.Authenticated>
           <NavigationProvider>
@@ -25,7 +33,7 @@ function App() {
           <PasswordRecovery />
         </AuthProvider.PasswordRecovery>
       </AuthProvider>
-    </>
+    </ErrorBoundary>
   );
 }
 

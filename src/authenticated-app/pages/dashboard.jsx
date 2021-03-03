@@ -24,14 +24,10 @@ export const iconSvgPath = (
 );
 
 export function Dashboard({ searchQuery }) {
-  const { loading, error, transactions } = useTransactions();
+  const { loading, transactions } = useTransactions();
 
   if (loading) {
     return <div>Loading...</div>;
-  }
-
-  if (error) {
-    return <div>Error: {error.message}</div>;
   }
 
   return (
