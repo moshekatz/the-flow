@@ -307,8 +307,8 @@ function getSubscriptionSearchableProps({
 }
 
 function isSubscription(transaction) {
-  const { repeat } = transaction;
-  return ["Monthly", "Annually"].includes(repeat);
+  const { repeat, direction } = transaction;
+  return ["Monthly", "Annually"].includes(repeat) && direction === "outgoing";
 }
 
 function sortSubscriptions({
