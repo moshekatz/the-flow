@@ -17,8 +17,8 @@ const workflows = {
 function UnauthenticatedApp() {
   const [workflow, setWorkflow] = React.useState(workflows.enterEmail);
   const [email, setEmail] = React.useState("");
-  let view;
 
+  let view;
   switch (workflow) {
     case workflows.enterEmail: {
       view = (
