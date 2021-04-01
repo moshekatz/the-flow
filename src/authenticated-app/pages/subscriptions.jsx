@@ -210,10 +210,7 @@ function SubscriptionItem({ subscription, onSelectSubscription, isActive }) {
         )}
       </div>
       <div>
-        <span className="text-gray-700 text-xl">
-          {/* TODO: support for usd view */}
-          {normalizedAmountToShow}
-        </span>
+        <span className="text-gray-700 text-xl">{normalizedAmountToShow}</span>
       </div>
     </li>
   );

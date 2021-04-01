@@ -53,7 +53,7 @@ function TransactionSlideOverDetails({
   updateTransaction,
   handleClose,
 }) {
-  // TODO: perf-optimization (getById? O(1) < O(n))
+  // TODO: perf optional-optimization (getById? O(1) < O(n))
   const selectedTransaction = transactions.find(
     (transaction) => transaction.id === transactionId
   );
@@ -85,6 +85,8 @@ function TransactionSlideOverDetails({
     selectedTransaction?.due_end || defaultTransaction.due_end
   );
 
+  const requiredFieldsInvalid = name === "" || amount === "";
+
   const nameInputRef = React.useRef();
   React.useEffect(() => {
     if (!selectedTransaction) {
@@ -95,7 +97,6 @@ function TransactionSlideOverDetails({
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    // TODO: upsert-transaction-support (hook exported method?)
     const shouldUpdate = transactionId !== null;
     if (shouldUpdate) {
       await updateTransaction(transactionId, {
@@ -197,7 +198,7 @@ function TransactionSlideOverDetails({
 
                     <form onSubmit={handleSubmit}>
                       <div className="min-h-0 flex-1 flex flex-col">
-                        <div className="mt-6 relative flex-1 ">
+                        <div className="mt-3 relative flex-1 ">
                           <div>
                             <label
                               htmlFor="name"
@@ -220,7 +221,7 @@ function TransactionSlideOverDetails({
                             </div>
                           </div>
 
-                          <div className="pt-6 sm:pt-5">
+                          <div className="pt-3">
                             <div role="group" aria-labelledby="label-direction">
                               <label
                                 htmlFor="direction"
@@ -272,7 +273,7 @@ function TransactionSlideOverDetails({
                             </div>
                           </div>
 
-                          <div className="pt-6 sm:pt-5">
+                          <div className="pt-3">
                             <label
                               htmlFor="amount"
                               className="block text-sm font-medium text-gray-700"
@@ -292,7 +293,11 @@ function TransactionSlideOverDetails({
                               <input
                                 value={amount}
                                 onChange={(e) => {
-                                  setAmount(e.target.valueAsNumber);
+                                  setAmount(
+                                    e.target.value === ""
+                                      ? ""
+                                      : e.target.valueAsNumber
+                                  );
                                 }}
                                 type="number"
                                 name="amount"
@@ -320,7 +325,7 @@ function TransactionSlideOverDetails({
                             </div>
                           </div>
 
-                          <div className="pt-6 sm:pt-5">
+                          <div className="pt-3">
                             <div role="group" aria-labelledby="label-repeat">
                               <label
                                 htmlFor="repeat"
@@ -385,37 +390,7 @@ function TransactionSlideOverDetails({
                             </div>
                           </div>
 
-                          <div className="pt-6 sm:pt-5">
-                            <label
-                              htmlFor="category"
-                              className="block text-sm font-medium text-gray-700"
-                            >
-                              Category
-                            </label>
-                            <select
-                              id="category"
-                              name="category"
-                              value={category}
-                              onChange={(e) => setCategory(e.target.value)}
-                              className="mt-1 block w-full pl-3 pr-10 py-2 text-base border-gray-300 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm rounded-md"
-                            >
-                              <option value="">Select a Category</option>
-                              {Object.keys(categoryToColorMap).map(
-                                (categoryValue) => {
-                                  return (
-                                    <option
-                                      key={categoryValue}
-                                      value={categoryValue}
-                                    >
-                                      {categoryValue}
-                                    </option>
-                                  );
-                                }
-                              )}
-                            </select>
-                          </div>
-
-                          <div className="pt-6 sm:pt-5">
+                          <div className="pt-3">
                             <label
                               htmlFor="due"
                               className="block text-sm font-medium text-gray-700"
@@ -435,7 +410,7 @@ function TransactionSlideOverDetails({
                           </div>
 
                           {repeat !== "One Time" ? (
-                            <div className="pt-6 sm:pt-5">
+                            <div className="pt-3">
                               <label
                                 htmlFor="due"
                                 className="block text-sm font-medium text-gray-700"
@@ -460,6 +435,39 @@ function TransactionSlideOverDetails({
                         </div>
                       </div>
 
+                      <div className="pt-3">
+                        <label
+                          htmlFor="category"
+                          className="block text-sm font-medium text-gray-700"
+                        >
+                          Category{" "}
+                          <span className="text-sm text-gray-400">
+                            (optional)
+                          </span>
+                        </label>
+                        <select
+                          id="category"
+                          name="category"
+                          value={category}
+                          onChange={(e) => setCategory(e.target.value)}
+                          className="mt-1 block w-full pl-3 pr-10 py-2 text-base border-gray-300 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm rounded-md"
+                        >
+                          <option value="">Select a Category</option>
+                          {Object.keys(categoryToColorMap).map(
+                            (categoryValue) => {
+                              return (
+                                <option
+                                  key={categoryValue}
+                                  value={categoryValue}
+                                >
+                                  {categoryValue}
+                                </option>
+                              );
+                            }
+                          )}
+                        </select>
+                      </div>
+
                       <div
                         className={`flex-shrink-0 py-4 flex ${
                           transactionId ? "justify-between" : "justify-end"
@@ -476,7 +484,12 @@ function TransactionSlideOverDetails({
                         ) : null}
                         <button
                           type="submit"
-                          className="ml-4 inline-flex justify-center py-2 px-4 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
+                          className={`ml-4 ${
+                            requiredFieldsInvalid
+                              ? "opacity-50"
+                              : "hover:bg-blue-700"
+                          } inline-flex justify-center py-2 px-4 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-blue-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500`}
+                          disabled={requiredFieldsInvalid}
                         >
                           Save
                         </button>

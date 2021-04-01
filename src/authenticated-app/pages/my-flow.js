@@ -173,24 +173,29 @@ function MyFlowDetails({ transactions, onSelectTransaction, searchQuery }) {
           <div className="space-y-3">
             <PageSubHeading title="Timeline" />
             <div className="flow-root space-y-3">
-              {upcomingTransactions && (
-                <Accordion title={"Upcoming Transactions"}>
-                  <ul className="border border-gray-300 p-1">
-                    {upcomingTransactions.map(
-                      (timelineTransaction, index, array) => {
-                        return (
-                          <TimelineItem
-                            key={timelineTransaction.id}
-                            timelineTransaction={timelineTransaction}
-                            isLast={index === array.length - 1}
-                            onSelectTransaction={onSelectTransaction}
-                          />
-                        );
-                      }
-                    )}
-                  </ul>
-                </Accordion>
-              )}
+              {upcomingTransactions &&
+                (upcomingTransactions.length === 0 ? (
+                  <div className="text-gray-600 tracking-wide">
+                    No upcoming transactions this month.
+                  </div>
+                ) : (
+                  <Accordion title={"Upcoming Transactions"}>
+                    <ul className="border border-gray-300 p-1">
+                      {upcomingTransactions.map(
+                        (timelineTransaction, index, array) => {
+                          return (
+                            <TimelineItem
+                              key={timelineTransaction.id}
+                              timelineTransaction={timelineTransaction}
+                              isLast={index === array.length - 1}
+                              onSelectTransaction={onSelectTransaction}
+                            />
+                          );
+                        }
+                      )}
+                    </ul>
+                  </Accordion>
+                ))}
               <Accordion title={"Transactions"} isOn={true}>
                 <ul className="p-1">
                   {currentTransactions.map(

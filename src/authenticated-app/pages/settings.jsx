@@ -1,3 +1,4 @@
+import { useAuth } from "../../auth/auth-context";
 import { PageHeading } from "../shared/components";
 
 export const title = "Settings";
@@ -20,13 +21,25 @@ export const iconSvgPath = (
 );
 
 export function Settings() {
+  const { user } = useAuth();
   return (
     <div className="py-3 space-y-3">
       <div className="px-4 sm:px-6 lg:px-0">
         <PageHeading title={title} />
       </div>
       <div className="px-4 sm:px-6 lg:px-0">
-        <div>Settings!!!!</div>
+        <div>
+          <span className="font-semibold">Logged in user:</span> {user.email}
+        </div>
+        <div className="mt-6">
+          More settings will be added in future versions:
+        </div>
+        <ul>
+          <li className="ml-2">- Managing the default currency, and more</li>
+          <li className="ml-2">- Switching themes</li>
+          <li className="ml-2">- Deleting the account</li>
+          <li className="ml-2">- Much more. Please submit your feedback! :)</li>
+        </ul>
       </div>
     </div>
   );

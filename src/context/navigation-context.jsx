@@ -55,7 +55,7 @@ function NavigationProvider(props) {
     });
   };
 
-  // TODO: validate-optimization?
+  // TODO: perf validate-optimization?
   const value = React.useMemo(() => {
     return {
       currentPage,

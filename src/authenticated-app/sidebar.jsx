@@ -258,17 +258,6 @@ function MobileOpenMenuButton({ handleClick }) {
 }
 
 function MobileMenuOverlay() {
-  /* TODO: animations-support
-  Off-canvas menu overlay, show/hide based on off-canvas menu state.
-
-  Entering: "transition-opacity ease-linear duration-300"
-    From: "opacity-0"
-    To: "opacity-100"
-  Leaving: "transition-opacity ease-linear duration-300"
-    From: "opacity-100"
-    To: "opacity-0"
-*/
-
   return (
     <Transition.Child
       enter="transition-opacity ease-linear duration-300"

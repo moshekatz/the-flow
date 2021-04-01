@@ -2,7 +2,6 @@ import { UnauthenticatedAppSubHeading } from "./shared/components";
 
 export { EmailSent };
 
-// TODO: better-copy
 function EmailSent({ email }) {
   return (
     <>
@@ -22,7 +21,7 @@ function EmailSent({ email }) {
       </svg>
 
       <UnauthenticatedAppSubHeading>
-        An email is on it's way!
+        An email is on its way!
       </UnauthenticatedAppSubHeading>
 
       <p className="text-center">
