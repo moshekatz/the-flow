@@ -1,4 +1,5 @@
 import React from "react";
+import { SkipNavLink, SkipNavContent } from "@reach/skip-nav";
 import { Header } from "./header";
 import { Sidebar } from "./sidebar";
 import { TransactionSlideOver } from "./transaction-slide-over";
@@ -13,7 +14,7 @@ import { Settings, title as settingsTitle } from "./pages/settings";
 import { useNavigation } from "../context/navigation-context";
 import { TransactionsProvider } from "../api/transactions/transactions-api-hooks";
 import { ErrorBoundary } from "react-error-boundary";
-import { ErrorFallback } from "./shared/components";
+import { ErrorFallback } from "../shared/components";
 import { logReactErrorBoundaryToAnalyticsService } from "../analytics";
 
 export default AuthenticatedApp;
@@ -68,44 +69,45 @@ function AuthenticatedApp() {
   }
 
   return (
-    <div
-      className={`min-h-screen bg-white flex ${
-        shouldHideScrollbar ? "overflow-y-hidden" : ""
-      }`}
-    >
-      <Sidebar />
-      <div className="ml-0 lg:ml-64 min-h-screen w-full">
-        <div className="mb-3 flex-1 lg:max-w-4xl mx-auto flex flex-col lg:px-8 xl:px-0">
-          <Header
-            searchQuery={searchQuery}
-            onSearchQueryChange={(e) => setSearchQuery(e.target.value)}
-            onCreateTransaction={openTransactionSlideOver}
-          />
-          <ErrorBoundary
-            FallbackComponent={ErrorFallback(
-              "There was an error while loading your transactions:"
-            )}
-            onError={logReactErrorBoundaryToAnalyticsService}
-          >
-            <TransactionsProvider>
-              <div className="flex ">
-                <main
-                  className="flex-1 relative focus:outline-none"
-                  tabIndex={0}
-                >
-                  {page}
-                </main>
-                <TransactionSlideOver
-                  handleClose={closeTransactionSlideOver}
-                  transactionId={editableTransactionId}
-                  showTransactionSlideOver={showTransactionSlideOver}
-                />
-              </div>
-            </TransactionsProvider>
-          </ErrorBoundary>
+    <>
+      <SkipNavLink className="sr-only" />
+      <div
+        className={`min-h-screen bg-white flex ${
+          shouldHideScrollbar ? "overflow-y-hidden" : ""
+        }`}
+      >
+        <Sidebar />
+        <div className="ml-0 lg:ml-64 min-h-screen w-full">
+          <div className="mb-3 flex-1 lg:max-w-4xl mx-auto flex flex-col lg:px-8 xl:px-0">
+            <Header
+              searchQuery={searchQuery}
+              onSearchQueryChange={(e) => setSearchQuery(e.target.value)}
+              onCreateTransaction={openTransactionSlideOver}
+            />
+            <ErrorBoundary
+              FallbackComponent={ErrorFallback(
+                "There was an error while loading your transactions:"
+              )}
+              onError={logReactErrorBoundaryToAnalyticsService}
+            >
+              <TransactionsProvider>
+                <div className="flex">
+                  <main className="flex-1 relative focus:outline-none">
+                    <SkipNavContent />
+                    {page}
+                  </main>
+                  <TransactionSlideOver
+                    handleClose={closeTransactionSlideOver}
+                    transactionId={editableTransactionId}
+                    showTransactionSlideOver={showTransactionSlideOver}
+                  />
+                </div>
+              </TransactionsProvider>
+            </ErrorBoundary>
+          </div>
         </div>
       </div>
-    </div>
+    </>
   );
 }
 

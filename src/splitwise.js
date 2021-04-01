@@ -33,7 +33,6 @@ export const SPLITWISE_CONSTS = {
 //   })
 //     .then((response) => response.json())
 //     .then((data) => {
-//       console.log(data);
 //       alert("Success!");
 //     });
 // }

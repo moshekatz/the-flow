@@ -3,7 +3,6 @@ import { useAuth } from "../auth/auth-context";
 
 export default PasswordRecovery;
 
-// TODO: reset-password-flow: design/refactor & testing -> https://security.stackexchange.com/questions/105124/why-should-you-redirect-the-user-to-a-login-page-after-a-password-reset
 function PasswordRecovery() {
   const { updatePassword } = useAuth();
   const handleResetPassword = async (e) => {

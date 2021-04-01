@@ -2,7 +2,6 @@ import { UnauthenticatedAppSubHeading } from "./shared/components";
 
 export { EmailSent };
 
-// TODO: better-copy
 function EmailSent({ email }) {
   return (
     <>
@@ -22,7 +21,7 @@ function EmailSent({ email }) {
       </svg>
 
       <UnauthenticatedAppSubHeading>
-        An email is on it's way!
+        An email is on its way!
       </UnauthenticatedAppSubHeading>
 
       <p className="text-center">
@@ -30,11 +29,8 @@ function EmailSent({ email }) {
         <span className="font-semibold text-gray-800">{email}</span>.
       </p>
       <p className="mt-2 text-center">
-        If this email address has an account, you'll find a magic link that will
-        sign you into your account.
-      </p>
-      <p className="mt-2 text-center">
-        The link expires in XX hours, so be sure to check it soon.
+        If this email address already has an account or was just used to sign
+        up, you'll find a magic link that will sign you into your account.
       </p>
     </>
   );
