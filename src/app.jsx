@@ -20,7 +20,7 @@ export default App;
 function App() {
   return (
     <ErrorBoundary
-      FallbackComponent={ErrorFallback("Something went wrong app:")}
+      FallbackComponent={ErrorFallback("Something went wrong:")}
       onError={logReactErrorBoundaryToAnalyticsService}
     >
       <Suspense fallback={LoadingWave}>
