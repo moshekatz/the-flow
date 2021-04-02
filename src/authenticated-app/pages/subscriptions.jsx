@@ -95,45 +95,46 @@ function SubscriptionsDetails({
           </div>
           <div className="flex justify-between items-center space-y-3">
             <PageSubHeading title="Active" />
-            <div>
-              <div className="text-gray-700 text-sm flex justify-between">
-                <span className="font-semibold">Show paid: </span>
+            <div className="md:space-x-2 md:flex md:items-center">
+              <div className="text-gray-700 text-sm flex justify-between space-x-2">
+                <span className="font-semibold">Normalize By: </span>
                 <button
                   onClick={normalizeAmountByMonth}
-                  className={`inline-block px-2 ${
+                  className={`inline-block ${
                     isAmountNormalizedByMonth
                       ? "font-semibold text-pink-600"
                       : ""
                   }`}
                 >
-                  Monthly
+                  Month
                 </button>
-                {" | "}
+                <div>|</div>
                 <button
                   onClick={normalizeAmountByYear}
-                  className={`inline-block px-2 ${
+                  className={`inline-block ${
                     isAmountNormalizedByYear
                       ? "font-semibold text-pink-600"
                       : ""
                   }`}
                 >
-                  Annually
+                  Year
                 </button>
               </div>
-              <div className="text-gray-700 text-sm">
+              <div class="hidden md:block font-extrabold">|</div>
+              <div className="text-gray-700 text-sm flex justify-between space-x-2">
                 <span className="font-semibold">Order By: </span>
                 <button
                   onClick={sortByNextDue}
-                  className={`inline-block px-2 ${
+                  className={`inline-block ${
                     isSortByNextDue ? "font-semibold text-pink-600" : ""
                   }`}
                 >
                   {isSortByNextDueASC ? "▼" : "▲"} Next Due
                 </button>
-                {" | "}
+                <div>|</div>
                 <button
                   onClick={sortByAmount}
-                  className={`inline-block px-2 ${
+                  className={`inline-block ${
                     isSortByAmount ? "font-semibold text-pink-600" : ""
                   }`}
                 >
