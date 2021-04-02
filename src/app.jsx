@@ -23,7 +23,7 @@ function App() {
       FallbackComponent={ErrorFallback("Something went wrong:")}
       onError={logReactErrorBoundaryToAnalyticsService}
     >
-      <Suspense fallback={LoadingWave}>
+      <Suspense fallback={<LoadingWave />}>
         <AuthProvider LoadingFallback={LoadingWave}>
           <AuthProvider.Authenticated>
             <NavigationProvider>
