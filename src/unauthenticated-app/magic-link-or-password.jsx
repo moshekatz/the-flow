@@ -4,7 +4,7 @@ import { UnauthenticatedAppSubHeading } from "./shared/components";
 
 export { MagicLinkOrPasswordView };
 
-function MagicLinkOrPasswordView({ email, onMagicLink }) {
+function MagicLinkOrPasswordView({ email, onMagicLink, onResetPassword }) {
   const { signIn, resetPasswordForEmail } = useAuth();
   const [password, setPassword] = React.useState("");
 
@@ -23,7 +23,7 @@ function MagicLinkOrPasswordView({ email, onMagicLink }) {
 
   const handlePasswordReset = async () => {
     await resetPasswordForEmail(email);
-    onMagicLink();
+    onResetPassword();
   };
 
   return (
