@@ -1,8 +1,12 @@
-import { UnauthenticatedAppSubHeading } from "./shared/components";
+import { UnauthenticatedAppSubHeading } from "../shared/components";
 
 export { EmailSent };
 
-function EmailSent({ email }) {
+function EmailSent({ email, type }) {
+  const isMagicLink = type === "MAGIC_LINK";
+  const isResetPassword = type === "RESET_PASSWORD";
+  const isConfirmEmail = type === "CONFIRM_EMAIL";
+
   return (
     <>
       <svg
@@ -28,10 +32,18 @@ function EmailSent({ email }) {
         We sent an email to{" "}
         <span className="font-semibold text-gray-800">{email}</span>.
       </p>
-      <p className="mt-2 text-center">
-        If this email address already has an account or was just used to sign
-        up, you'll find a magic link that will sign you into your account.
-      </p>
+      {(isMagicLink || isConfirmEmail) && (
+        <p className="mt-2 text-center">
+          If this email address already has an account or was just used to sign
+          up, you'll find a magic link that will sign you into your account.
+        </p>
+      )}
+      {isResetPassword && (
+        <p className="mt-2 text-center">
+          If this email address already has an account, you'll find a link to
+          reset your password.
+        </p>
+      )}
     </>
   );
 }

@@ -1,6 +1,6 @@
 import React from "react";
 import { useAuth } from "../auth/auth-context";
-import { UnauthenticatedAppSubHeading } from "./shared/components";
+import { UnauthenticatedAppSubHeading } from "../shared/components";
 
 export { SignUp };
 

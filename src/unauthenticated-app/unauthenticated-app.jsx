@@ -11,7 +11,9 @@ const workflows = {
   enterEmail: "ENTER_EMAIL",
   magicLinkOrPassword: "SIGN_IN_MAGIC_LINK_OR_PASSWORD",
   signUp: "SIGN_UP",
-  emailSent: "EMAIL_SENT",
+  magicLinkSent: "MAGIC_LINK_SENT",
+  resetPasswordSent: "RESET_PASSWORD_SENT",
+  confirmEmailSent: "CONFIRM_EMAIL_SENT",
 };
 
 function UnauthenticatedApp() {
@@ -38,7 +40,10 @@ function UnauthenticatedApp() {
         <MagicLinkOrPasswordView
           email={email}
           onMagicLink={() => {
-            setWorkflow(workflows.emailSent);
+            setWorkflow(workflows.magicLinkSent);
+          }}
+          onResetPassword={() => {
+            setWorkflow(workflows.resetPasswordSent);
           }}
         />
       );
@@ -50,14 +55,22 @@ function UnauthenticatedApp() {
           onEmailChanged={(e) => setEmail(e.target.value)}
           email={email}
           onSignUp={() => {
-            setWorkflow(workflows.emailSent);
+            setWorkflow(workflows.confirmEmailSent);
           }}
         />
       );
       break;
     }
-    case workflows.emailSent: {
-      view = <EmailSent email={email} />;
+    case workflows.magicLinkSent: {
+      view = <EmailSent email={email} type="MAGIC_LINK" />;
+      break;
+    }
+    case workflows.resetPasswordSent: {
+      view = <EmailSent email={email} type="RESET_PASSWORD" />;
+      break;
+    }
+    case workflows.confirmEmailSent: {
+      view = <EmailSent email={email} type="CONFIRM_EMAIL" />;
       break;
     }
     default: {

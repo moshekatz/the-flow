@@ -32,13 +32,15 @@ export function Settings() {
           <span className="font-semibold">Logged in user:</span> {user.email}
         </div>
         <div className="mt-6">
-          More settings will be added in future versions:
+          More features will be added in future versions:
         </div>
         <ul>
-          <li className="ml-2">- Managing the default currency, and more</li>
+          <li className="ml-2">- Managing the default currency</li>
           <li className="ml-2">- Switching themes</li>
           <li className="ml-2">- Deleting the account</li>
-          <li className="ml-2">- Much more. Please submit your feedback! :)</li>
+          <li className="ml-2">
+            - Much more - please submit your feedback! :)
+          </li>
         </ul>
       </div>
     </div>

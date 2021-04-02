@@ -36,11 +36,17 @@ function AuthProviderForApi({ api, LoadingFallback, ...props }) {
 
     const { authListener, error } = api.onAuthStateChange((event, session) => {
       /* type AuthChangeEvent = 'SIGNED_IN' | 'SIGNED_OUT' | 'USER_UPDATED' | 'PASSWORD_RECOVERY' */
-      setAuthState({
-        mode: event,
-        session,
-        error: null,
-      });
+      if (event === "USER_UPDATED") {
+        api.signOut().catch((error) => {
+          handleError(error);
+        });
+      } else {
+        setAuthState({
+          mode: event,
+          session,
+          error: null,
+        });
+      }
     });
 
     if (error) {
