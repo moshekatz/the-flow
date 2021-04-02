@@ -1,4 +1,4 @@
-import { UnauthenticatedAppSubHeading } from "./shared/components";
+import { UnauthenticatedAppSubHeading } from "../shared/components";
 
 export { EmailSent };
 
