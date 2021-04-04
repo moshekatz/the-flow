@@ -39,6 +39,7 @@ function AuthenticatedApp() {
       page = (
         <MyFlow
           onSelectTransaction={openTransactionSlideOverForId}
+          onCreateTransaction={openTransactionSlideOver}
           searchQuery={searchQuery}
         />
       );
@@ -48,13 +49,19 @@ function AuthenticatedApp() {
       page = (
         <Subscriptions
           onSelectSubscription={openTransactionSlideOverForId}
+          onCreateTransaction={openTransactionSlideOver}
           searchQuery={searchQuery}
         />
       );
       break;
     }
     case dashboardTitle: {
-      page = <Dashboard searchQuery={searchQuery} />;
+      page = (
+        <Dashboard
+          searchQuery={searchQuery}
+          onCreateTransaction={openTransactionSlideOver}
+        />
+      );
       break;
     }
     case settingsTitle: {

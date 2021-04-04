@@ -25,7 +25,7 @@ function MobileOpenSideBarButton() {
   return (
     <button
       onClick={openMobileNav}
-      className="lg:hidden border-r border-gray-200 px-4 text-gray-500 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-indigo-500"
+      className="lg:hidden border-r border-gray-200 px-4 text-gray-500 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-blue-500"
     >
       <span className="sr-only">Open sidebar</span>
       {/* Heroicon name: menu-alt-2 */}

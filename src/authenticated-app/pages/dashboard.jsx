@@ -1,5 +1,10 @@
 import React from "react";
-import { PageHeading, PageSubHeading, Dropdown } from "../shared/components";
+import {
+  PageHeading,
+  PageSubHeading,
+  Dropdown,
+  PrimaryButton,
+} from "../shared/components";
 import { useTransactions } from "../../api/transactions/transactions-api-hooks";
 import { ResponsiveBar } from "@nivo/bar";
 import { ResponsivePie } from "@nivo/pie";
@@ -23,11 +28,15 @@ export const iconSvgPath = (
   />
 );
 
-export function Dashboard({ searchQuery }) {
+export function Dashboard({ searchQuery, onCreateTransaction }) {
   const { loading, transactions } = useTransactions();
 
   if (loading) {
     return <div>Loading...</div>;
+  }
+
+  if (transactions.length === 0) {
+    return <DashboardEmpty onCreateTransaction={onCreateTransaction} />;
   }
 
   return (
@@ -108,6 +117,26 @@ function DashboardDetails({ transactions, searchQuery }) {
   );
 }
 
+function DashboardEmpty({ onCreateTransaction }) {
+  return (
+    <div className="py-3 space-y-3">
+      <div className="px-4 sm:px-6 lg:px-0">
+        <PageHeading title={title} />
+      </div>
+      <div className="px-4 sm:px-6 lg:px-0">
+        <div className="space-y-3">
+          <PageSubHeading title="No Transaction Added Yet" />
+          <p className="text-gray-600">
+            Tap "Create" button below to add your first transaction and start
+            the flow!
+          </p>
+          <PrimaryButton onClick={onCreateTransaction}>Create</PrimaryButton>
+        </div>
+      </div>
+    </div>
+  );
+}
+
 function IncomingVsOutgoing({ transactions, filterMonths }) {
   const data = calculateIncomingVsOutgoingVisualizationsData({
     transactions,
@@ -115,7 +144,6 @@ function IncomingVsOutgoing({ transactions, filterMonths }) {
   });
 
   return (
-    // <div className="h-80 bg-gradient-to-t from-yellow-500 to-yellow-700"></div>
     <div className="relative h-80">
       <div className="absolute w-full h-full">
         <ResponsiveBar
@@ -161,7 +189,6 @@ function OutgoingByCategory({ transactions, filterMonths }) {
   });
   const dataSortedByValue = data.sort((a, b) => b.value - a.value);
   return (
-    // <div className="h-80 bg-gradient-to-t from-green-500 to-green-700"></div>
     <div className="relative h-96">
       <div className="absolute w-full h-full">
         <ResponsivePie

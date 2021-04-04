@@ -450,7 +450,7 @@ function TransactionSlideOverDetails({
                           name="category"
                           value={category}
                           onChange={(e) => setCategory(e.target.value)}
-                          className="mt-1 block w-full pl-3 pr-10 py-2 text-base border-gray-300 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm rounded-md"
+                          className="mt-1 block w-full pl-3 pr-10 py-2 text-base border-gray-300 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm rounded-md"
                         >
                           <option value="">Select a Category</option>
                           {Object.keys(categoryToColorMap).map(
@@ -486,7 +486,7 @@ function TransactionSlideOverDetails({
                           type="submit"
                           className={`ml-4 ${
                             requiredFieldsInvalid
-                              ? "opacity-50"
+                              ? "opacity-50 cursor-not-allowed"
                               : "hover:bg-blue-700"
                           } inline-flex justify-center py-2 px-4 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-blue-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500`}
                           disabled={requiredFieldsInvalid}

@@ -40,8 +40,8 @@ function EmailSent({ email, type }) {
       )}
       {isResetPassword && (
         <p className="mt-2 text-center">
-          If this email address already has an account, you'll find a link to
-          reset your password.
+          If this email address has an account, you'll find a link to reset your
+          password.
         </p>
       )}
     </>
