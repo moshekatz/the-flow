@@ -144,7 +144,6 @@ function IncomingVsOutgoing({ transactions, filterMonths }) {
   });
 
   return (
-    // <div className="h-80 bg-gradient-to-t from-yellow-500 to-yellow-700"></div>
     <div className="relative h-80">
       <div className="absolute w-full h-full">
         <ResponsiveBar
@@ -190,7 +189,6 @@ function OutgoingByCategory({ transactions, filterMonths }) {
   });
   const dataSortedByValue = data.sort((a, b) => b.value - a.value);
   return (
-    // <div className="h-80 bg-gradient-to-t from-green-500 to-green-700"></div>
     <div className="relative h-96">
       <div className="absolute w-full h-full">
         <ResponsivePie

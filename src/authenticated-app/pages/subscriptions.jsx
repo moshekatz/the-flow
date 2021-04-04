@@ -133,7 +133,7 @@ function SubscriptionsDetails({
                   Year
                 </button>
               </div>
-              <div class="hidden md:block font-extrabold">|</div>
+              <div className="hidden md:block font-extrabold">|</div>
               <div className="text-gray-700 text-sm flex justify-between space-x-2">
                 <span className="font-semibold">Order By: </span>
                 <button
