@@ -1,6 +1,11 @@
 import React from "react";
 import { useTransactions } from "../../api/transactions/transactions-api-hooks";
-import { PageHeading, PageSubHeading, StatCard } from "../shared/components";
+import {
+  PageHeading,
+  PageSubHeading,
+  StatCard,
+  PrimaryButton,
+} from "../shared/components";
 import {
   calculateSubscriptionStats,
   calculateNextDue,
@@ -20,10 +25,18 @@ export const iconSvgPath = (
   />
 );
 
-export function Subscriptions({ onSelectSubscription, searchQuery }) {
+export function Subscriptions({
+  onSelectSubscription,
+  onCreateTransaction,
+  searchQuery,
+}) {
   const { loading, transactions } = useTransactions();
   if (loading) {
     return <div>Loading...</div>;
+  }
+
+  if (!transactions.some(isSubscription)) {
+    return <SubscriptionsEmpty onCreateTransaction={onCreateTransaction} />;
   }
 
   return (
@@ -214,6 +227,30 @@ function SubscriptionItem({ subscription, onSelectSubscription, isActive }) {
         <span className="text-gray-700 text-xl">{normalizedAmountToShow}</span>
       </div>
     </li>
+  );
+}
+
+function SubscriptionsEmpty({ onCreateTransaction }) {
+  return (
+    <div className="py-3 space-y-3">
+      <div className="px-4 sm:px-6 lg:px-0">
+        <PageHeading title={title} />
+      </div>
+      <div className="px-4 sm:px-6 lg:px-0">
+        <div className="space-y-3">
+          <PageSubHeading title="No Subscriptions Added Yet" />
+          <p className="text-gray-600">
+            Tap "Create" button below to add your first subscription and start
+            the flow!
+          </p>
+          <p className="text-gray-600">
+            Make sure you choose a "Repeat" value of "Monthly" or "Annually" to
+            make it a recurring transaction.
+          </p>
+          <PrimaryButton onClick={onCreateTransaction}>Create</PrimaryButton>
+        </div>
+      </div>
+    </div>
   );
 }
 

@@ -9,6 +9,7 @@ import {
   categoryToColorMap,
   Dropdown,
   SkeletonDropdown,
+  PrimaryButton,
 } from "../shared/components";
 import {
   calculateLeftReceivedSpent,
@@ -29,7 +30,11 @@ export const iconSvgPath = (
   />
 );
 
-export function MyFlow({ onSelectTransaction, searchQuery }) {
+export function MyFlow({
+  onSelectTransaction,
+  searchQuery,
+  onCreateTransaction,
+}) {
   const { loading, transactions } = useTransactions();
 
   if (loading) {
@@ -71,6 +76,10 @@ export function MyFlow({ onSelectTransaction, searchQuery }) {
         </div>
       </div>
     );
+  }
+
+  if (transactions.length === 0) {
+    return <MyFlowEmpty onCreateTransaction={onCreateTransaction} />;
   }
 
   return (
@@ -337,6 +346,26 @@ function SkeletonTimelineItem({ isLast }) {
         </div>
       </div>
     </li>
+  );
+}
+
+function MyFlowEmpty({ onCreateTransaction }) {
+  return (
+    <div className="py-3 space-y-3">
+      <div className="px-4 sm:px-6 lg:px-0">
+        <PageHeading title={title} />
+      </div>
+      <div className="px-4 sm:px-6 lg:px-0">
+        <div className="space-y-3">
+          <PageSubHeading title="No Transaction Added Yet" />
+          <p className="text-gray-600">
+            Tap "Create" button below to add your first transaction and start
+            the flow!
+          </p>
+          <PrimaryButton onClick={onCreateTransaction}>Create</PrimaryButton>
+        </div>
+      </div>
+    </div>
   );
 }
 
