@@ -201,7 +201,7 @@ function MobileMenuContent() {
                 href="https://www.buymeacoffee.com/moshe"
                 target="_blank"
                 rel="noreferrer"
-                className="text-gray-600 hover:text-gray-900 group rounded-md py-2 px-2 flex items-center font-medium w-full text-sm"
+                className="text-gray-600 hover:text-gray-900 group rounded-md py-2 px-2 flex items-center font-medium w-full text-base"
               >
                 <BuyMeACoffeeIcon isMobile /> Buy Me A Coffee
               </a>
