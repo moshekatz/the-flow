@@ -1,3 +1,6 @@
+![the-flow-sneak-peek](https://user-images.githubusercontent.com/25473107/115138275-bbd4e500-a033-11eb-8b58-3c9fccb114cb.png)
+
+
 # The Flow
 
 The app I built to track my expenses.
