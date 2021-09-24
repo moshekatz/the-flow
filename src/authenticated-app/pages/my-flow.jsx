@@ -107,6 +107,11 @@ const periods = {
     title: "Next Month",
     value: nextMonthAsFilterMonth,
   },
+  EVERYTHING: {
+    key: "EVERYTHING",
+    title: "Everything",
+    value: '01-01-2000',
+  }
 };
 
 function MyFlowDetails({ transactions, onSelectTransaction, searchQuery }) {
@@ -124,10 +129,13 @@ function MyFlowDetails({ transactions, onSelectTransaction, searchQuery }) {
     return { selectedOptionValue: value, filterOptions };
   }, [filteredPeriodKey]);
   // Transform
-  const transactionsForPeriod = calculateTimelineTransactionsForPeriod(
-    transactions,
-    filterMonth
-  );
+  let transactionsForPeriod = transactions;
+  if(filterMonth !== '01-01-2000') {
+      transactionsForPeriod = calculateTimelineTransactionsForPeriod(
+        transactions,
+        filterMonth
+      );
+  }
   const timelineTransactions = transactionsForPeriod.map(
     createTimelineTransaction
   );
