@@ -217,5 +217,6 @@ export const categoryToColorMap = {
   Clothing: "bg-blue-500",
   Health: "bg-green-500",
   Salary: "bg-green-600",
+  School: "bg-yellow-800",
   Other: "bg-gray-500",
 };
