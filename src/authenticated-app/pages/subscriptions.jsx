@@ -14,7 +14,7 @@ import {
   calculateLastDue,
 } from "../shared/calculation-utils";
 
-export const title = "Subscriptions";
+export const title = "Max";
 export const iconSvgPath = (
   /* Heroicon name: refresh */
   <path
