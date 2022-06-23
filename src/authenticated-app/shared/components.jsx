@@ -207,13 +207,14 @@ function calculateOptionToShow(dropdownOptions) {
 }
 
 export const categoryToColorMap = {
-  Apartment: "bg-red-500",
   Food: "bg-rose-500",
+  Transportation: "bg-orange-500",
+  Apartment: "bg-red-500",
   Essentials: "bg-fuchsia-500",
   Entertainment: "bg-emerald-500",
+  Travel: "bg-rose-900",
   DevTools: "bg-indigo-500",
   Savings: "bg-pink-500",
-  Transportation: "bg-orange-500",
   Clothing: "bg-blue-500",
   Health: "bg-green-500",
   Salary: "bg-green-600",
