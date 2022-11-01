@@ -157,6 +157,13 @@ function MyFlowDetails({ transactions, onSelectTransaction, searchQuery }) {
     transactions: filteredTransactionsNewestFirst,
   });
 
+  const budgetPerCategory = {};
+  filteredTimelineTransactions.forEach(({ direction, amount, category }) => {
+    if(direction === 'outgoing') {
+      budgetPerCategory[category] = budgetPerCategory[category] ? budgetPerCategory[category] + amount : amount;
+    }
+  });
+
   // Load
   return (
     <div className="py-3 space-y-3">
@@ -187,6 +194,12 @@ function MyFlowDetails({ transactions, onSelectTransaction, searchQuery }) {
               />
             </div>
           </div>
+
+        <PageSubHeading title="Expenses by category" />
+        <div className="space-y-3">
+          {Object.entries(budgetPerCategory).map(([category, categoryBudget]) => <div><b>{category}:</b> {categoryBudget}</div>)}
+        </div>
+
           <div className="space-y-3">
             <PageSubHeading title="Timeline" />
             <div className="flow-root space-y-3">
