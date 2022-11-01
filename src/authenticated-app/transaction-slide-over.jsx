@@ -459,6 +459,7 @@ function TransactionSlideOverDetails({
                                 <option
                                   key={categoryValue}
                                   value={categoryValue}
+                                  className="z-30"
                                 >
                                   {categoryValue}
                                 </option>

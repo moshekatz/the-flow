@@ -221,4 +221,8 @@ export const categoryToColorMap = {
   School: "bg-yellow-800",
   Cafe: "bg-orange-1000",
   Other: "bg-gray-500",
+  Funds: 'bg-rose-300',
+  Groceries: 'bg-rose-100',
+  Networking: 'bg-indigo-300',
+  Celebrations: 'bg-indigo-100',
 };
