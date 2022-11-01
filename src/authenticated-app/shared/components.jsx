@@ -229,4 +229,5 @@ export const categoryToColorMap = {
   Networking: 'bg-indigo-300',
   Celebrations: 'bg-indigo-100',
   Myself: 'bg-blue-100',
+  Incoming: 'bg-emerald-100'
 };
