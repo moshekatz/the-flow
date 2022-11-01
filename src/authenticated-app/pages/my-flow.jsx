@@ -177,7 +177,7 @@ function MyFlowDetails({ transactions, onSelectTransaction, searchQuery }) {
         />
       </div>
       <div className="px-4 sm:px-6 lg:px-0">
-        <div className="space-y-3">
+        <div className="space-y-8">
           <div className="space-y-3">
             <PageSubHeading title="Stats" />
             <div className="grid grid-cols-3 gap-3 sm:gap-5">
@@ -195,9 +195,11 @@ function MyFlowDetails({ transactions, onSelectTransaction, searchQuery }) {
             </div>
           </div>
 
-        <PageSubHeading title="Expenses by category" />
         <div className="space-y-3">
-          {Object.entries(budgetPerCategory).map(([category, categoryBudget]) => <div><b>{category}:</b> {categoryBudget}</div>)}
+          <PageSubHeading title="Expenses by category" />
+          <div className="space-y-3">
+            {Object.entries(budgetPerCategory).map(([category, categoryBudget]) => <div><b>{category}:</b> {categoryBudget}</div>)}
+          </div>
         </div>
 
           <div className="space-y-3">
