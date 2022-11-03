@@ -198,7 +198,11 @@ function MyFlowDetails({ transactions, onSelectTransaction, searchQuery }) {
         <div className="space-y-3">
           <PageSubHeading title="Expenses by category" />
           <div className="space-y-3">
-            {Object.entries(budgetPerCategory).map(([category, categoryBudget]) => <div><b>{category}:</b> {categoryBudget}</div>)}
+            {
+            Object.entries(budgetPerCategory)
+              .sort(([_a, categoryBudgetA], [_b, categoryBudgetB]) => categoryBudgetB - categoryBudgetA)
+              .map(([category, categoryBudget]) => <div><b>{category}:</b> {categoryBudget}</div>)
+            }
           </div>
         </div>
 
