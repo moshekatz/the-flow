@@ -230,5 +230,6 @@ export const categoryToColorMap = {
   Celebrations: 'bg-indigo-100',
   Myself: 'bg-blue-100',
   Incoming: 'bg-emerald-100',
-  Debt: 'bg-fuchsia-200'
+  Debt: 'bg-fuchsia-200',
+  Beauty: 'bg-fuchsia-600'
 };
