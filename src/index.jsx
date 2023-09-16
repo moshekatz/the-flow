@@ -1,10 +1,10 @@
 import React from "react";
 import ReactDOM from "react-dom";
 import { reportWebVitals } from "./reportWebVitals";
+import { initAnalytics } from "./analytics";
+import App from "./app";
 
 import "./index.css";
-import App from "./app";
-import { initAnalytics } from "./analytics";
 
 ReactDOM.render(
   <React.StrictMode>
