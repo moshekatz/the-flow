@@ -7,7 +7,7 @@ export { AuthProvider, useAuth };
 const AuthContext = React.createContext();
 AuthContext.displayName = "AuthContext";
 
-function AuthProvider({ LoadingFallback = DeafultLoadingFallback, ...props }) {
+function AuthProvider({ LoadingFallback = DefaultLoadingFallback, ...props }) {
   return AuthProviderForApi({
     api: authApi,
     LoadingFallback,
@@ -147,7 +147,7 @@ function PasswordRecovery({ children }) {
   return isPasswordRecovery ? children : null;
 }
 
-function DeafultLoadingFallback() {
+function DefaultLoadingFallback() {
   return (
     <div className="min-h-screen flex justify-center items-center">
       Loading...
