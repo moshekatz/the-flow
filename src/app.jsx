@@ -3,7 +3,6 @@ import { AuthProvider } from "./auth/auth-context";
 import { NavigationProvider } from "./context/navigation-context";
 import { ErrorBoundary } from "react-error-boundary";
 import { ErrorFallback } from "./shared/components";
-import { logReactErrorBoundaryToAnalyticsService } from "./analytics";
 
 import AuthenticatedApp from "./authenticated-app/authenticated-app";
 import UnauthenticatedApp from "./unauthenticated-app/unauthenticated-app";
@@ -15,7 +14,6 @@ function App() {
   return (
     <ErrorBoundary
       FallbackComponent={ErrorFallback("Something went wrong:")}
-      onError={logReactErrorBoundaryToAnalyticsService}
     >
       <AuthProvider LoadingFallback={LoadingWave}>
         <AuthProvider.Authenticated>

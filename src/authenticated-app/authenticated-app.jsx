@@ -15,7 +15,6 @@ import { useNavigation } from "../context/navigation-context";
 import { TransactionsProvider } from "../api/transactions/transactions-api-hooks";
 import { ErrorBoundary } from "react-error-boundary";
 import { ErrorFallback } from "../shared/components";
-import { logReactErrorBoundaryToAnalyticsService } from "../analytics";
 
 export default AuthenticatedApp;
 
@@ -53,7 +52,7 @@ function AuthenticatedApp() {
           searchQuery={searchQuery}
         />
       );
-      break;
+    break;
     }
     case dashboardTitle: {
       page = (
@@ -95,7 +94,6 @@ function AuthenticatedApp() {
               FallbackComponent={ErrorFallback(
                 "There was an error while loading your transactions:"
               )}
-              onError={logReactErrorBoundaryToAnalyticsService}
             >
               <TransactionsProvider>
                 <div className="flex">
