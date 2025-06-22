@@ -1,5 +1,5 @@
 import React from "react";
-import { SkipNavLink, SkipNavContent } from "@reach/skip-nav";
+import { SkipNavLink, SkipNavContent } from "@react-lit/skip-nav";
 import { Header } from "./header";
 import { Sidebar } from "./sidebar";
 import { TransactionSlideOver } from "./transaction-slide-over";
@@ -52,7 +52,7 @@ function AuthenticatedApp() {
           searchQuery={searchQuery}
         />
       );
-    break;
+      break;
     }
     case dashboardTitle: {
       page = (

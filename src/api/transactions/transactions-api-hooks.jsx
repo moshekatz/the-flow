@@ -1,6 +1,6 @@
 import React from "react";
 import * as transactionsApi from "./transactions-api";
-import { useErrorHandler } from "react-error-boundary";
+import { useErrorBoundary } from "react-error-boundary";
 
 export { TransactionsProvider, useTransactions };
 
@@ -17,7 +17,13 @@ function TransactionsProviderForApi({ api, ...props }) {
     error: null,
   });
 
-  useErrorHandler(error);
+  const { showBoundary } = useErrorBoundary();
+
+  React.useEffect(() => {
+    if (error) {
+      showBoundary(error);
+    }
+  }, [error, showBoundary]);
 
   const handleError = (error) => {
     setTransactionsState({ error, transactions: null });

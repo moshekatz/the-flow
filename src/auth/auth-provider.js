@@ -2,45 +2,51 @@ import { supabase } from "../supabase";
 
 const createSupabaseAuth = (supabaseClient) => ({
   signUp: async ({ email, password }) => {
-    const { user, session, error } = await supabaseClient.auth.signUp({
+    const { data, error } = await supabaseClient.auth.signUp({
       email: email.toLowerCase(),
       password,
     });
-    return { user, session, error };
+    return { user: data?.user, session: data?.session, error };
   },
   signIn: async ({ email, password, provider }) => {
-    const { user, session, error } = await supabaseClient.auth.signIn({
-      email: email.toLowerCase(),
-      password,
-      provider,
-    });
-    return { user, session, error };
+    if (provider) {
+      // OAuth provider login
+      const { data, error } = await supabaseClient.auth.signInWithOAuth({
+        provider,
+      });
+      return { user: data?.user, session: data?.session, error };
+    } else {
+      // Email/password login
+      const { data, error } = await supabaseClient.auth.signInWithPassword({
+        email: email.toLowerCase(),
+        password,
+      });
+      return { user: data?.user, session: data?.session, error };
+    }
   },
   signOut: async () => {
     const { error } = await supabaseClient.auth.signOut();
     return { error };
   },
   resetPasswordForEmail: async (email) => {
-    const { data, error } = await supabaseClient.auth.api.resetPasswordForEmail(
+    const { data, error } = await supabaseClient.auth.resetPasswordForEmail(
       email.toLowerCase()
     );
-
     return { data, error };
   },
   updatePassword: async (newPassword) => {
-    const { user, error } = await supabaseClient.auth.update({
+    const { data, error } = await supabaseClient.auth.updateUser({
       password: newPassword,
     });
-    return { user, error };
+    return { user: data?.user, error };
   },
   onAuthStateChange: (...props) => {
-    const { data: authListener, error } = supabaseClient.auth.onAuthStateChange(
-      ...props
-    );
-    return { authListener, error };
+    const { data, error } = supabaseClient.auth.onAuthStateChange(...props);
+    return { authListener: data, error };
   },
-  getSession: () => {
-    return supabase.auth.session();
+  getSession: async () => {
+    const { data, error } = await supabaseClient.auth.getSession();
+    return data?.session;
   },
 });
 

@@ -17,6 +17,7 @@ const workflows = {
 };
 
 function UnauthenticatedApp() {
+  console.log("🔑 UnauthenticatedApp rendering");
   const [workflow, setWorkflow] = React.useState(workflows.enterEmail);
   const [email, setEmail] = React.useState("");
 
