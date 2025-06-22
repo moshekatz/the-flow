@@ -1,6 +1,6 @@
 import React from "react";
 import * as authApi from "./auth-provider";
-import { useErrorHandler } from "react-error-boundary";
+import { useErrorBoundary } from "react-error-boundary";
 
 export { AuthProvider, useAuth };
 
@@ -21,25 +21,59 @@ function AuthProviderForApi({ api, LoadingFallback, ...props }) {
     error: null,
     mode: "LOADING", // 'LOADING' | 'ERROR' | 'SIGNED_IN' | 'SIGNED_OUT' | 'USER_UPDATED' | 'PASSWORD_RECOVERY'
   });
-  useErrorHandler(error);
+  const { showBoundary } = useErrorBoundary();
+
+  React.useEffect(() => {
+    if (error) {
+      showBoundary(error);
+    }
+  }, [error, showBoundary]);
 
   const handleError = (error) => {
     setAuthState({ mode: "ERROR", error, session: null });
   };
   React.useEffect(() => {
-    const session = api.getSession();
-    if (session) {
-      setAuthState({ mode: "SIGNED_IN", session, error: null });
-    } else {
-      setAuthState({ mode: "SIGNED_OUT", session: null, error: null });
-    }
+    const initializeAuth = async () => {
+      try {
+        console.log("🔐 Initializing auth...");
+        const session = await api.getSession();
+        console.log(
+          "🔐 Auth session:",
+          session ? "Found session" : "No session"
+        );
+        if (session) {
+          console.log("🔐 Setting state to SIGNED_IN");
+          setAuthState({ mode: "SIGNED_IN", session, error: null });
+        } else {
+          console.log("🔐 Setting state to SIGNED_OUT");
+          setAuthState({ mode: "SIGNED_OUT", session: null, error: null });
+        }
+      } catch (error) {
+        console.error("🔐 Auth initialization error:", error);
+        handleError(error);
+      }
+    };
+
+    initializeAuth();
 
     const { authListener, error } = api.onAuthStateChange((event, session) => {
-      /* type AuthChangeEvent = 'SIGNED_IN' | 'SIGNED_OUT' | 'USER_UPDATED' | 'PASSWORD_RECOVERY' */
+      console.log(
+        "🔐 Auth state change event:",
+        event,
+        session ? "with session" : "no session"
+      );
+      /* type AuthChangeEvent = 'SIGNED_IN' | 'SIGNED_OUT' | 'USER_UPDATED' | 'PASSWORD_RECOVERY' | 'INITIAL_SESSION' */
       if (event === "USER_UPDATED") {
         api.signOut().catch((error) => {
           handleError(error);
         });
+      } else if (event === "INITIAL_SESSION") {
+        // Handle initial session - set appropriate state based on whether we have a session
+        if (session) {
+          setAuthState({ mode: "SIGNED_IN", session, error: null });
+        } else {
+          setAuthState({ mode: "SIGNED_OUT", session: null, error: null });
+        }
       } else {
         setAuthState({
           mode: event,
@@ -53,15 +87,24 @@ function AuthProviderForApi({ api, LoadingFallback, ...props }) {
       handleError(error);
     }
 
-    return () => authListener.unsubscribe();
+    return () => authListener?.subscription?.unsubscribe();
   }, [api]);
 
   const isLoading = mode === "LOADING";
-  if (isLoading) return <LoadingFallback />;
-
   const isPasswordRecovery = mode === "PASSWORD_RECOVERY";
   const isSignedOut = mode === "SIGNED_OUT";
   const isSignedIn = mode === "SIGNED_IN";
+
+  console.log("🔐 AuthProvider render state:", {
+    mode,
+    isLoading,
+    isSignedOut,
+    isSignedIn,
+    isPasswordRecovery,
+    hasSession: !!session,
+  });
+
+  if (isLoading) return <LoadingFallback />;
 
   const signIn = async ({ email, password, provider }) => {
     const { error } = await api.signIn({
@@ -134,16 +177,22 @@ function useAuth() {
 
 function Authenticated({ children }) {
   const { isSignedIn } = useAuth();
+  console.log("🔐 Authenticated component - isSignedIn:", isSignedIn);
   return isSignedIn ? children : null;
 }
 
 function Unauthenticated({ children }) {
   const { isSignedOut } = useAuth();
+  console.log("🔐 Unauthenticated component - isSignedOut:", isSignedOut);
   return isSignedOut ? children : null;
 }
 
 function PasswordRecovery({ children }) {
   const { isPasswordRecovery } = useAuth();
+  console.log(
+    "🔐 PasswordRecovery component - isPasswordRecovery:",
+    isPasswordRecovery
+  );
   return isPasswordRecovery ? children : null;
 }
 

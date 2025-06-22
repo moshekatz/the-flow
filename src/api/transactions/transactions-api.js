@@ -16,8 +16,19 @@ async function getAllTransactions() {
 }
 
 async function createTransaction(transaction) {
-  const user_id = supabase.auth.user().id;
-  const { data: createdTransaction, error } = await supabase
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+  const user_id = user?.id;
+
+  if (!user_id) {
+    return {
+      createdTransaction: null,
+      error: new Error("User not authenticated"),
+    };
+  }
+
+  const { data: createdTransactions, error } = await supabase
     .from(table)
     .insert([
       {
@@ -25,27 +36,27 @@ async function createTransaction(transaction) {
         user_id,
       },
     ])
-    .single();
+    .select();
 
-  return { createdTransaction, error };
+  return { createdTransaction: createdTransactions?.[0], error };
 }
 
 async function deleteTransaction(id) {
-  const { data: deletedTransaction, error } = await supabase
+  const { data: deletedTransactions, error } = await supabase
     .from(table)
     .delete()
     .eq("id", id)
-    .single();
+    .select();
 
-  return { deletedTransaction, error };
+  return { deletedTransaction: deletedTransactions?.[0], error };
 }
 
 async function updateTransaction(id, updates) {
-  const { data: updatedTransaction, error } = await supabase
+  const { data: updatedTransactions, error } = await supabase
     .from(table)
     .update(updates)
     .eq("id", id)
-    .single();
+    .select();
 
-  return { updatedTransaction, error };
+  return { updatedTransaction: updatedTransactions?.[0], error };
 }
